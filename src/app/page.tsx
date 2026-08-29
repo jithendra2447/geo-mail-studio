@@ -673,6 +673,30 @@ export default function Home() {
     }
   };
 
+  const handleSaveDraftCampaign = async () => {
+    if (!campaignForm.name || !campaignForm.subject) {
+      return alert("Please enter Campaign Name and Subject Line to save draft.");
+    }
+    setSendingCampaign(true);
+    setCampaignResult(null);
+
+    try {
+      const response = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...campaignForm, workspaceId, sendNow: false }),
+      });
+
+      const data = await response.json();
+      setCampaignResult({ status: response.status, data });
+      fetchCampaigns();
+    } catch (err: any) {
+      setCampaignResult({ status: 500, data: { error: err.message } });
+    } finally {
+      setSendingCampaign(false);
+    }
+  };
+
   const totalAccountCount = smtpPoolData?.summary?.totalAccounts || 0;
 
   return (
@@ -708,87 +732,69 @@ export default function Home() {
           <nav className="space-y-1.5">
             <button
               onClick={() => setActiveTab("analytics")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+              className={`w-full flex items-center rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "analytics"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <span className="font-bold">Analytics</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "analytics" ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
-                Live
-              </span>
             </button>
 
             <button
               onClick={() => setActiveTab("campaigns")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+              className={`w-full flex items-center rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "campaigns"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <span className="font-bold">Campaign Studio</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "campaigns" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
-                {campaignsList.length}
-              </span>
             </button>
 
             <button
               onClick={() => setActiveTab("infrastructure")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+              className={`w-full flex items-center rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "infrastructure"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <span className="font-bold">SMTP Infrastructure</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "infrastructure" ? "bg-white/20 text-white" : "bg-indigo-50 text-indigo-700 border border-indigo-200"}`}>
-                Unlimited
-              </span>
             </button>
 
             <button
               onClick={() => setActiveTab("compliance")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+              className={`w-full flex items-center rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "compliance"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <span className="font-bold">Deliverability Guard</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "compliance" ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
-                100% Score
-              </span>
             </button>
 
             <button
               onClick={() => setActiveTab("audience")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+              className={`w-full flex items-center rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "audience"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <span className="font-bold">Audience & Dev</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "audience" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
-                {subscribersData?.totalCount || 0}
-              </span>
             </button>
 
             {/* 6. SAAS BILLING, API KEYS & MULTI-TENANCY */}
             <button
               onClick={() => setActiveTab("saas")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+              className={`w-full flex items-center rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "saas"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               <span className="font-bold">SaaS Billing & API</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "saas" ? "bg-white/20 text-white" : "bg-purple-50 text-purple-700 border border-purple-200"}`}>
-                Pro Tier
-              </span>
             </button>
           </nav>
         </div>
@@ -1047,8 +1053,35 @@ export default function Home() {
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
               <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Broadcast Composer</h3>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
+                  <div className="flex items-center space-x-3">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Broadcast Composer</h3>
+                    {campaignsList.length > 0 && (
+                      <select
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          const found = campaignsList.find((c: any) => c.id === selectedId);
+                          if (found) {
+                            setCampaignForm({
+                              name: found.name || "",
+                              subject: found.subject || "",
+                              fromName: found.fromName || "",
+                              fromEmail: found.fromEmail || "jithendravarma.l@gmail.com",
+                              bodyHtml: found.bodyHtml || "",
+                            });
+                          }
+                        }}
+                        className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-800 focus:outline-none cursor-pointer hover:bg-slate-100"
+                      >
+                        <option value="">📁 Load Saved Campaign...</option>
+                        {campaignsList.map((c: any) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name} ({c.status || "DRAFT"})
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
                   <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
                     Auto-Rotate Multi-SMTP
                   </span>
@@ -1057,7 +1090,7 @@ export default function Home() {
                 {campaignResult && (
                   <div className={`p-4 rounded-xl border text-xs font-semibold ${campaignResult.status === 200 ? "bg-emerald-50 border-emerald-200 text-emerald-950" : "bg-rose-50 border-rose-200 text-rose-950"}`}>
                     <div className="flex justify-between items-center font-bold mb-1">
-                      <span>{campaignResult.status === 200 ? "✓ Campaign Dispatched Successfully!" : "Dispatch Notification"}</span>
+                      <span>{campaignResult.status === 200 ? "✓ Campaign Saved / Dispatched!" : "Campaign Notification"}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded bg-white font-mono">{campaignResult.status}</span>
                     </div>
                     <p>{campaignResult.data?.message || campaignResult.data?.error || "Campaign process complete."}</p>
@@ -1172,13 +1205,23 @@ export default function Home() {
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={sendingCampaign}
-                    className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 text-xs font-extrabold transition-all shadow-md cursor-pointer disabled:opacity-50"
-                  >
-                    {sendingCampaign ? "Dispatching via Multi-Account Pool..." : "Send Campaign (Auto-Rotate Senders + Rate Limited)"}
-                  </button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleSaveDraftCampaign}
+                      disabled={sendingCampaign}
+                      className="w-full rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 py-3 text-xs font-extrabold transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-1"
+                    >
+                      <span>💾 Save as Draft</span>
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={sendingCampaign}
+                      className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-xs font-extrabold transition-all shadow-md cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-1"
+                    >
+                      <span>{sendingCampaign ? "Dispatching..." : "Send Broadcast Now"}</span>
+                    </button>
+                  </div>
                 </form>
               </div>
 
