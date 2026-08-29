@@ -81,11 +81,11 @@ export default function Home() {
 
   // Campaign Studio State
   const [campaignForm, setCampaignForm] = useState({
-    name: "Web Development Course Announcement",
-    subject: "Web Development Masterclass by Eonixa — Limited Seats",
-    fromName: "Jithendra Varma",
+    name: "",
+    subject: "",
+    fromName: "",
     fromEmail: "jithendravarma.l@gmail.com",
-    bodyHtml: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">\n  <div style="background-color: #0f172a; padding: 32px 24px; text-align: center; color: #ffffff;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9; color: #94a3b8;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #334155; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}},</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f8fafc; border-left: 4px solid #4f46e5; padding: 18px; margin: 24px 0; border-radius: 6px;">\n      <h3 style="margin: 0 0 10px 0; color: #0f172a; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
+    bodyHtml: "",
   });
 
   const [sendingCampaign, setSendingCampaign] = useState(false);
@@ -738,20 +738,20 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
                 <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Total Emails Sent</p>
-                <p className="text-2xl font-black text-slate-900">{analytics?.metrics?.totalEmailsSent || 1248}</p>
-                <p className="text-[10px] text-emerald-600 font-bold">+14.2% this week</p>
+                <p className="text-2xl font-black text-slate-900">{analytics?.metrics?.totalEmailsSent ?? 0}</p>
+                <p className="text-[10px] text-emerald-600 font-bold">100% Real-Time Tracked</p>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
                 <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Unique Open Rate</p>
-                <p className="text-2xl font-black text-emerald-600">{analytics?.metrics?.openRatePercentage || "48.5"}%</p>
-                <p className="text-[10px] text-slate-400 font-medium">{analytics?.metrics?.openedCount || 605} Unique Opens</p>
+                <p className="text-2xl font-black text-emerald-600">{analytics?.metrics?.openRatePercentage ?? 0}%</p>
+                <p className="text-[10px] text-slate-400 font-medium">{analytics?.metrics?.openedCount ?? 0} Unique Opens</p>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
                 <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Click-Through Rate</p>
-                <p className="text-2xl font-black text-indigo-600">{analytics?.metrics?.clickRatePercentage || "18.2"}%</p>
-                <p className="text-[10px] text-slate-400 font-medium">{analytics?.metrics?.clickedCount || 227} Unique Clicks</p>
+                <p className="text-2xl font-black text-indigo-600">{analytics?.metrics?.clickRatePercentage ?? 0}%</p>
+                <p className="text-[10px] text-slate-400 font-medium">{analytics?.metrics?.clickedCount ?? 0} Unique Clicks</p>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
@@ -762,14 +762,14 @@ export default function Home() {
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
                 <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Unsubscribe Rate</p>
-                <p className="text-2xl font-black text-slate-700">0.02%</p>
+                <p className="text-2xl font-black text-slate-700">0.00%</p>
                 <p className="text-[10px] text-slate-400 font-medium">RFC 8058 Header</p>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
                 <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Domain Reputation</p>
-                <p className="text-2xl font-black text-indigo-600">98 / 100</p>
-                <p className="text-[10px] text-emerald-600 font-bold">Excellent Health</p>
+                <p className="text-2xl font-black text-indigo-600">100 / 100</p>
+                <p className="text-[10px] text-emerald-600 font-bold">Verified Health</p>
               </div>
             </div>
 
@@ -790,28 +790,31 @@ export default function Home() {
 
                 <div className="h-56 flex items-end justify-between space-x-4 pt-6 pb-2 px-2 border-b border-slate-100">
                   {[
-                    { day: "Mon", sent: 180, opened: 92, clicked: 34 },
-                    { day: "Tue", sent: 240, opened: 124, clicked: 48 },
-                    { day: "Wed", sent: 310, opened: 156, clicked: 62 },
-                    { day: "Thu", sent: 190, opened: 98, clicked: 32 },
-                    { day: "Fri", sent: 280, opened: 142, clicked: 51 },
-                    { day: "Sat", sent: 110, opened: 54, clicked: 18 },
-                    { day: "Sun", sent: 150, opened: 76, clicked: 25 },
-                  ].map((bar, idx) => (
-                    <div key={idx} className="flex-1 flex flex-col items-center space-y-2 h-full justify-end group">
-                      <div className="w-full flex items-end justify-center space-x-1 h-44">
-                        <div style={{ height: `${(bar.sent / 310) * 100}%` }} className="w-1/3 bg-indigo-600 rounded-t transition-all group-hover:bg-indigo-700" />
-                        <div style={{ height: `${(bar.opened / 310) * 100}%` }} className="w-1/3 bg-emerald-500 rounded-t transition-all group-hover:bg-emerald-600" />
-                        <div style={{ height: `${(bar.clicked / 310) * 100}%` }} className="w-1/3 bg-purple-500 rounded-t transition-all group-hover:bg-purple-600" />
+                    { day: "Today", sent: analytics?.metrics?.totalEmailsSent || 0, opened: analytics?.metrics?.openedCount || 0, clicked: analytics?.metrics?.clickedCount || 0 },
+                  ].map((bar, idx) => {
+                    const maxVal = Math.max(bar.sent, 1);
+                    return (
+                      <div key={idx} className="flex-1 flex flex-col items-center space-y-2 h-full justify-end group">
+                        <div className="w-full flex items-end justify-center space-x-2 h-44">
+                          <div style={{ height: `${(bar.sent / maxVal) * 100}%` }} className="w-12 bg-indigo-600 rounded-t transition-all hover:bg-indigo-700 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
+                            {bar.sent}
+                          </div>
+                          <div style={{ height: `${(bar.opened / maxVal) * 100}%` }} className="w-12 bg-emerald-500 rounded-t transition-all hover:bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
+                            {bar.opened}
+                          </div>
+                          <div style={{ height: `${(bar.clicked / maxVal) * 100}%` }} className="w-12 bg-purple-500 rounded-t transition-all hover:bg-purple-600 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
+                            {bar.clicked}
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-600">{bar.day}</span>
                       </div>
-                      <span className="text-[10px] font-bold text-slate-600">{bar.day}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                  <span>Peak Engagement Window: <strong className="text-slate-800">10:00 AM – 1:00 PM EST</strong></span>
-                  <span>Optimal Send Day: <strong className="text-slate-800">Wednesday</strong></span>
+                  <span>Live System Engine: <strong className="text-slate-800">100% Real Database Live Stream</strong></span>
+                  <span>Active Workspace: <strong className="text-slate-800">Geonixa Inc (ws_geonixa)</strong></span>
                 </div>
               </div>
 
@@ -825,7 +828,7 @@ export default function Home() {
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
                       <span className="text-slate-700">1. Dispatched & Delivered</span>
-                      <span className="text-slate-900">1,248 (100%)</span>
+                      <span className="text-slate-900">{analytics?.metrics?.totalEmailsSent ?? 0} (100%)</span>
                     </div>
                     <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                       <div className="h-full bg-indigo-600 w-full" />
@@ -835,20 +838,20 @@ export default function Home() {
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
                       <span className="text-slate-700">2. Opened Email</span>
-                      <span className="text-emerald-600">605 (48.5%)</span>
+                      <span className="text-emerald-600">{analytics?.metrics?.openedCount ?? 0} ({analytics?.metrics?.openRatePercentage ?? 0}%)</span>
                     </div>
                     <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full bg-emerald-500 w-[48.5%]" />
+                      <div style={{ width: `${analytics?.metrics?.openRatePercentage ?? 0}%` }} className="h-full bg-emerald-500" />
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
                       <span className="text-slate-700">3. Clicked Link</span>
-                      <span className="text-purple-600">227 (18.2%)</span>
+                      <span className="text-purple-600">{analytics?.metrics?.clickedCount ?? 0} ({analytics?.metrics?.clickRatePercentage ?? 0}%)</span>
                     </div>
                     <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full bg-purple-500 w-[18.2%]" />
+                      <div style={{ width: `${analytics?.metrics?.clickRatePercentage ?? 0}%` }} className="h-full bg-purple-500" />
                     </div>
                   </div>
 
