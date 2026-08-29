@@ -17,10 +17,10 @@ export default function Home() {
   // Mailchimp-Style Campaign Studio State
   const [campaignForm, setCampaignForm] = useState({
     name: "Web Development Course Announcement",
-    subject: "🎓 Web Development Masterclass by Eonixa — Limited Seats",
+    subject: "Web Development Masterclass by Eonixa — Limited Seats",
     fromName: "Jithendra Varma",
     fromEmail: "jithendravarma.l@gmail.com",
-    bodyHtml: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">\n  <div style="background-color: #0d1f1c; padding: 32px 24px; text-align: center; color: #ffffff; border-bottom: 3px solid #bef264;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #bef264;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9; color: #a7f3d0;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #1e293b; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #091412; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}}! 👋</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 18px; margin: 24px 0; border-radius: 8px;">\n      <h3 style="margin: 0 0 10px 0; color: #065f46; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #047857; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #059669; color: #ffffff; padding: 14px 28px; border-radius: 9999px; font-weight: 800; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f8fafc; padding: 20px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #059669; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
+    bodyHtml: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">\n  <div style="background-color: #0f172a; padding: 32px 24px; text-align: center; color: #ffffff;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9; color: #94a3b8;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #334155; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}},</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f8fafc; border-left: 4px solid #4f46e5; padding: 18px; margin: 24px 0; border-radius: 6px;">\n      <h3 style="margin: 0 0 10px 0; color: #0f172a; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
   });
 
   const [sendingCampaign, setSendingCampaign] = useState(false);
@@ -399,245 +399,221 @@ export default function Home() {
   const dynamicCapacity = smtpPoolData?.summary?.totalDailyCapacity || (totalAccountCount * 2000);
 
   return (
-    <div className="min-h-screen bg-[#081311] text-slate-900 font-sans antialiased flex">
-      {/* 1. MESA-STYLE LEFT SIDEBAR NAVIGATION */}
-      <aside className="w-72 border-r border-[#1b3832] bg-[#0a1815] min-h-screen flex flex-col justify-between p-5 sticky top-0 h-screen overflow-y-auto">
-        <div className="space-y-6">
-          {/* Brand Logo Header */}
-          <div className="flex items-center space-x-3 pb-4 border-b border-[#1b3832]">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#bef264] text-[#081311] font-black text-sm tracking-tighter shadow-md">
-              m
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased flex">
+      {/* 1. PROFESSIONAL LIGHT SLATE SIDEBAR */}
+      <aside className="w-64 border-r border-slate-200 bg-white min-h-screen flex flex-col justify-between p-4 sticky top-0 h-screen overflow-y-auto shadow-sm">
+        <div className="space-y-5">
+          {/* Executive Brand Logo Header */}
+          <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-xs tracking-wider">
+              GM
             </div>
             <div>
-              <h1 className="text-base font-extrabold tracking-tight text-white">GEO Mail Studio</h1>
-              <p className="text-[10px] font-bold text-[#bef264] tracking-wide uppercase mt-0.5">Enterprise Platform</p>
+              <h1 className="text-sm font-bold text-slate-900 tracking-tight">GEO Mail Studio</h1>
+              <p className="text-[10px] font-medium text-slate-500">Marketing & Deliverability</p>
             </div>
           </div>
 
-          {/* Tenant Selector */}
-          <div className="bg-[#0f231f] p-3 rounded-2xl border border-[#1b3832] space-y-1">
-            <label className="text-[9px] font-extrabold text-emerald-400 uppercase tracking-widest block">Workspace Tenant</label>
+          {/* Workspace Tenant Selector */}
+          <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 space-y-1">
+            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Workspace</label>
             <select
               value={workspaceId}
               onChange={(e) => setWorkspaceId(e.target.value)}
-              className="w-full bg-transparent text-xs font-bold text-white outline-none cursor-pointer"
+              className="w-full bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer"
             >
-              <option value="ws_geonixa" className="bg-[#0a1815] text-white">Geonixa Inc (ws_geonixa)</option>
-              <option value="ws_demo" className="bg-[#0a1815] text-white">Demo Workspace (ws_demo)</option>
+              <option value="ws_geonixa">Geonixa Inc (ws_geonixa)</option>
+              <option value="ws_demo">Demo Workspace (ws_demo)</option>
             </select>
           </div>
 
-          {/* Vertical Sidebar Navigation Items */}
-          <nav className="space-y-1.5">
+          {/* Clean Executive Navigation List (No Emojis) */}
+          <nav className="space-y-1">
             <button
               onClick={() => setActiveTab("smtppool")}
-              className={`w-full flex items-center justify-between rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "smtppool"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <div className="flex items-center space-x-3">
-                <span className="text-sm">📫</span>
-                <span>Sender Accounts Pool</span>
-              </div>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === "smtppool" ? "bg-[#081311] text-[#bef264]" : "bg-[#162e29] text-[#bef264] border border-[#274c44]"}`}>
+              <span>Sender Accounts Pool</span>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "smtppool" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
                 {totalAccountCount}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab("spamchecker")}
-              className={`w-full flex items-center space-x-3 rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "spamchecker"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="text-sm">🛡️</span>
-              <span className="flex-1">Spam Checker & Auto-Fix</span>
+              <span>Spam Checker & Fixer</span>
             </button>
 
             <button
               onClick={() => setActiveTab("campaigns")}
-              className={`w-full flex items-center space-x-3 rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "campaigns"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="text-sm">📣</span>
-              <span className="flex-1">Campaign Studio</span>
+              <span>Campaign Studio</span>
             </button>
 
             <button
               onClick={() => setActiveTab("domains")}
-              className={`w-full flex items-center space-x-3 rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "domains"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="text-sm">🔑</span>
-              <span className="flex-1">Domain Verification</span>
+              <span>Domain Verification</span>
             </button>
 
             <button
               onClick={() => setActiveTab("analytics")}
-              className={`w-full flex items-center space-x-3 rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "analytics"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="text-sm">📊</span>
-              <span className="flex-1">Analytics Dashboard</span>
+              <span>Analytics Dashboard</span>
             </button>
 
             <button
               onClick={() => setActiveTab("subscribers")}
-              className={`w-full flex items-center justify-between rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "subscribers"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <div className="flex items-center space-x-3">
-                <span className="text-sm">👥</span>
-                <span>Audience List</span>
-              </div>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === "subscribers" ? "bg-[#081311] text-[#bef264]" : "bg-[#162e29] text-emerald-200 border border-[#274c44]"}`}>
+              <span>Audience List</span>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "subscribers" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
                 {subscribersData?.totalCount || 0}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab("upload")}
-              className={`w-full flex items-center space-x-3 rounded-full px-4 py-2.5 text-xs font-extrabold transition-all text-left ${
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
                 activeTab === "upload"
-                  ? "bg-[#bef264] text-[#081311] shadow-md"
-                  : "text-emerald-200/80 hover:text-white hover:bg-[#122622]"
+                  ? "bg-slate-900 text-white shadow-sm font-bold"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="text-sm">🖼️</span>
-              <span className="flex-1">Asset Storage</span>
+              <span>Asset Storage</span>
             </button>
           </nav>
         </div>
 
         {/* Sidebar Status Footer */}
-        <div className="pt-4 border-t border-[#1b3832] space-y-3">
-          <div className="rounded-2xl bg-[#0f231f] p-3.5 border border-[#1b3832] text-[11px] font-medium text-emerald-300 space-y-1">
-            <div className="flex items-center space-x-2 font-extrabold text-[#bef264]">
-              <span className="h-2 w-2 rounded-full bg-[#bef264] animate-pulse" />
-              <span>Pool Capacity Active</span>
+        <div className="pt-3 border-t border-slate-100 space-y-2">
+          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200 text-[11px] font-medium text-slate-700 space-y-1">
+            <div className="flex items-center space-x-2 font-bold text-emerald-700">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Pool Active</span>
             </div>
-            <p className="text-[10px] text-emerald-200/70 font-mono">
+            <p className="text-[10px] text-slate-500 font-mono">
               Cap: {dynamicCapacity.toLocaleString()} Mails/Day ({totalAccountCount} Accs × 2,000)
             </p>
           </div>
         </div>
       </aside>
 
-      {/* 2. MAIN CONTENT AREA WITH CRISP WHITE MAIL PARTS */}
-      <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-[#081311]">
+      {/* 2. PURE WHITE CANVAS MAIN CONTENT */}
+      <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-[#f8fafc]">
         {/* TAB 1: MULTI-ACCOUNT SMTP LOAD BALANCER POOL */}
         {activeTab === "smtppool" && (
-          <div className="space-y-8 max-w-7xl mx-auto">
-            {/* Hero Card */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white rounded-3xl border border-slate-200 p-8 shadow-xl relative overflow-hidden">
-              <div className="lg:col-span-7 space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-emerald-50 border border-emerald-200 px-3.5 py-1 text-xs font-extrabold text-emerald-800">
-                    🟢 2,000 Mails / Acc Cap
-                  </span>
-                  <span className="rounded-full bg-slate-100 border border-slate-200 px-3.5 py-1 text-xs font-extrabold text-slate-700">
-                    ⚡ Auto Round-Robin Rotation
-                  </span>
-                  <span className="rounded-full bg-slate-100 border border-slate-200 px-3.5 py-1 text-xs font-extrabold text-slate-700">
-                    🕒 24-Hour Rolling Reset
-                  </span>
-                </div>
-
-                <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                  Multi-Account Load Balancer Engine
-                </h2>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  Scale your email dispatches to 60,000+ daily emails completely free without page timeouts or Google spam flags.
+          <div className="space-y-6 max-w-7xl mx-auto">
+            {/* Header Title Section */}
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Dynamic Capacity Engine
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Sender Accounts Pool</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Every sender account adds <span className="text-indigo-600 font-semibold">+2,000 emails/day</span> to your daily dispatch capacity.
                 </p>
-
-                <div className="pt-2 flex items-center space-x-3">
-                  <button
-                    onClick={handleSeed30Accounts}
-                    disabled={seedingPool}
-                    className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 text-xs font-extrabold tracking-wide transition-all shadow-md flex items-center space-x-2 cursor-pointer"
-                  >
-                    <span>SEED 30 SENDER ACCOUNTS (+60,000 DAILY CAP)</span>
-                    <span>→</span>
-                  </button>
-
-                  <button
-                    onClick={handleManualResetQuota}
-                    disabled={resettingQuota}
-                    className="rounded-full border border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 px-5 py-3 text-xs font-extrabold transition-all cursor-pointer"
-                  >
-                    🔄 {resettingQuota ? "Resetting..." : "Reset 24h Quotas"}
-                  </button>
-                </div>
               </div>
 
-              {/* Summary Metrics Cards */}
-              <div className="lg:col-span-5 grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center space-y-1 shadow-sm">
-                  <p className="text-[10px] font-extrabold text-emerald-700 uppercase tracking-widest">Total Daily Capacity</p>
-                  <p className="text-3xl font-black text-emerald-600">{dynamicCapacity.toLocaleString()}</p>
-                  <p className="text-[11px] text-slate-500 font-semibold">{totalAccountCount} Accounts × 2,000</p>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center space-y-1 shadow-sm">
-                  <p className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest">Active Accounts</p>
-                  <p className="text-3xl font-black text-slate-900">{totalAccountCount}</p>
-                  <p className="text-[11px] text-slate-500 font-semibold">Load Balanced</p>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center space-y-1 shadow-sm">
-                  <p className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest">Sent Today</p>
-                  <p className="text-3xl font-black text-slate-900">{smtpPoolData?.summary?.totalSentToday || 0}</p>
-                  <p className="text-[11px] text-slate-500 font-semibold">Throttled Rate</p>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center space-y-1 shadow-sm">
-                  <p className="text-[10px] font-extrabold text-amber-700 uppercase tracking-widest">Cap / Account</p>
-                  <p className="text-xl font-black text-amber-600">2,000 / 24h</p>
-                  <p className="text-[11px] text-slate-500 font-semibold">Auto-Restores</p>
-                </div>
+              <div className="flex items-center space-x-2.5">
+                <button
+                  onClick={handleManualResetQuota}
+                  disabled={resettingQuota}
+                  className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+                >
+                  {resettingQuota ? "Resetting..." : "Reset 24h Quotas"}
+                </button>
+                <button
+                  onClick={handleSeed30Accounts}
+                  disabled={seedingPool}
+                  className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-sm flex items-center space-x-1.5 cursor-pointer"
+                >
+                  <span>{seedingPool ? "Seeding..." : "Seed 30 Accounts (+60,000 Capacity)"}</span>
+                </button>
               </div>
             </div>
 
-            {/* Split Form & Rotation Pool Grid */}
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              {/* White Mail Form Card */}
-              <div className="lg:col-span-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-5">
+            {/* Metric Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Daily Capacity</p>
+                <p className="text-2xl font-extrabold text-indigo-600">{dynamicCapacity.toLocaleString()}</p>
+                <p className="text-[11px] text-slate-400 font-medium">{totalAccountCount} Accounts × 2,000</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Active Sender Accounts</p>
+                <p className="text-2xl font-extrabold text-slate-900">{totalAccountCount}</p>
+                <p className="text-[11px] text-slate-400 font-medium">Load Balanced Rotation</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sent Today Across Pool</p>
+                <p className="text-2xl font-extrabold text-emerald-600">{smtpPoolData?.summary?.totalSentToday || 0}</p>
+                <p className="text-[11px] text-slate-400 font-medium">Inter-Email Throttling Active</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Per-Account Cap</p>
+                <p className="text-xl font-bold text-amber-600">2,000 / 24h</p>
+                <p className="text-[11px] text-slate-400 font-medium">Auto-Restores in 24 Hours</p>
+              </div>
+            </div>
+
+            {/* Split Panel Grid */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              {/* Form Card */}
+              <div className="lg:col-span-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-sm font-bold text-slate-900">How to Add Sender Mails</h3>
-                  <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-full border border-slate-200 text-[11px] font-bold">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Add Sender Accounts</h3>
+                  <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-[11px] font-semibold">
                     <button
                       onClick={() => setAddMode("single")}
-                      className={`px-3 py-1 rounded-full transition-all ${addMode === "single" ? "bg-emerald-600 text-white font-extrabold shadow-sm" : "text-slate-600"}`}
+                      className={`px-2.5 py-1 rounded transition-all ${addMode === "single" ? "bg-white text-slate-900 font-bold shadow-sm" : "text-slate-600"}`}
                     >
                       Single
                     </button>
                     <button
                       onClick={() => setAddMode("bulk")}
-                      className={`px-3 py-1 rounded-full transition-all ${addMode === "bulk" ? "bg-emerald-600 text-white font-extrabold shadow-sm" : "text-slate-600"}`}
+                      className={`px-2.5 py-1 rounded transition-all ${addMode === "bulk" ? "bg-white text-slate-900 font-bold shadow-sm" : "text-slate-600"}`}
                     >
-                      📋 Bulk Paste
+                      Bulk Import
                     </button>
                   </div>
                 </div>
 
                 {addMode === "single" ? (
-                  <form onSubmit={handleAddSingleSmtp} className="space-y-4">
+                  <form onSubmit={handleAddSingleSmtp} className="space-y-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Email Address</label>
                       <input
@@ -645,7 +621,7 @@ export default function Home() {
                         value={newSmtpEmail}
                         onChange={(e) => setNewSmtpEmail(e.target.value)}
                         placeholder="user1@geonixa.com"
-                        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none font-medium shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none font-medium shadow-sm"
                         required
                       />
                     </div>
@@ -657,10 +633,10 @@ export default function Home() {
                         value={newSmtpPass}
                         onChange={(e) => setNewSmtpPass(e.target.value)}
                         placeholder="nswymhicrcfgctmu"
-                        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none font-mono shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none font-mono shadow-sm"
                         required
                       />
-                      <p className="text-[10px] text-slate-500 mt-1">Use 16-character App Password from Google Security settings.</p>
+                      <p className="text-[10px] text-slate-500 mt-1">Use 16-character App Password generated from Google Security.</p>
                     </div>
 
                     <div>
@@ -669,7 +645,7 @@ export default function Home() {
                         type="number"
                         value={newSmtpLimit}
                         onChange={(e) => setNewSmtpLimit(Number(e.target.value))}
-                        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                         required
                       />
                     </div>
@@ -677,23 +653,23 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={addingSmtp}
-                      className="w-full rounded-full bg-emerald-600 text-white py-3 text-xs font-extrabold hover:bg-emerald-700 transition-all cursor-pointer shadow-md"
+                      className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
                     >
-                      {addingSmtp ? "Adding..." : "➕ Add Sender Email to Pool (+2,000 Capacity)"}
+                      {addingSmtp ? "Adding..." : "Add Sender Email to Pool (+2,000 Capacity)"}
                     </button>
                   </form>
                 ) : (
-                  <form onSubmit={handleBulkImportSmtp} className="space-y-4">
+                  <form onSubmit={handleBulkImportSmtp} className="space-y-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        Paste Sender Emails & Passwords (Format: <code className="text-emerald-700 font-bold">email, password</code>)
+                        Paste Accounts (Format: <code className="text-indigo-600 font-mono">email, password</code>)
                       </label>
                       <textarea
-                        rows={8}
+                        rows={7}
                         value={bulkText}
                         onChange={(e) => setBulkText(e.target.value)}
                         placeholder={`sender1@geonixa.com, app_password_1\nsender2@geonixa.com, app_password_2\nsender3@geonixa.com, app_password_3`}
-                        className="w-full rounded-2xl border border-slate-300 bg-white p-3.5 text-xs font-mono text-slate-900 placeholder-slate-400 focus:border-emerald-600 focus:outline-none leading-relaxed shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none leading-relaxed shadow-sm"
                         required
                       />
                     </div>
@@ -701,20 +677,20 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={addingSmtp}
-                      className="w-full rounded-full bg-emerald-600 text-white py-3 text-xs font-extrabold hover:bg-emerald-700 transition-all cursor-pointer shadow-md"
+                      className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
                     >
-                      {addingSmtp ? "Importing..." : "🚀 Import All Sender Emails to Pool"}
+                      {addingSmtp ? "Importing..." : "Import All Sender Emails to Pool"}
                     </button>
                   </form>
                 )}
               </div>
 
-              {/* White Mail Pool Table Card */}
-              <div className="lg:col-span-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-4 flex flex-col">
+              {/* Pool Table Card */}
+              <div className="lg:col-span-7 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 flex flex-col">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-sm font-bold text-slate-900">Active Sender Pool Rotation ({totalAccountCount})</h3>
-                  <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-                    24h Rolling Quota Auto-Reset
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Active Sender Pool ({totalAccountCount})</h3>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded">
+                    24h Rolling Reset Active
                   </span>
                 </div>
 
@@ -722,10 +698,10 @@ export default function Home() {
                   <div className="overflow-x-auto flex-1 max-h-[460px]">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 uppercase font-semibold sticky top-0">
+                        <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold sticky top-0">
                           <th className="p-3">Sender Email</th>
                           <th className="p-3">Daily Progress</th>
-                          <th className="p-3">24h Quota Status</th>
+                          <th className="p-3">Quota Status</th>
                           <th className="p-3 text-right">Action</th>
                         </tr>
                       </thead>
@@ -735,16 +711,16 @@ export default function Home() {
                           const isCapReached = acc.sentToday >= acc.dailyLimit;
                           return (
                             <tr key={acc.id} className="hover:bg-slate-50">
-                              <td className="p-3 font-bold text-slate-900">{acc.email}</td>
+                              <td className="p-3 font-semibold text-slate-900">{acc.email}</td>
                               <td className="p-3">
                                 <div className="space-y-1">
                                   <div className="flex items-center justify-between text-[11px]">
-                                    <span className="font-semibold text-slate-700">{acc.sentToday} / {acc.dailyLimit}</span>
-                                    <span className="text-slate-500">{pct}%</span>
+                                    <span className="font-medium text-slate-700">{acc.sentToday} / {acc.dailyLimit}</span>
+                                    <span className="text-slate-400">{pct}%</span>
                                   </div>
                                   <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
                                     <div
-                                      className={`h-1.5 rounded-full ${isCapReached ? "bg-rose-500" : "bg-emerald-600"}`}
+                                      className={`h-1.5 rounded-full ${isCapReached ? "bg-rose-500" : "bg-emerald-500"}`}
                                       style={{ width: `${pct}%` }}
                                     />
                                   </div>
@@ -752,19 +728,19 @@ export default function Home() {
                               </td>
                               <td className="p-3">
                                 <span
-                                  className={`rounded-full px-3 py-0.5 font-extrabold text-[10px] ${
+                                  className={`rounded px-2 py-0.5 font-bold text-[10px] ${
                                     isCapReached
-                                      ? "bg-amber-100 text-amber-900 border border-amber-300"
-                                      : "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                                      ? "bg-amber-50 text-amber-800 border border-amber-200"
+                                      : "bg-emerald-50 text-emerald-800 border border-emerald-200"
                                   }`}
                                 >
-                                  {isCapReached ? "🔒 LOCKED (Restores in 24h)" : "🟢 ACTIVE"}
+                                  {isCapReached ? "LOCKED (Restores in 24h)" : "ACTIVE"}
                                 </span>
                               </td>
                               <td className="p-3 text-right">
                                 <button
                                   onClick={() => handleDeleteSmtpAccount(acc.id)}
-                                  className="text-rose-600 hover:text-rose-700 font-bold hover:underline"
+                                  className="text-rose-600 hover:text-rose-700 font-semibold hover:underline"
                                 >
                                   Remove
                                 </button>
@@ -776,22 +752,17 @@ export default function Home() {
                     </table>
                   </div>
                 ) : (
-                  <div className="flex-1 min-h-[260px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-2xl p-8 text-center space-y-4 bg-slate-50">
-                    <div className="h-12 w-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-2xl shadow-sm text-emerald-600">
-                      📫
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-bold text-slate-900">No Sender Accounts Configured</p>
-                      <p className="text-xs text-slate-500 max-w-sm">
-                        Click <strong>"SEED 30 SENDER ACCOUNTS"</strong> or paste your list on the left to load sender accounts!
-                      </p>
-                    </div>
+                  <div className="flex-1 min-h-[240px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-lg p-6 text-center space-y-3 bg-slate-50">
+                    <p className="text-xs font-semibold text-slate-800">No Sender Accounts Configured</p>
+                    <p className="text-xs text-slate-500 max-w-sm">
+                      Click <strong>"Seed 30 Accounts"</strong> above or paste your account list on the left to load senders!
+                    </p>
                     <button
                       onClick={handleSeed30Accounts}
                       disabled={seedingPool}
-                      className="rounded-full bg-emerald-600 text-white px-6 py-2.5 text-xs font-extrabold hover:bg-emerald-700 transition-all shadow-md"
+                      className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm"
                     >
-                      ⚡ Seed 30 Geonixa Accounts (+60,000 Capacity)
+                      Seed 30 Geonixa Accounts (+60,000 Capacity)
                     </button>
                   </div>
                 )}
@@ -802,50 +773,49 @@ export default function Home() {
 
         {/* TAB 2: SPAM CHECKER TOOL */}
         {activeTab === "spamchecker" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
-                <span className="text-[10px] font-extrabold text-[#bef264] uppercase tracking-widest bg-[#162e29] px-3 py-1 rounded-full border border-[#274c44]">
-                  SPAM INSPECTOR
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Spam Inspector
                 </span>
-                <h2 className="text-3xl font-extrabold text-white tracking-tight mt-2">Spam Checker</h2>
-                <p className="text-xs text-emerald-200/80 mt-1">
-                  Copy/paste an email message to detect and optimize <span className="text-[#bef264] underline font-semibold">spam words with professional synonyms</span>.
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Spam Checker</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Copy/paste email copy to scan for trigger phrases and replace them with professional synonyms.
                 </p>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <button
                   onClick={handleClearEditor}
-                  className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer shadow-sm"
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm"
                 >
-                  🧹 Clear Editor
+                  Clear Editor
                 </button>
                 <button
                   onClick={handleAutoRemoveSpam}
-                  className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer shadow-sm"
+                  className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm"
                 >
-                  ⚡ Fast Synonym Fix
+                  Fast Synonym Fix
                 </button>
                 <button
                   onClick={handleAiAutoFixSpam}
                   disabled={fixingSpamAi}
-                  className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700 px-5 py-2 text-xs font-extrabold transition-all disabled:opacity-50 flex items-center space-x-2 cursor-pointer shadow-md"
+                  className="rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 text-xs font-bold transition-all shadow-sm disabled:opacity-50"
                 >
-                  <span>✨</span>
-                  <span>{fixingSpamAi ? "Rewriting with Smart AI..." : "Replace Spam Words with AI Synonyms"}</span>
+                  {fixingSpamAi ? "Rewriting..." : "Replace Spam Words with AI Synonyms"}
                 </button>
               </div>
             </div>
 
-            {/* TOP METRICS BANNER */}
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            {/* Metrics Banner Card */}
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-3">
                 <div className="flex items-center space-x-6">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Overall score</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Overall score</span>
                     <span
-                      className={`text-xl font-black ${
+                      className={`text-xl font-extrabold ${
                         detailedSpamAnalysis?.overallScore === "Poor"
                           ? "text-rose-600"
                           : detailedSpamAnalysis?.overallScore === "Needs Work"
@@ -862,7 +832,7 @@ export default function Home() {
                   <div className="h-8 w-px bg-slate-200" />
 
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Words</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Words</span>
                     <span className="text-xl font-extrabold text-slate-900">
                       {detailedSpamAnalysis?.wordCount || 0}
                     </span>
@@ -871,18 +841,18 @@ export default function Home() {
                   <div className="h-8 w-px bg-slate-200" />
 
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Read time</span>
-                    <span className="text-xs font-bold text-slate-700">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Read time</span>
+                    <span className="text-xs font-semibold text-slate-700">
                       {detailedSpamAnalysis?.readTime || "a few seconds"}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Categorized Breakdown Cards */}
+              {/* Categorized Breakdown */}
               <div>
-                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest block mb-2">Detected Categories</span>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Detected Categories</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {detailedSpamAnalysis?.categorySummaries.map((cat) => {
                     const colorStyles =
                       cat.category === "Urgency"
@@ -896,17 +866,14 @@ export default function Home() {
                     return (
                       <div
                         key={cat.category}
-                        className={`flex items-center justify-between rounded-2xl p-3 border text-xs font-bold transition-all ${
+                        className={`flex items-center justify-between rounded-lg p-2.5 border text-xs font-semibold transition-all ${
                           cat.count > 0 ? `${colorStyles} shadow-sm` : "bg-slate-50 border-slate-200 text-slate-400 opacity-60"
                         }`}
                       >
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm">{cat.icon}</span>
-                          <span>{cat.category}</span>
-                        </div>
+                        <span>{cat.category}</span>
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
-                            cat.count > 0 ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-600"
+                          className={`px-2 py-0.5 rounded text-xs font-bold ${
+                            cat.count > 0 ? "bg-slate-900 text-white" : "bg-slate-200 text-slate-600"
                           }`}
                         >
                           ({cat.count})
@@ -918,14 +885,11 @@ export default function Home() {
               </div>
             </div>
 
-            {/* EDITORS GRID */}
+            {/* Editors Grid */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="lg:col-span-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-3 flex flex-col">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <h3 className="text-xs font-bold text-slate-900 flex items-center space-x-2">
-                    <span>✍️</span>
-                    <span>Email Body Editor</span>
-                  </h3>
+              <div className="lg:col-span-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 flex flex-col">
+                <div className="border-b border-slate-100 pb-2">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Email Body Editor</h3>
                 </div>
 
                 <textarea
@@ -933,38 +897,34 @@ export default function Home() {
                   value={spamInputText}
                   onChange={(e) => setSpamInputText(e.target.value)}
                   placeholder="Paste or type your email content here..."
-                  className="w-full flex-1 rounded-2xl border border-slate-300 bg-white p-4 text-xs font-sans text-slate-900 focus:border-emerald-600 focus:outline-none leading-relaxed shadow-inner"
+                  className="w-full flex-1 rounded-lg border border-slate-300 bg-white p-3.5 text-xs font-sans text-slate-900 focus:border-indigo-600 focus:outline-none leading-relaxed shadow-inner"
                 />
               </div>
 
               <div className="lg:col-span-6 space-y-4 flex flex-col">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-3 flex-1 flex flex-col">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <h3 className="text-xs font-bold text-slate-900 flex items-center space-x-2">
-                      <span>🔍</span>
-                      <span>Live Highlighted Output</span>
-                    </h3>
+                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 flex-1 flex flex-col">
+                  <div className="border-b border-slate-100 pb-2">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Live Highlighted Output</h3>
                   </div>
 
                   <div
-                    className="w-full flex-1 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-relaxed text-slate-900 whitespace-pre-wrap overflow-y-auto max-h-[360px]"
+                    className="w-full flex-1 rounded-lg border border-slate-200 bg-slate-50 p-3.5 text-xs leading-relaxed text-slate-900 whitespace-pre-wrap overflow-y-auto max-h-[360px]"
                     dangerouslySetInnerHTML={{
                       __html: SpamDetector.renderHighlightedHtml(spamInputText),
                     }}
                   />
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl space-y-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-2">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <h4 className="text-[10px] font-extrabold text-slate-800 uppercase tracking-widest flex items-center space-x-1.5">
-                      <span>📋</span>
-                      <span>Deliverability Audit Report</span>
+                    <h4 className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">
+                      Deliverability Audit Report
                     </h4>
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         detailedSpamAnalysis?.highlights.length === 0
-                          ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
-                          : "bg-rose-100 text-rose-900 border border-rose-300"
+                          ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                          : "bg-rose-50 text-rose-800 border border-rose-200"
                       }`}
                     >
                       {detailedSpamAnalysis?.highlights.length === 0
@@ -975,14 +935,12 @@ export default function Home() {
 
                   {detailedSpamAnalysis?.highlights && detailedSpamAnalysis.highlights.length > 0 ? (
                     <div className="space-y-2 text-xs">
-                      <p className="text-slate-600 font-medium">
-                        The following trigger phrases were detected and highlighted above:
-                      </p>
+                      <p className="text-slate-600 font-medium">Detected trigger phrases:</p>
                       <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1">
                         {detailedSpamAnalysis.highlights.map((h, i) => (
                           <span
                             key={i}
-                            className={`px-2 py-0.5 rounded text-[11px] font-bold border ${h.color}`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${h.color}`}
                           >
                             {h.word} ({h.category})
                           </span>
@@ -990,11 +948,8 @@ export default function Home() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-2xl bg-emerald-50 p-3 border border-emerald-200 text-xs text-emerald-900 flex items-center space-x-2">
-                      <span className="text-base">🎉</span>
-                      <span className="font-semibold">
-                        Zero spam triggers detected! 100% ready for maximum inbox deliverability.
-                      </span>
+                    <div className="rounded-lg bg-emerald-50 p-2.5 border border-emerald-200 text-xs text-emerald-900 font-medium">
+                      Zero spam triggers detected! 100% ready for maximum inbox deliverability.
                     </div>
                   )}
                 </div>
@@ -1005,40 +960,39 @@ export default function Home() {
 
         {/* TAB 3: CAMPAIGN STUDIO */}
         {activeTab === "campaigns" && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-6">
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="lg:col-span-7 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-5">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Campaign Setup & Design Studio</h3>
-                    <p className="text-xs text-slate-500">Configure target audience, sender signature, subject line, and HTML email body.</p>
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Campaign Setup</h3>
+                    <p className="text-xs text-slate-500">Configure signature, subject line, and HTML email body.</p>
                   </div>
                   <button
                     onClick={() => setShowAiModal(true)}
-                    className="flex items-center space-x-1.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-1.5 text-xs font-extrabold transition-all cursor-pointer shadow-md"
+                    className="rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-1.5 text-xs font-bold transition-all shadow-sm"
                   >
-                    <span>✨</span>
-                    <span>AI Copilot</span>
+                    AI Copilot
                   </button>
                 </div>
 
-                <form onSubmit={handleSendCampaign} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <form onSubmit={handleSendCampaign} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Campaign Title</label>
                       <input
                         type="text"
                         value={campaignForm.name}
                         onChange={(e) => setCampaignForm({ ...campaignForm, name: e.target.value })}
-                        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                         required
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Target Audience</label>
-                      <div className="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-bold text-emerald-900 flex items-center justify-between">
+                      <div className="w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900 flex items-center justify-between">
                         <span>All Active Subscribers</span>
-                        <span className="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-bold">
+                        <span className="bg-emerald-600 text-white px-2 py-0.5 rounded text-[11px] font-bold">
                           {subscribersData?.totalCount || 0} Recipients
                         </span>
                       </div>
@@ -1051,19 +1005,19 @@ export default function Home() {
                       type="text"
                       value={campaignForm.subject}
                       onChange={(e) => setCampaignForm({ ...campaignForm, subject: e.target.value })}
-                      className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none font-medium shadow-sm"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none font-medium shadow-sm"
                       required
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">From Name</label>
                       <input
                         type="text"
                         value={campaignForm.fromName}
                         onChange={(e) => setCampaignForm({ ...campaignForm, fromName: e.target.value })}
-                        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                         required
                       />
                     </div>
@@ -1073,7 +1027,7 @@ export default function Home() {
                         type="email"
                         value={campaignForm.fromEmail}
                         onChange={(e) => setCampaignForm({ ...campaignForm, fromEmail: e.target.value })}
-                        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-emerald-700 focus:border-emerald-600 focus:outline-none font-bold shadow-sm"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-indigo-700 focus:border-indigo-600 focus:outline-none font-semibold shadow-sm"
                         required
                       />
                     </div>
@@ -1085,16 +1039,16 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => setShowAiModal(true)}
-                        className="text-[11px] font-bold text-emerald-700 hover:underline"
+                        className="text-[11px] font-semibold text-indigo-600 hover:underline"
                       >
-                        ✨ Write with AI Copilot
+                        Write with AI Copilot
                       </button>
                     </div>
                     <textarea
                       rows={10}
                       value={campaignForm.bodyHtml}
                       onChange={(e) => setCampaignForm({ ...campaignForm, bodyHtml: e.target.value })}
-                      className="w-full rounded-2xl border border-slate-300 bg-white p-4 text-xs font-mono text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                      className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                       required
                     />
                   </div>
@@ -1102,42 +1056,42 @@ export default function Home() {
                   <button
                     type="submit"
                     disabled={sendingCampaign}
-                    className="w-full rounded-full bg-emerald-600 text-white py-3.5 text-xs font-extrabold hover:bg-emerald-700 transition-all shadow-md flex items-center justify-center space-x-2 cursor-pointer"
+                    className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer"
                   >
-                    <span>🚀</span>
-                    <span>{sendingCampaign ? "Dispatching via Multi-Account Pool..." : "Send Campaign (Auto-Rotate Senders + Rate Limited)"}</span>
+                    {sendingCampaign ? "Dispatching via Multi-Account Pool..." : "Send Campaign (Auto-Rotate Senders + Rate Limited)"}
                   </button>
                 </form>
               </div>
 
-              <div className="lg:col-span-5 space-y-6">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl flex flex-col">
-                  <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                    <h3 className="text-sm font-bold text-slate-900">Live Email Inbox Preview</h3>
-                    <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-full border border-slate-200 text-xs font-bold">
+              {/* Preview Box */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col">
+                  <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Live Inbox Preview</h3>
+                    <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-[11px] font-semibold">
                       <button
                         onClick={() => setPreviewMode("desktop")}
-                        className={`px-3 py-1 rounded-full transition-all ${previewMode === "desktop" ? "bg-emerald-600 text-white font-extrabold shadow-sm" : "text-slate-600"}`}
+                        className={`px-2.5 py-1 rounded transition-all ${previewMode === "desktop" ? "bg-white text-slate-900 font-bold shadow-sm" : "text-slate-600"}`}
                       >
-                        🖥️ Desktop
+                        Desktop
                       </button>
                       <button
                         onClick={() => setPreviewMode("mobile")}
-                        className={`px-3 py-1 rounded-full transition-all ${previewMode === "mobile" ? "bg-emerald-600 text-white font-extrabold shadow-sm" : "text-slate-600"}`}
+                        className={`px-2.5 py-1 rounded transition-all ${previewMode === "mobile" ? "bg-white text-slate-900 font-bold shadow-sm" : "text-slate-600"}`}
                       >
-                        📱 Mobile
+                        Mobile
                       </button>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl bg-slate-50 p-3 border border-slate-200 text-xs space-y-1 mb-4 text-slate-700">
+                  <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200 text-xs space-y-0.5 mb-3 text-slate-700">
                     <p><strong className="text-slate-500">From:</strong> {campaignForm.fromName} &lt;{campaignForm.fromEmail}&gt;</p>
                     <p><strong className="text-slate-500">To:</strong> Jithendra Varma &lt;jithendravarma.l@gmail.com&gt;</p>
                     <p><strong className="text-slate-500">Subject:</strong> {campaignForm.subject}</p>
                   </div>
 
                   <div
-                    className={`mx-auto transition-all duration-300 border border-slate-200 rounded-2xl bg-white shadow-inner overflow-hidden ${
+                    className={`mx-auto transition-all duration-300 border border-slate-200 rounded-lg bg-white shadow-inner overflow-hidden ${
                       previewMode === "mobile" ? "w-[320px] min-h-[400px]" : "w-full min-h-[350px]"
                     }`}
                   >
@@ -1150,21 +1104,22 @@ export default function Home() {
                 </div>
 
                 {campaignResult && (
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6 text-xs font-mono text-slate-900 overflow-x-auto space-y-2 shadow-xl">
-                    <p className="text-emerald-700 font-bold">// Live Multi-Account Dispatch Output</p>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-xs font-mono text-slate-900 overflow-x-auto space-y-1 shadow-sm">
+                    <p className="text-indigo-600 font-bold">// Live Multi-Account Dispatch Output</p>
                     <pre>{JSON.stringify(campaignResult.data, null, 2)}</pre>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">Campaign History ({campaignsList.length})</h3>
+            {/* Campaign History Table */}
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Campaign History ({campaignsList.length})</h3>
               {campaignsList.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 uppercase font-semibold">
+                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
                         <th className="p-3">Campaign Title</th>
                         <th className="p-3">Subject</th>
                         <th className="p-3">From Signature</th>
@@ -1176,12 +1131,12 @@ export default function Home() {
                     <tbody className="divide-y divide-slate-100">
                       {campaignsList.map((c: any) => (
                         <tr key={c.id} className="hover:bg-slate-50">
-                          <td className="p-3 font-bold text-slate-900">{c.name}</td>
+                          <td className="p-3 font-semibold text-slate-900">{c.name}</td>
                           <td className="p-3 text-slate-700">{c.subject}</td>
                           <td className="p-3 text-slate-500">{c.fromName} &lt;{c.fromEmail}&gt;</td>
-                          <td className="p-3 font-bold text-emerald-700">{c._count?.emailLogs || 0} Emails</td>
+                          <td className="p-3 font-bold text-indigo-600">{c._count?.emailLogs || 0} Emails</td>
                           <td className="p-3">
-                            <span className="rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 font-extrabold">
+                            <span className="rounded bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 font-semibold text-[10px]">
                               {c.status}
                             </span>
                           </td>
@@ -1200,15 +1155,15 @@ export default function Home() {
 
         {/* TAB 4: DOMAIN AUTH */}
         {activeTab === "domains" && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-4">
-                <h3 className="text-sm font-bold text-slate-900">Register Domain for Verification</h3>
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="lg:col-span-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Register Domain for Verification</h3>
                 <p className="text-xs text-slate-500">
                   Enter your sending domain to generate 2048-bit RSA DKIM keys and required DNS TXT records.
                 </p>
 
-                <form onSubmit={handleRegisterDomain} className="space-y-4">
+                <form onSubmit={handleRegisterDomain} className="space-y-3">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">Domain Name</label>
                     <input
@@ -1216,7 +1171,7 @@ export default function Home() {
                       value={inputDomain}
                       onChange={(e) => setInputDomain(e.target.value)}
                       placeholder="example.com"
-                      className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                       required
                     />
                   </div>
@@ -1224,26 +1179,26 @@ export default function Home() {
                   <button
                     type="submit"
                     disabled={registeringDomain}
-                    className="w-full rounded-full bg-emerald-600 text-white py-3 text-xs font-extrabold hover:bg-emerald-700 transition-all cursor-pointer shadow-md"
+                    className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-sm cursor-pointer"
                   >
-                    {registeringDomain ? "Generating DKIM Keys..." : "🔑 Register & Generate DNS Keys"}
+                    {registeringDomain ? "Generating DKIM Keys..." : "Register & Generate DNS Keys"}
                   </button>
                 </form>
 
                 {domainRecords?.expectedRecords && (
-                  <div className="mt-6 border-t border-slate-100 pt-4 space-y-3 text-xs">
+                  <div className="mt-4 border-t border-slate-100 pt-3 space-y-2 text-xs">
                     <h4 className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">Required DNS TXT Records:</h4>
 
-                    <div className="rounded-2xl bg-slate-50 p-4 text-slate-800 font-mono text-[11px] overflow-x-auto space-y-2 border border-slate-200">
-                      <p className="text-emerald-700 font-bold">// 1. DKIM Record (TXT)</p>
+                    <div className="rounded-lg bg-slate-50 p-3 text-slate-800 font-mono text-[11px] overflow-x-auto space-y-2 border border-slate-200">
+                      <p className="text-indigo-600 font-bold">// 1. DKIM Record (TXT)</p>
                       <p><span className="text-slate-500">Host:</span> {domainRecords.expectedRecords.dkim.host}</p>
                       <p><span className="text-slate-500">Value:</span> {domainRecords.expectedRecords.dkim.value.substring(0, 70)}...</p>
 
-                      <p className="text-emerald-700 font-bold pt-2">// 2. SPF Record (TXT)</p>
+                      <p className="text-indigo-600 font-bold pt-2">// 2. SPF Record (TXT)</p>
                       <p><span className="text-slate-500">Host:</span> {domainRecords.expectedRecords.spf.host}</p>
                       <p><span className="text-slate-500">Value:</span> {domainRecords.expectedRecords.spf.value}</p>
 
-                      <p className="text-emerald-700 font-bold pt-2">// 3. DMARC Record (TXT)</p>
+                      <p className="text-indigo-600 font-bold pt-2">// 3. DMARC Record (TXT)</p>
                       <p><span className="text-slate-500">Host:</span> {domainRecords.expectedRecords.dmarc.host}</p>
                       <p><span className="text-slate-500">Value:</span> {domainRecords.expectedRecords.dmarc.value}</p>
                     </div>
@@ -1251,28 +1206,28 @@ export default function Home() {
                     <button
                       onClick={() => handleRunDNSCheck(inputDomain)}
                       disabled={checkingDNS}
-                      className="w-full rounded-full border border-emerald-300 bg-emerald-50 text-emerald-800 py-2.5 text-xs font-extrabold hover:bg-emerald-100 transition-all cursor-pointer"
+                      className="w-full rounded-lg border border-slate-300 bg-white text-slate-700 py-2 text-xs font-semibold hover:bg-slate-50 transition-all shadow-sm"
                     >
-                      {checkingDNS ? "Querying Public DNS..." : "🔍 Run Live Real-Time DNS Check"}
+                      {checkingDNS ? "Querying DNS..." : "Run Live Real-Time DNS Check"}
                     </button>
                   </div>
                 )}
               </div>
 
-              <div className="lg:col-span-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl flex flex-col">
-                <h3 className="text-sm font-bold text-slate-900 mb-4">Workspace Authenticated Domains</h3>
+              <div className="lg:col-span-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Workspace Authenticated Domains</h3>
                 {registeredDomains.length > 0 ? (
-                  <div className="space-y-4 flex-1">
+                  <div className="space-y-3 flex-1">
                     {registeredDomains.map((d: any) => (
-                      <div key={d.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                      <div key={d.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <span className="text-sm font-bold text-slate-900">{d.domain}</span>
+                            <span className="text-xs font-bold text-slate-900">{d.domain}</span>
                             <span
-                              className={`rounded-full px-3 py-0.5 text-[10px] font-bold ${
+                              className={`rounded px-2 py-0.5 text-[10px] font-bold ${
                                 d.isVerified
-                                  ? "bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold"
-                                  : "bg-amber-100 text-amber-900 border border-amber-300"
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                  : "bg-amber-50 text-amber-800 border border-amber-200"
                               }`}
                             >
                               {d.isVerified ? "VERIFIED" : "PENDING DNS"}
@@ -1281,20 +1236,20 @@ export default function Home() {
                           <button
                             onClick={() => handleRunDNSCheck(d.domain)}
                             disabled={checkingDNS}
-                            className="rounded-full bg-emerald-600 text-white border border-emerald-600 px-3 py-1 text-xs font-bold hover:bg-emerald-700 cursor-pointer shadow-sm"
+                            className="rounded bg-indigo-600 text-white px-2.5 py-1 text-[11px] font-semibold hover:bg-indigo-700 shadow-sm cursor-pointer"
                           >
                             Re-Check DNS
                           </button>
                         </div>
 
                         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                          <div className={`p-2 rounded-xl border ${d.spfVerified ? "bg-emerald-100 border-emerald-300 text-emerald-900 font-extrabold" : "bg-white border-slate-200 text-slate-400"}`}>
+                          <div className={`p-1.5 rounded border ${d.spfVerified ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold" : "bg-white border-slate-200 text-slate-400"}`}>
                             SPF: {d.spfVerified ? "PASS" : "FAIL"}
                           </div>
-                          <div className={`p-2 rounded-xl border ${d.dkimVerified ? "bg-emerald-100 border-emerald-300 text-emerald-900 font-extrabold" : "bg-white border-slate-200 text-slate-400"}`}>
+                          <div className={`p-1.5 rounded border ${d.dkimVerified ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold" : "bg-white border-slate-200 text-slate-400"}`}>
                             DKIM: {d.dkimVerified ? "PASS" : "FAIL"}
                           </div>
-                          <div className={`p-2 rounded-xl border ${d.dmarcVerified ? "bg-emerald-100 border-emerald-300 text-emerald-900 font-extrabold" : "bg-white border-slate-200 text-slate-400"}`}>
+                          <div className={`p-1.5 rounded border ${d.dmarcVerified ? "bg-emerald-50 border-emerald-200 text-emerald-800 font-bold" : "bg-white border-slate-200 text-slate-400"}`}>
                             DMARC: {d.dmarcVerified ? "PASS" : "FAIL"}
                           </div>
                         </div>
@@ -1302,17 +1257,16 @@ export default function Home() {
                     ))}
 
                     {dnsResult && (
-                      <div className="rounded-2xl bg-white p-4 text-xs font-mono text-slate-900 overflow-x-auto space-y-2 border border-slate-200 shadow-sm">
-                        <p className="text-emerald-700 font-bold">// Live DNS Query Output</p>
+                      <div className="rounded-lg bg-white p-3 text-xs font-mono text-slate-900 overflow-x-auto space-y-1 border border-slate-200 shadow-sm">
+                        <p className="text-indigo-600 font-bold">// Live DNS Query Output</p>
                         <p className="text-slate-800">Domain: {dnsResult.domain}</p>
-                        <p className="text-slate-800">Status: {dnsResult.isFullyVerified ? "100% VERIFIED" : "Records Pending DNS Propagation"}</p>
-                        <pre className="text-slate-600 mt-2">{JSON.stringify(dnsResult.dnsDetails, null, 2)}</pre>
+                        <p className="text-slate-800">Status: {dnsResult.isFullyVerified ? "100% VERIFIED" : "Records Pending Propagation"}</p>
+                        <pre className="text-slate-500 mt-1">{JSON.stringify(dnsResult.dnsDetails, null, 2)}</pre>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="flex-1 min-h-[200px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-2xl p-6 text-center text-slate-500">
-                    <span className="text-3xl mb-2">🛡️</span>
+                  <div className="flex-1 min-h-[180px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-lg p-4 text-center text-slate-500">
                     <p className="text-xs font-medium">No authenticated domains registered yet.</p>
                   </div>
                 )}
@@ -1323,40 +1277,40 @@ export default function Home() {
 
         {/* TAB 5: ANALYTICS DASHBOARD */}
         {activeTab === "analytics" && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl">
-                <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Total Emails Sent</p>
-                <p className="text-3xl font-black text-slate-900 mt-1">{analytics?.metrics?.totalEmailsSent || 0}</p>
-                <p className="text-[11px] text-slate-500 mt-1">Tenant: {workspaceId}</p>
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Emails Sent</p>
+                <p className="text-2xl font-extrabold text-slate-900 mt-1">{analytics?.metrics?.totalEmailsSent || 0}</p>
+                <p className="text-[11px] text-slate-400 mt-1">Tenant: {workspaceId}</p>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl">
-                <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Open Rate %</p>
-                <p className="text-3xl font-black text-emerald-600 mt-1">{analytics?.metrics?.openRatePercentage || 0}%</p>
-                <p className="text-[11px] text-slate-500 mt-1">{analytics?.metrics?.openedCount || 0} opened</p>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Open Rate %</p>
+                <p className="text-2xl font-extrabold text-emerald-600 mt-1">{analytics?.metrics?.openRatePercentage || 0}%</p>
+                <p className="text-[11px] text-slate-400 mt-1">{analytics?.metrics?.openedCount || 0} opened</p>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl">
-                <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Click Rate %</p>
-                <p className="text-3xl font-black text-emerald-600 mt-1">{analytics?.metrics?.clickRatePercentage || 0}%</p>
-                <p className="text-[11px] text-slate-500 mt-1">{analytics?.metrics?.clickedCount || 0} clicked</p>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Click Rate %</p>
+                <p className="text-2xl font-extrabold text-indigo-600 mt-1">{analytics?.metrics?.clickRatePercentage || 0}%</p>
+                <p className="text-[11px] text-slate-400 mt-1">{analytics?.metrics?.clickedCount || 0} clicked</p>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl">
-                <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Unsubscribes</p>
-                <p className="text-3xl font-black text-rose-600 mt-1">{analytics?.metrics?.unsubscribedCount || 0}</p>
-                <p className="text-[11px] text-slate-500 mt-1">RFC 8058 Compliant</p>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Unsubscribes</p>
+                <p className="text-2xl font-extrabold text-rose-600 mt-1">{analytics?.metrics?.unsubscribedCount || 0}</p>
+                <p className="text-[11px] text-slate-400 mt-1">RFC 8058 Compliant</p>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-              <h3 className="text-sm font-bold text-slate-900 mb-4">Recent Email Logs & Tracking Stats</h3>
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Recent Email Logs & Tracking</h3>
               {analytics?.recentLogs?.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 uppercase font-semibold">
+                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
                         <th className="p-3">Message ID</th>
                         <th className="p-3">To Email</th>
                         <th className="p-3">Subject</th>
@@ -1369,11 +1323,11 @@ export default function Home() {
                       {analytics.recentLogs.map((log: any) => (
                         <tr key={log.id} className="hover:bg-slate-50">
                           <td className="p-3 font-mono text-slate-500">{log.messageId}</td>
-                          <td className="p-3 font-medium text-slate-900">{log.toEmail}</td>
+                          <td className="p-3 font-semibold text-slate-900">{log.toEmail}</td>
                           <td className="p-3 text-slate-700">{log.subject}</td>
                           <td className="p-3">
                             {log.openedAt ? (
-                              <span className="rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 font-extrabold">
+                              <span className="rounded bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 font-semibold text-[10px]">
                                 Opened
                               </span>
                             ) : (
@@ -1382,7 +1336,7 @@ export default function Home() {
                           </td>
                           <td className="p-3">
                             {log.clickedAt ? (
-                              <span className="rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 font-bold">
+                              <span className="rounded bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 font-semibold text-[10px]">
                                 Clicked
                               </span>
                             ) : (
@@ -1396,7 +1350,7 @@ export default function Home() {
                   </table>
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 py-4">No email logs found yet for tenant {workspaceId}. Send a campaign to populate analytics!</p>
+                <p className="text-xs text-slate-500 py-3">No email logs found yet for tenant {workspaceId}. Send a campaign to populate analytics!</p>
               )}
             </div>
           </div>
@@ -1404,10 +1358,10 @@ export default function Home() {
 
         {/* TAB 6: AUDIENCE SUBSCRIBERS */}
         {activeTab === "subscribers" && (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-              <h3 className="text-sm font-bold text-slate-900 mb-4">Add New Subscriber</h3>
-              <form onSubmit={handleAddSubscriber} className="space-y-4">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 max-w-7xl mx-auto">
+            <div className="lg:col-span-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Add New Subscriber</h3>
+              <form onSubmit={handleAddSubscriber} className="space-y-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
                   <input
@@ -1415,7 +1369,7 @@ export default function Home() {
                     value={newSubEmail}
                     onChange={(e) => setNewSubEmail(e.target.value)}
                     placeholder="user@example.com"
-                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                     required
                   />
                 </div>
@@ -1426,25 +1380,25 @@ export default function Home() {
                     value={newSubFirstName}
                     onChange={(e) => setNewSubFirstName(e.target.value)}
                     placeholder="John"
-                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-emerald-600 text-white py-3 text-xs font-extrabold hover:bg-emerald-700 transition-all shadow-md"
+                  className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-sm"
                 >
-                  ➕ Add Subscriber to List
+                  Add Subscriber to List
                 </button>
               </form>
             </div>
 
-            <div className="lg:col-span-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-              <h3 className="text-sm font-bold text-slate-900 mb-4">Audience List ({subscribersData?.totalCount || 0})</h3>
+            <div className="lg:col-span-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Audience List ({subscribersData?.totalCount || 0})</h3>
               {subscribersData?.subscribers?.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-700 uppercase font-semibold">
+                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
                         <th className="p-3">Email</th>
                         <th className="p-3">Name</th>
                         <th className="p-3">Status</th>
@@ -1454,14 +1408,14 @@ export default function Home() {
                     <tbody className="divide-y divide-slate-100">
                       {subscribersData.subscribers.map((sub: any) => (
                         <tr key={sub.id} className="hover:bg-slate-50">
-                          <td className="p-3 font-bold text-slate-900">{sub.email}</td>
+                          <td className="p-3 font-semibold text-slate-900">{sub.email}</td>
                           <td className="p-3 text-slate-700">{sub.firstName} {sub.lastName}</td>
                           <td className="p-3">
                             <span
-                              className={`rounded-full px-3 py-0.5 font-bold ${
+                              className={`rounded px-2 py-0.5 text-[10px] font-bold ${
                                 sub.status === "SUBSCRIBED"
-                                  ? "bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold"
-                                  : "bg-rose-100 text-rose-900 border border-rose-300"
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                  : "bg-rose-50 text-rose-800 border border-rose-200"
                               }`}
                             >
                               {sub.status}
@@ -1474,7 +1428,7 @@ export default function Home() {
                   </table>
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 py-4">No subscribers found for tenant {workspaceId}.</p>
+                <p className="text-xs text-slate-500 py-3">No subscribers found for tenant {workspaceId}.</p>
               )}
             </div>
           </div>
@@ -1482,44 +1436,44 @@ export default function Home() {
 
         {/* TAB 7: ASSET UPLOAD */}
         {activeTab === "upload" && (
-          <div className="max-w-2xl mx-auto rounded-3xl border border-slate-200 bg-white p-8 shadow-xl space-y-6">
+          <div className="max-w-2xl mx-auto rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Self-Hosted Media Asset Upload</h3>
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Self-Hosted Media Asset Upload</h3>
               <p className="text-xs text-slate-500 mt-1">
-                Upload image banners, logos, or attachment assets directly to your self-hosted <code className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">/public/uploads</code> directory.
+                Upload image banners, logos, or attachment assets directly to your self-hosted <code className="text-indigo-600 font-mono bg-slate-100 px-1.5 py-0.5 rounded font-semibold">/public/uploads</code> directory.
               </p>
             </div>
 
-            <form onSubmit={handleUpload} className="space-y-4">
+            <form onSubmit={handleUpload} className="space-y-3">
               <input
                 type="file"
                 onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                className="w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
+                className="w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
                 required
               />
               <button
                 type="submit"
                 disabled={uploading || !uploadFile}
-                className="w-full rounded-full bg-emerald-600 text-white py-3.5 text-xs font-extrabold hover:bg-emerald-700 transition-all shadow-md disabled:opacity-50 cursor-pointer"
+                className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer"
               >
-                {uploading ? "Uploading..." : "Upload File to Local Storage"}
+                {uploading ? "Uploading..." : "Upload File to Storage"}
               </button>
             </form>
 
             {uploadResult && (
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs font-mono text-slate-900 overflow-x-auto space-y-2">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5 text-xs font-mono text-slate-900 overflow-x-auto space-y-1 shadow-sm">
                 {uploadResult.url ? (
                   <>
-                    <p className="text-emerald-700 font-bold">✅ Asset Uploaded Successfully!</p>
-                    <p className="text-slate-700">Public URL: <a href={uploadResult.url} target="_blank" rel="noreferrer" className="text-emerald-700 underline">{uploadResult.url}</a></p>
+                    <p className="text-emerald-700 font-bold">Asset Uploaded Successfully!</p>
+                    <p className="text-slate-700">Public URL: <a href={uploadResult.url} target="_blank" rel="noreferrer" className="text-indigo-600 underline">{uploadResult.url}</a></p>
                     {uploadResult.url.match(/\.(png|jpg|jpeg|gif|webp)$/i) && (
-                      <div className="mt-3 border border-slate-200 rounded-xl p-2 bg-white">
+                      <div className="mt-2 border border-slate-200 rounded p-2 bg-white">
                         <img src={uploadResult.url} alt="Uploaded asset preview" className="max-h-40 rounded mx-auto" />
                       </div>
                     )}
                   </>
                 ) : (
-                  <p className="text-rose-600 font-bold">❌ Upload Error: {uploadResult.error}</p>
+                  <p className="text-rose-600 font-bold">Upload Error: {uploadResult.error}</p>
                 )}
               </div>
             )}
@@ -1529,16 +1483,13 @@ export default function Home() {
 
       {/* AI TEMPLATE GENERATOR MODAL */}
       {showAiModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 shadow-2xl space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-xl bg-white border border-slate-200 p-5 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center space-x-2">
-                <span className="text-xl">✨</span>
-                <h3 className="text-base font-bold text-slate-900">AI Template Copilot</h3>
-              </div>
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">AI Template Copilot</h3>
               <button
                 onClick={() => setShowAiModal(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-lg"
+                className="text-slate-400 hover:text-slate-600 font-bold text-sm"
               >
                 ✕
               </button>
@@ -1552,7 +1503,7 @@ export default function Home() {
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   placeholder="e.g. for course web development from Eonixa Limited slots for students..."
-                  className="w-full rounded-2xl border border-slate-300 bg-white p-3.5 text-xs text-slate-900 placeholder-slate-400 focus:border-emerald-600 focus:outline-none font-medium shadow-sm"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none font-medium shadow-sm"
                   required
                 />
               </div>
@@ -1562,31 +1513,30 @@ export default function Home() {
                 <select
                   value={aiTone}
                   onChange={(e: any) => setAiTone(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-900 focus:border-emerald-600 focus:outline-none shadow-sm"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
                 >
-                  <option value="Friendly" className="bg-white text-slate-900">😊 Friendly & Welcoming</option>
-                  <option value="Urgent" className="bg-white text-slate-900">🚨 Urgent / Sales Focus</option>
-                  <option value="Professional" className="bg-white text-slate-900">💼 Professional & Corporate</option>
-                  <option value="Persuasive" className="bg-white text-slate-900">🎯 Persuasive Call-to-Action</option>
-                  <option value="Casual" className="bg-white text-slate-900">💬 Casual & Personal</option>
+                  <option value="Friendly">Friendly & Welcoming</option>
+                  <option value="Urgent">Urgent / Sales Focus</option>
+                  <option value="Professional">Professional & Corporate</option>
+                  <option value="Persuasive">Persuasive Call-to-Action</option>
+                  <option value="Casual">Casual & Personal</option>
                 </select>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-2">
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowAiModal(false)}
-                  className="rounded-full border border-slate-300 px-5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100"
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={generatingAi}
-                  className="rounded-full bg-emerald-600 text-white px-6 py-2 text-xs font-extrabold hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer shadow-md"
+                  className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all disabled:opacity-50 shadow-sm cursor-pointer"
                 >
-                  <span>✨</span>
-                  <span>{generatingAi ? "Crafting Email..." : "Generate AI Template"}</span>
+                  {generatingAi ? "Crafting..." : "Generate AI Template"}
                 </button>
               </div>
             </form>
