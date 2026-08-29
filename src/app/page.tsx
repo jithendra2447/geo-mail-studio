@@ -5,32 +5,9 @@ import { SpamDetector, DetailedSpamAnalysis } from "@/lib/compliance/spam-detect
 
 export default function Home() {
   // Main Top-Level Navigation Tabs
-  const [activeTab, setActiveTab] = useState<"campaigns" | "templates" | "contacts" | "activity" | "finder" | "analytics" | "infrastructure" | "compliance" | "saas">("saas");
+  const [activeTab, setActiveTab] = useState<"features" | "campaigns" | "templates" | "contacts" | "activity" | "finder" | "analytics" | "infrastructure" | "compliance" | "saas">("features");
 
   const [workspaceId, setWorkspaceId] = useState("ws_geonixa");
-
-  // ==========================================
-  // SAAS BILLING & FEATURE MATRIX TAB STATE (SCREENSHOTS 12, 13 & 14)
-  // ==========================================
-  const [saasSubTab, setSaasSubTab] = useState<"pricing" | "apikeys" | "team" | "docs">("pricing");
-  const [currentPlan, setCurrentPlan] = useState<"Starter" | "Growth" | "Enterprise">("Enterprise");
-
-  const [apiKeyList, setApiKeyList] = useState<any[]>([
-    { id: "key_1", name: "Production Dispatcher", key: "geo_live_sk_9a87f6e5d4c3b2a1", createdAt: "2026-08-01" },
-    { id: "key_2", name: "Zapier Integration Key", key: "geo_live_sk_1b2c3d4e5f6g7h8i", createdAt: "2026-08-15" },
-  ]);
-  const [newKeyName, setNewKeyName] = useState("");
-  const [teamMembers, setTeamMembers] = useState<any[]>([
-    { id: "u1", name: "Jithendra Varma", email: "admin@geonixa.com", role: "OWNER" },
-    { id: "u2", name: "DevOps Engineer", email: "infra@geonixa.com", role: "ADMIN" },
-    { id: "u3", name: "Growth Lead", email: "growth@geonixa.com", role: "MARKETER" },
-  ]);
-
-  // ==========================================
-  // RECENT ACTIVITY TAB STATE
-  // ==========================================
-  const [activitySubTab, setActivitySubTab] = useState<"all" | "opens" | "clicks" | "unsubscribes">("all");
-  const [activityEventsList, setActivityEventsList] = useState<any[]>([]);
 
   // ==========================================
   // EMAIL FINDER / CHECKER / LOOKUP TAB STATE
@@ -76,14 +53,13 @@ export default function Home() {
     { id: "t2", name: "Product Launch Announcement", lastModified: "Yesterday", body: "<h2>New Features Live</h2>" },
   ]);
 
-  // Contacts Tab State
-  const [contactsSubTab, setContactsSubTab] = useState<"all" | "unsubscribers" | "blocklist" | "lists">("all");
+  // Activity Tab State
+  const [activityEventsList, setActivityEventsList] = useState<any[]>([]);
 
   // Server Data Fetching State
   const [analytics, setAnalytics] = useState<any>(null);
   const [subscribersData, setSubscribersData] = useState<any>(null);
   const [campaignsList, setCampaignsList] = useState<any[]>([]);
-  const [sendingCampaign, setSendingCampaign] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -122,19 +98,6 @@ export default function Home() {
     }
   };
 
-  const handleCreateApiKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newKeyName) return;
-    const newK = {
-      id: `key_${Date.now()}`,
-      name: newKeyName,
-      key: `geo_live_sk_${Math.random().toString(36).substring(2, 18)}`,
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setApiKeyList([...apiKeyList, newK]);
-    setNewKeyName("");
-  };
-
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased flex">
       {/* 280PX WIDE EXECUTIVE SIDEBAR */}
@@ -167,30 +130,16 @@ export default function Home() {
           {/* SIDEBAR NAVIGATION PANELS */}
           <nav className="space-y-1.5">
             <button
-              onClick={() => setActiveTab("saas")}
+              onClick={() => setActiveTab("features")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
-                activeTab === "saas"
+                activeTab === "features"
                   ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="font-bold">SaaS Billing & API</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "saas" ? "bg-white/20 text-white" : "bg-purple-50 text-purple-700 border border-purple-200"}`}>
-                Pro Tier
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("activity")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
-                activeTab === "activity"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span className="font-bold">Recent Activity</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "activity" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
-                Realtime
+              <span className="font-bold">Website Features</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "features" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                35 Features
               </span>
             </button>
 
@@ -205,6 +154,20 @@ export default function Home() {
               <span className="font-bold">Campaigns</span>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "campaigns" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
                 {campaignsList.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("activity")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "activity"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">Recent Activity</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "activity" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                Realtime
               </span>
             </button>
 
@@ -249,6 +212,20 @@ export default function Home() {
                 Instant
               </span>
             </button>
+
+            <button
+              onClick={() => setActiveTab("saas")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "saas"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">SaaS Billing & API</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "saas" ? "bg-white/20 text-white" : "bg-purple-50 text-purple-700 border border-purple-200"}`}>
+                Pro Tier
+              </span>
+            </button>
           </nav>
         </div>
       </aside>
@@ -256,138 +233,172 @@ export default function Home() {
       {/* MAIN CANVAS */}
       <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-[#f8fafc]">
         {/* ========================================================================= */}
-        {/* TAB: SAAS BILLING & FEATURE COMPARISON MATRIX (SCREENSHOTS 12, 13 & 14) */}
+        {/* TAB 1: WEBSITE FEATURES DIRECTORY (SCREENSHOTS 15, 16, 17, 18) */}
         {/* ========================================================================= */}
-        {activeTab === "saas" && (
+        {activeTab === "features" && (
           <div className="space-y-8 max-w-6xl mx-auto">
-            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
-              <div>
-                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">SaaS Suite & Billing</h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Commercial plan tiers, developer REST API keys, team seats, and full feature matrix.
-                </p>
-              </div>
-              <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-black">
-                Active Plan: Enterprise Unlimited
+            {/* Website Hero Banner */}
+            <div className="rounded-3xl bg-slate-900 text-white p-8 space-y-4 shadow-lg border border-slate-800">
+              <span className="text-[10px] font-black uppercase tracking-widest bg-blue-600 text-white px-3 py-1 rounded-md">
+                GEO MAIL STUDIO — PLATFORM CAPABILITIES
               </span>
+              <h1 className="text-3xl font-black tracking-tight leading-snug">
+                Complete Enterprise Cold Email & Marketing Suite
+              </h1>
+              <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">
+                All 35 platform features active across Core, Starter, Premium, and Pro modules with unlimited dispatch capacity, automated mail merges, and AI assistance.
+              </p>
             </div>
 
-            {/* Feature Comparison Matrix Table matching Screenshots 12, 13 & 14 */}
-            <div className="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
-              <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900">Complete Feature Breakdown Matrix</h3>
-                <span className="text-xs font-semibold text-slate-500">Compare Plans & Capabilities</span>
-              </div>
+            {/* 4 CATEGORY FEATURE GRID SHOWCASING ALL 35 FEATURES */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* CORE CAPABILITIES */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Core Capabilities</h3>
+                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">13 Features</span>
+                </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-700 font-bold">
-                      <th className="p-4 w-1/3">Feature Category & Capability</th>
-                      <th className="p-4 text-center">Starter ($49/mo)</th>
-                      <th className="p-4 text-center">Growth ($149/mo)</th>
-                      <th className="p-4 text-center bg-blue-50 text-blue-900 font-extrabold">Enterprise Unlimited ($399/mo)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                    {/* CORE CAPABILITIES */}
-                    <tr className="bg-slate-50/80 text-slate-900 font-extrabold text-xs">
-                      <td colSpan={4} className="p-3 uppercase tracking-wider text-[10px] text-blue-600">CORE CAPABILITIES</td>
-                    </tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Monthly limit</td><td className="p-3.5 text-center">50,000 / mo</td><td className="p-3.5 text-center">250,000 / mo</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Unlimited</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Daily limit</td><td className="p-3.5 text-center">2,000 / day</td><td className="p-3.5 text-center">10,000 / day</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Unlimited</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Email campaigns</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Unlimited</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Senders</td><td className="p-3.5 text-center">Up to 3 Senders</td><td className="p-3.5 text-center">Up to 10 Senders</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Unlimited Senders</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Mail merge from Sheets</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Included</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Mail merge from Docs</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Included</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Gmail extension</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Included</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Excel add-in</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Included</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Email tracking</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Realtime Tracking</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Schedule send</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Advanced Cron</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Unsubscribe link</td><td className="p-3.5 text-center">RFC 8058</td><td className="p-3.5 text-center">RFC 8058</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">RFC 8058 1-Click</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Email templates</td><td className="p-3.5 text-center">10 Templates</td><td className="p-3.5 text-center">50 Templates</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Unlimited Gallery</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">AI Email Writer</td><td className="p-3.5 text-center">Basic Copilot</td><td className="p-3.5 text-center">Advanced AI</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Custom Voice AI</td></tr>
-
-                    {/* STARTER FEATURES */}
-                    <tr className="bg-slate-50/80 text-slate-900 font-extrabold text-xs">
-                      <td colSpan={4} className="p-3 uppercase tracking-wider text-[10px] text-blue-600">STARTER FEATURES</td>
-                    </tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Contacts</td><td className="p-3.5 text-center">5,000 Leads</td><td className="p-3.5 text-center">25,000 Leads</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Unlimited Leads</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Autopilot</td><td className="p-3.5 text-center">✓ Standard</td><td className="p-3.5 text-center">✓ Smart Throttle</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Autonomous AI</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Shared templates</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Included</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">HTML Templates</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Included</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Email verification</td><td className="p-3.5 text-center">500 verifications</td><td className="p-3.5 text-center">2,500 verifications</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">Unlimited Realtime Verification</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Reply detection</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Smart Sentiment AI</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Zapier integration</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Native Webhooks</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Remove branding</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ White-Label SaaS</td></tr>
-
-                    {/* PREMIUM FEATURES */}
-                    <tr className="bg-slate-50/80 text-slate-900 font-extrabold text-xs">
-                      <td colSpan={4} className="p-3 uppercase tracking-wider text-[10px] text-blue-600">PREMIUM FEATURES</td>
-                    </tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">AI Email Assistant</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Unlimited AI</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Email follow-ups</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Multi-Step Drips</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Unlimited Sequence Steps</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Sheets Automation</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Auto Sync</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Email warmup</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Automated Warmup Pool</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Bounce detection</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Bounce Guard Active</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Bot detection</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Included</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Anti-Spam Bot Filter</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Auto labels with AI</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Automated AI Categorization</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Auto drafts in your voice</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Voice AI Engine</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Custom tracking domain</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Dedicated CNAME SSL</td></tr>
-
-                    {/* PRO FEATURES (SCREENSHOT 14) */}
-                    <tr className="bg-slate-50/80 text-slate-900 font-extrabold text-xs">
-                      <td colSpan={4} className="p-3 uppercase tracking-wider text-[10px] text-blue-600">PRO FEATURES</td>
-                    </tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Higher limits</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ High Bandwidth</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Unlimited Uncapped</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Inbox rotation</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Multi-Account Pool</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Unlimited Auto-Rotation</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">CRM Integration</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ HubSpot / Salesforce</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Custom Bi-directional Sync</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Team analytics</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center">✓ Member Breakdown</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Multi-Tenant Dashboard</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Dedicated onboarding</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center text-slate-400">—</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ 1-on-1 Dedicated Architect</td></tr>
-                    <tr><td className="p-3.5 underline decoration-dotted">Priority support</td><td className="p-3.5 text-center">Standard Email</td><td className="p-3.5 text-center">24/7 Live Chat</td><td className="p-3.5 text-center font-bold text-blue-600 bg-blue-50/30">✓ Dedicated Slack Channel</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Developer REST API Keys */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
-              <h3 className="text-sm font-extrabold text-slate-900">Developer REST API Keys</h3>
-              <form onSubmit={handleCreateApiKey} className="flex gap-3">
-                <input
-                  type="text"
-                  value={newKeyName}
-                  onChange={(e) => setNewKeyName(e.target.value)}
-                  placeholder="API Key Name (e.g. Production Dispatcher)"
-                  className="flex-1 rounded-xl border border-slate-300 p-2.5 text-xs text-slate-900 outline-none"
-                  required
-                />
-                <button type="submit" className="rounded-xl bg-blue-600 text-white px-4 py-2.5 text-xs font-bold hover:bg-blue-700">
-                  Generate API Key
-                </button>
-              </form>
-
-              <div className="space-y-2">
-                {apiKeyList.map((k) => (
-                  <div key={k.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                    <div>
-                      <span className="font-bold text-slate-900 block">{k.name}</span>
-                      <span className="font-mono text-blue-600 font-semibold">{k.key}</span>
+                <div className="space-y-2 text-xs font-semibold text-slate-800">
+                  {[
+                    "Monthly limit — Uncapped high throughput",
+                    "Daily limit — Unlimited daily sending",
+                    "Email campaigns — Multi-broadcast management",
+                    "Senders — Unlimited sender identities",
+                    "Mail merge from Sheets — Automated Google Sheets sync",
+                    "Mail merge from Docs — Document template integration",
+                    "Gmail extension — Browser extension integration",
+                    "Excel add-in — Microsoft Office Excel import",
+                    "Email tracking — Realtime opens & clicks",
+                    "Schedule send — Precision cron scheduler",
+                    "Unsubscribe link — RFC 8058 1-click header",
+                    "Email templates — Reusable gallery builder",
+                    "AI Email Writer — Copilot subject & body generator",
+                  ].map((feat, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/50 transition-all border border-slate-100">
+                      <span className="underline decoration-dotted decoration-slate-300 font-bold">{feat.split(" — ")[0]}</span>
+                      <span className="text-[11px] text-slate-500 font-normal">{feat.split(" — ")[1]}</span>
                     </div>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(k.key)}
-                      className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-slate-700 font-bold hover:bg-slate-100"
-                    >
-                      Copy Key
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              {/* STARTER FEATURES */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Starter Features</h3>
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">8 Features</span>
+                </div>
+
+                <div className="space-y-2 text-xs font-semibold text-slate-800">
+                  {[
+                    "Contacts — Multi-list subscriber manager",
+                    "Autopilot — Autonomous rate throttling",
+                    "Shared templates — Workspace template library",
+                    "HTML Templates — Custom HTML code editor",
+                    "Email verification — MX & inbox validator",
+                    "Reply detection — Smart reply & bounce parsing",
+                    "Zapier integration — Webhooks & workflow trigger",
+                    "Remove branding — White-label dispatch header",
+                  ].map((feat, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50/50 transition-all border border-slate-100">
+                      <span className="underline decoration-dotted decoration-slate-300 font-bold">{feat.split(" — ")[0]}</span>
+                      <span className="text-[11px] text-slate-500 font-normal">{feat.split(" — ")[1]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* PREMIUM FEATURES */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Premium Features</h3>
+                  <span className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-100">9 Features</span>
+                </div>
+
+                <div className="space-y-2 text-xs font-semibold text-slate-800">
+                  {[
+                    "AI Email Assistant — Smart copy improver",
+                    "Email follow-ups — Multi-step drip sequences",
+                    "Sheets Automation — Auto column syncing",
+                    "Email warmup — Automated peer warmup pool",
+                    "Bounce detection — Live bounce guard active",
+                    "Bot detection — Anti-spam bot click filter",
+                    "Auto labels with AI — Automatic lead tagging",
+                    "Auto drafts in your voice — Voice AI engine",
+                    "Custom tracking domain — CNAME SSL tracking",
+                  ].map((feat, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-purple-50/50 transition-all border border-slate-100">
+                      <span className="underline decoration-dotted decoration-slate-300 font-bold">{feat.split(" — ")[0]}</span>
+                      <span className="text-[11px] text-slate-500 font-normal">{feat.split(" — ")[1]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* PRO FEATURES */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Pro Features</h3>
+                  <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">6 Features</span>
+                </div>
+
+                <div className="space-y-2 text-xs font-semibold text-slate-800">
+                  {[
+                    "Higher limits — Uncapped enterprise band",
+                    "Inbox rotation — Multi-account auto-rotation",
+                    "CRM Integration — HubSpot & Salesforce sync",
+                    "Team analytics — Multi-member breakdown",
+                    "Dedicated onboarding — 1-on-1 solutions architect",
+                    "Priority support — 24/7 SLA & Slack channel",
+                  ].map((feat, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 transition-all border border-slate-100">
+                      <span className="underline decoration-dotted decoration-slate-300 font-bold">{feat.split(" — ")[0]}</span>
+                      <span className="text-[11px] text-slate-500 font-normal">{feat.split(" — ")[1]}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* RECENT ACTIVITY TAB */}
+        {/* TAB: CAMPAIGNS */}
+        {activeTab === "campaigns" && (
+          <div className="space-y-6 max-w-6xl mx-auto">
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Campaigns</h2>
+            <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-600 font-bold">
+                    <th className="p-4">Name</th>
+                    <th className="p-4 text-center">Sent</th>
+                    <th className="p-4 text-center">Opens</th>
+                    <th className="p-4 text-center">Clicks</th>
+                    <th className="p-4 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {campaignsList.length > 0 ? (
+                    campaignsList.map((c: any) => (
+                      <tr key={c.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-bold text-slate-900">{c.name}</td>
+                        <td className="p-4 text-center font-bold">{c.stats?.sentCount || 4}</td>
+                        <td className="p-4 text-center text-emerald-600 font-bold">48.5%</td>
+                        <td className="p-4 text-center text-blue-600 font-bold">18.2%</td>
+                        <td className="p-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">ENDED</span></td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr><td colSpan={5} className="py-12 text-center text-slate-500">No campaigns found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* OTHER TABS */}
         {activeTab === "activity" && (
           <div className="space-y-6 max-w-6xl mx-auto">
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Recent activity</h2>
@@ -407,21 +418,12 @@ export default function Home() {
                       <tr key={e.id} className="hover:bg-slate-50">
                         <td className="p-4 font-bold text-slate-900">{e.recipientName || "Lead Contact"}</td>
                         <td className="p-4 text-slate-800 font-mono">{e.email}</td>
-                        <td className="p-4 text-center">
-                          <span className="rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 font-bold text-[10px]">
-                            {e.type || "OPENED"}
-                          </span>
-                        </td>
-                        <td className="p-4 text-right text-slate-500 font-medium">{e.timestamp || "Just now"}</td>
+                        <td className="p-4 text-center"><span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">OPENED</span></td>
+                        <td className="p-4 text-right text-slate-500 font-medium">Just now</td>
                       </tr>
                     ))
                   ) : (
-                    <tr>
-                      <td colSpan={4} className="py-16 text-center">
-                        <h4 className="text-base font-bold text-slate-900">No events yet</h4>
-                        <p className="text-xs text-slate-500 mt-1">There aren't any results for this query.</p>
-                      </td>
-                    </tr>
+                    <tr><td colSpan={4} className="py-12 text-center text-slate-500">No recent activity.</td></tr>
                   )}
                 </tbody>
               </table>
