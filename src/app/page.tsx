@@ -95,8 +95,8 @@ export default function Home() {
   // Multi-Account SMTP Pool State
   const [smtpPoolData, setSmtpPoolData] = useState<any>(null);
   const [addMode, setAddMode] = useState<"single" | "bulk" | "dedicated">("single");
-  const [newSmtpEmail, setNewSmtpEmail] = useState("");
-  const [newSmtpPass, setNewSmtpPass] = useState("");
+  const [newSmtpEmail, setNewSmtpEmail] = useState("jithendravarma.l@gmail.com");
+  const [newSmtpPass, setNewSmtpPass] = useState("nswymhicrcfgctmu");
   const [bulkText, setBulkText] = useState(
     `sender1@geonixa.com, nswymhicrcfgctmu\nsender2@geonixa.com, nswymhicrcfgctmu\nsender3@geonixa.com, nswymhicrcfgctmu`
   );
