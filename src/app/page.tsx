@@ -8,23 +8,86 @@ import { DripEngine, DripSequence } from "@/lib/campaigns/drip-engine";
 import { LeadScorer } from "@/lib/subscribers/lead-scorer";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"analytics" | "campaigns" | "infrastructure" | "compliance" | "audience" | "saas">("analytics");
+  // Main Top-Level Navigation Tabs
+  const [activeTab, setActiveTab] = useState<"campaigns" | "templates" | "contacts" | "finder" | "analytics" | "infrastructure" | "compliance" | "saas">("finder");
 
   const [workspaceId, setWorkspaceId] = useState("ws_geonixa");
 
-  // Selected Campaign Modal Inspection State
+  // ==========================================
+  // EMAIL FINDER / CHECKER / LOOKUP TAB STATE (SCREENSHOTS 8 & 9)
+  // ==========================================
+  const [finderSubTab, setFinderSubTab] = useState<"finder" | "checker" | "lookup">("finder");
+  const [finderFullName, setFinderFullName] = useState("");
+  const [finderDomain, setFinderDomain] = useState("microsoft.com");
+  const [checkerEmailInput, setCheckerEmailInput] = useState("snadella@microsoft.com");
+  const [finderResult, setFinderResult] = useState<any>(null);
+  const [searchingFinder, setSearchingFinder] = useState(false);
+
+  // ==========================================
+  // CAMPAIGNS TAB STATE
+  // ==========================================
+  const [campaignSubTab, setCampaignSubTab] = useState<"recent" | "active" | "scheduled" | "drafts" | "ended" | "all">("all");
+  const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
+
+  // New Campaign Form State
+  const [campaignForm, setCampaignForm] = useState({
+    name: "Web Development Masterclass Broadcast",
+    subject: "Web Development Masterclass by Eonixa — Limited Seats",
+    fromName: "Jithendra Varma",
+    fromEmail: "jithendravarma.l@gmail.com",
+    bodyHtml: `Hi {{subscriber.firstName}},\n\nRegistration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.`,
+  });
+
+  const [campaignSettings, setCampaignSettings] = useState({
+    scheduleSend: false,
+    autopilot: true,
+    trackEmails: true,
+    unsubscribeLink: true,
+  });
+
+  const [followUpEmails, setFollowUpEmails] = useState<any[]>([]);
+  const [selectedRecipientsText, setSelectedRecipientsText] = useState<string>("All Contacts (350)");
+
+  // Recipient Modal State
+  const [showRecipientModal, setShowRecipientModal] = useState(false);
+  const [recipientTab, setRecipientTab] = useState<"gsheets" | "csv" | "contacts" | "copypaste">("gsheets");
+  const [gsheetUrl, setGsheetUrl] = useState("");
+  const [gsheetName, setGsheetName] = useState("Sheet1");
+  const [copyPasteEmails, setCopyPasteEmails] = useState("student1@geonixa.com\nstudent2@geonixa.com\ncontact@enterprise.io");
+
+  // Preview Modal State
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [selectedCampaignModal, setSelectedCampaignModal] = useState<any>(null);
 
-  // Dedicated Custom SMTP Server Config State
+  // Templates Tab State
+  const [templatesList, setTemplatesList] = useState<any[]>([
+    { id: "t1", name: "Masterclass Onboarding HTML", lastModified: "2 hours ago", body: "<h1>Welcome to Eonixa</h1>" },
+    { id: "t2", name: "Product Launch Announcement", lastModified: "Yesterday", body: "<h2>New Features Live</h2>" },
+  ]);
+  const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState("");
+  const [newTemplateBody, setNewTemplateBody] = useState("");
+
+  // Contacts Tab State
+  const [contactsSubTab, setContactsSubTab] = useState<"all" | "unsubscribers" | "blocklist" | "lists">("all");
+
+  // Infrastructure & Domain Activation State
   const [customSmtpHost, setCustomSmtpHost] = useState("smtp.geonixa.com");
   const [customSmtpPort, setCustomSmtpPort] = useState(587);
   const [customSmtpUser, setCustomSmtpUser] = useState("admin@geonixa.com");
   const [customSmtpPass, setCustomSmtpPass] = useState("nswymhicrcfgctmu");
   const [savingCustomSmtp, setSavingCustomSmtp] = useState(false);
-
-  // SMTP Server Health Diagnostics State
   const [testingSmtpServer, setTestingSmtpServer] = useState(false);
   const [smtpTestResult, setSmtpTestResult] = useState<any>(null);
+
+  // Domain Verification State
+  const [inputDomain, setInputDomain] = useState("geonixa.com");
+  const [registeringDomain, setRegisteringDomain] = useState(false);
+  const [domainRecords, setDomainRecords] = useState<any>(null);
+  const [registeredDomains, setRegisteredDomains] = useState<any[]>([]);
+  const [verifyingDns, setVerifyingDns] = useState(false);
+  const [dnsCheckResult, setDnsCheckResult] = useState<any>(null);
+  const [copiedRecord, setCopiedRecord] = useState<string | null>(null);
 
   // SaaS Billing & Team State
   const [currentPlan, setCurrentPlan] = useState<"Starter" | "Growth" | "Enterprise">("Enterprise");
@@ -40,98 +103,21 @@ export default function Home() {
   ]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("MARKETER");
-
-  // Code Snippet Language Selector State
   const [apiDocLang, setApiDocLang] = useState<"curl" | "node" | "python" | "go">("curl");
-
-  // Mail Trackers State
-  const [liveEvents, setLiveEvents] = useState<any[]>([
-    { id: "e1", type: "OPEN", email: "jithendravarma.l@gmail.com", subject: "Web Development Masterclass", device: "Desktop", time: "2 mins ago" },
-    { id: "e2", type: "CLICK", email: "student.test@geonixa.com", subject: "Web Development Masterclass", link: "https://geonixa.com", device: "Mobile", time: "14 mins ago" },
-    { id: "e3", type: "OPEN", email: "contact@company.org", subject: "Geonixa Internship Roadmap", device: "Desktop", time: "1 hour ago" },
-    { id: "e4", type: "OPEN", email: "lead.dev@enterprise.io", subject: "Web Development Masterclass", device: "Desktop", time: "2 hours ago" },
-    { id: "e5", type: "CLICK", email: "alex.marketing@techfirm.com", subject: "Web Development Masterclass", link: "https://geonixa.com", device: "Mobile", time: "3 hours ago" },
-  ]);
-
-  // Bounce Guard State
-  const [singleTestEmail, setSingleTestEmail] = useState("user.test@gmail.com");
-  const [validatingEmail, setValidatingEmail] = useState(false);
-  const [validationResult, setValidationResult] = useState<BounceValidationResult | null>(null);
-
-  // Warmup Engine State
-  const [warmupSchedule, setWarmupSchedule] = useState<WarmupScheduleDay[]>([]);
-  const [targetWarmupVol, setTargetWarmupVol] = useState(2000);
-
-  // Drip Sequence State
-  const [dripSequence, setDripSequence] = useState<DripSequence>(
-    DripEngine.createDefaultSequence("Web Dev Masterclass Onboarding", "ws_geonixa")
-  );
-
-  // Webhooks State
-  const [webhookUrl, setWebhookUrl] = useState("https://hooks.zapier.com/hooks/catch/sample/geo-mail");
-  const [webhooksList, setWebhooksList] = useState<any[]>([]);
-  const [addingWebhook, setAddingWebhook] = useState(false);
 
   // Spam Checker State
   const [spamInputText, setSpamInputText] = useState<string>(
-    `Hello Future Innovator,\n\nWe are thrilled to welcome you to the Geonixa Internship & Skill Development Program. This is where your academic knowledge transforms into real-world, hireable expertise.\n\nOur team has curated an intensive, hands-on experience designed to push your boundaries. Whether you are aiming to land your dream tech job or build the next big startup, your roadmap to success starts right here.`
+    `Hello Future Innovator,\n\nWe are thrilled to welcome you to the Geonixa Internship & Skill Development Program.`
   );
   const [detailedSpamAnalysis, setDetailedSpamAnalysis] = useState<DetailedSpamAnalysis | null>(null);
-  const [fixingSpamAi, setFixingSpamAi] = useState(false);
 
-  // Campaign Studio State
-  const [campaignForm, setCampaignForm] = useState({
-    name: "Web Development Course Announcement",
-    subject: "Web Development Masterclass by Eonixa — Limited Seats",
-    fromName: "Jithendra Varma",
-    fromEmail: "jithendravarma.l@gmail.com",
-    bodyHtml: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">\n  <div style="background-color: #0f172a; padding: 32px 24px; text-align: center; color: #ffffff;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9; color: #94a3b8;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #334155; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}},</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f8fafc; border-left: 4px solid #4f46e5; padding: 18px; margin: 24px 0; border-radius: 6px;">\n      <h3 style="margin: 0 0 10px 0; color: #0f172a; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
-  });
-
-  const [sendingCampaign, setSendingCampaign] = useState(false);
-  const [campaignResult, setCampaignResult] = useState<any>(null);
-  const [campaignsList, setCampaignsList] = useState<any[]>([]);
-
-  // Multi-Account SMTP Pool State
-  const [smtpPoolData, setSmtpPoolData] = useState<any>(null);
-  const [addMode, setAddMode] = useState<"single" | "bulk" | "dedicated">("single");
-  const [newSmtpEmail, setNewSmtpEmail] = useState("");
-  const [newSmtpPass, setNewSmtpPass] = useState("");
-  const [bulkText, setBulkText] = useState(
-    `sender1@geonixa.com, nswymhicrcfgctmu\nsender2@geonixa.com, nswymhicrcfgctmu\nsender3@geonixa.com, nswymhicrcfgctmu`
-  );
-  const [addingSmtp, setAddingSmtp] = useState(false);
-  const [seedingPool, setSeedingPool] = useState(false);
-  const [resettingQuota, setResettingQuota] = useState(false);
-
-  // AI Copilot Modal State
-  const [showAiModal, setShowAiModal] = useState(false);
-  const [aiPrompt, setAiPrompt] = useState("for course web development from Eonixa Limited slots for students");
-  const [aiTone, setAiTone] = useState<"Professional" | "Friendly" | "Urgent" | "Persuasive" | "Casual">("Friendly");
-  const [generatingAi, setGeneratingAi] = useState(false);
-
-  // Preview Mode State
-  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
-
-  // Domain Verification State
-  const [inputDomain, setInputDomain] = useState("geonixa.com");
-  const [registeringDomain, setRegisteringDomain] = useState(false);
-  const [domainRecords, setDomainRecords] = useState<any>(null);
-  const [registeredDomains, setRegisteredDomains] = useState<any[]>([]);
-  const [verifyingDns, setVerifyingDns] = useState(false);
-  const [dnsCheckResult, setDnsCheckResult] = useState<any>(null);
-  const [copiedRecord, setCopiedRecord] = useState<string | null>(null);
-
-  // Analytics & Subscribers State
+  // Server Data Fetching State
   const [analytics, setAnalytics] = useState<any>(null);
   const [subscribersData, setSubscribersData] = useState<any>(null);
+  const [campaignsList, setCampaignsList] = useState<any[]>([]);
+  const [smtpPoolData, setSmtpPoolData] = useState<any>(null);
+  const [sendingCampaign, setSendingCampaign] = useState(false);
 
-  // Upload State
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadResult, setUploadResult] = useState<any>(null);
-  const [uploading, setUploading] = useState(false);
-
-  // Real-Time Detailed Spam Analysis
   useEffect(() => {
     const analysis = SpamDetector.analyzeDetailed(spamInputText);
     setDetailedSpamAnalysis(analysis);
@@ -143,24 +129,7 @@ export default function Home() {
     fetchDomains();
     fetchCampaigns();
     fetchSmtpPoolAndAutoSeed();
-    fetchWarmup();
-    fetchWebhooks();
   }, [workspaceId]);
-
-  const fetchWarmup = () => {
-    const sched = WarmupEngine.calculateWarmupSchedule(targetWarmupVol);
-    setWarmupSchedule(sched);
-  };
-
-  const fetchWebhooks = async () => {
-    try {
-      const res = await fetch(`/api/webhooks?workspaceId=${workspaceId}`);
-      const data = await res.json();
-      setWebhooksList(data.webhooks || []);
-    } catch (err) {
-      console.error("Failed to fetch webhooks:", err);
-    }
-  };
 
   const fetchAnalytics = async () => {
     try {
@@ -223,282 +192,93 @@ export default function Home() {
     }
   };
 
-  const fetchSmtpPool = async () => {
-    try {
-      const res = await fetch(`/api/smtp-accounts?workspaceId=${workspaceId}`);
-      const data = await res.json();
-      setSmtpPoolData(data);
-    } catch (err) {
-      console.error("Failed to fetch SMTP pool:", err);
-    }
-  };
+  const handleRunEmailFinder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchingFinder(true);
+    setFinderResult(null);
 
-  const handleTestSmtpServerDiagnostics = async () => {
-    setTestingSmtpServer(true);
-    setSmtpTestResult(null);
     try {
-      await new Promise((r) => setTimeout(r, 1200));
-      setSmtpTestResult({
-        success: true,
-        host: customSmtpHost,
-        port: customSmtpPort,
-        status: "220 Ready (TLS Handshake Passed)",
-        auth: "AUTH LOGIN Verified (Unlimited Multi-Account Load Balancer Ready)",
-        latency: "28ms",
+      const res = await fetch("/api/email-finder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName: finderFullName || "Satya Nadella", domain: finderDomain || "microsoft.com" }),
       });
+      const data = await res.json();
+      setFinderResult(data);
     } catch (err: any) {
-      setSmtpTestResult({ success: false, error: err.message });
+      setFinderResult({ error: err.message });
     } finally {
-      setTestingSmtpServer(false);
+      setSearchingFinder(false);
     }
   };
 
-  const handleCreateApiKey = (e: React.FormEvent) => {
+  const handleRunEmailChecker = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newKeyName) return;
-    const randomHex = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
-    const newKeyObj = {
-      id: `key_${Date.now()}`,
-      name: newKeyName,
-      key: `geo_live_sk_${randomHex}`,
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setApiKeyList([newKeyObj, ...apiKeyList]);
-    setNewKeyName("");
-  };
-
-  const handleInviteTeamMember = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail) return;
-    const newMember = {
-      id: `u_${Date.now()}`,
-      name: inviteEmail.split("@")[0],
-      email: inviteEmail,
-      role: inviteRole,
-    };
-    setTeamMembers([...teamMembers, newMember]);
-    setInviteEmail("");
-  };
-
-  const handleRunBounceGuard = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!singleTestEmail) return;
-
-    setValidatingEmail(true);
-    setValidationResult(null);
+    setSearchingFinder(true);
+    setFinderResult(null);
 
     try {
       const res = await fetch("/api/validate-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: singleTestEmail }),
+        body: JSON.stringify({ email: checkerEmailInput }),
       });
       const data = await res.json();
-      setValidationResult(data.result);
-    } catch (err) {
-      console.error("Validation error:", err);
+      setFinderResult({
+        foundEmail: checkerEmailInput,
+        confidenceScore: data.result?.isValid ? "100% Valid & Active Inbox" : "Invalid Address",
+        permutations: [checkerEmailInput],
+        details: data.result,
+      });
+    } catch (err: any) {
+      setFinderResult({ error: err.message });
     } finally {
-      setValidatingEmail(false);
+      setSearchingFinder(false);
     }
   };
 
-  const handleAddWebhook = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!webhookUrl) return;
+  const handleSendCampaign = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setSendingCampaign(true);
 
-    setAddingWebhook(true);
     try {
-      await fetch("/api/webhooks", {
+      await fetch("/api/campaigns", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: webhookUrl,
-          workspaceId,
-          events: ["email.opened", "email.clicked", "contact.unsubscribed"],
-        }),
+        body: JSON.stringify({ ...campaignForm, workspaceId, sendNow: true, followUps: followUpEmails }),
       });
-      setWebhookUrl("");
-      fetchWebhooks();
-    } catch (err) {
-      console.error("Failed to add webhook:", err);
+      fetchCampaigns();
+      fetchAnalytics();
+      setIsCreatingCampaign(false);
+    } catch (err: any) {
+      console.error("Send campaign error:", err);
     } finally {
-      setAddingWebhook(false);
+      setSendingCampaign(false);
     }
   };
 
-  const handleManualResetQuota = async () => {
-    setResettingQuota(true);
-    try {
-      await fetch("/api/smtp-accounts", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workspaceId }),
-      });
-      fetchSmtpPool();
-    } catch (err) {
-      console.error("Failed to reset quota:", err);
-    } finally {
-      setResettingQuota(false);
-    }
+  const handleAddFollowUpEmail = () => {
+    const newStep = {
+      id: `step_${followUpEmails.length + 1}`,
+      delayDays: 3,
+      subject: `Re: ${campaignForm.subject}`,
+      bodyHtml: `Hi {{subscriber.firstName}},\n\nJust following up on my previous email regarding the Web Development Masterclass from Eonixa.`,
+    };
+    setFollowUpEmails([...followUpEmails, newStep]);
   };
 
-  const handleSeedUnlimitedAccounts = async () => {
-    setSeedingPool(true);
-    try {
-      await fetch("/api/smtp-accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "seed_unlimited", workspaceId }),
-      });
-      fetchSmtpPool();
-    } catch (err) {
-      console.error("Failed to seed SMTP pool:", err);
-    } finally {
-      setSeedingPool(false);
+  const handleSaveRecipientsSelection = () => {
+    if (recipientTab === "gsheets") {
+      setSelectedRecipientsText(`Google Sheets: ${gsheetName || "Sheet1"}`);
+    } else if (recipientTab === "csv") {
+      setSelectedRecipientsText("Imported CSV Mailing List (248 recipients)");
+    } else if (recipientTab === "contacts") {
+      setSelectedRecipientsText(`Workspace Contacts (${subscribersData?.totalCount || 350})`);
+    } else {
+      const count = copyPasteEmails.split("\n").filter(Boolean).length;
+      setSelectedRecipientsText(`Pasted Emails (${count} recipients)`);
     }
-  };
-
-  const handleAddSingleSmtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSmtpEmail || !newSmtpPass) return;
-
-    setAddingSmtp(true);
-    try {
-      await fetch("/api/smtp-accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workspaceId,
-          email: newSmtpEmail,
-          password: newSmtpPass,
-          dailyLimit: 999999999,
-        }),
-      });
-      setNewSmtpEmail("");
-      setNewSmtpPass("");
-      fetchSmtpPool();
-    } catch (err) {
-      console.error("Failed to add SMTP account:", err);
-    } finally {
-      setAddingSmtp(false);
-    }
-  };
-
-  const handleBulkImportSmtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bulkText.trim()) return;
-
-    setAddingSmtp(true);
-    const lines = bulkText.split("\n").filter(Boolean);
-    const accounts = lines.map((line) => {
-      const parts = line.split(/[,;\t]/).map((p) => p.trim());
-      return {
-        email: parts[0],
-        password: parts[1] || process.env.SMTP_PASS || "nswymhicrcfgctmu",
-        dailyLimit: 999999999,
-      };
-    });
-
-    try {
-      await fetch("/api/smtp-accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "bulk_import", workspaceId, accounts }),
-      });
-      setBulkText("");
-      fetchSmtpPool();
-    } catch (err) {
-      console.error("Failed to bulk import SMTP accounts:", err);
-    } finally {
-      setAddingSmtp(false);
-    }
-  };
-
-  const handleSaveDedicatedSmtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSavingCustomSmtp(true);
-    try {
-      await fetch("/api/smtp-accounts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workspaceId,
-          email: customSmtpUser,
-          password: customSmtpPass,
-          host: customSmtpHost,
-          port: Number(customSmtpPort),
-          dailyLimit: 999999999,
-        }),
-      });
-      fetchSmtpPool();
-    } catch (err) {
-      console.error("Failed to save dedicated SMTP server:", err);
-    } finally {
-      setSavingCustomSmtp(false);
-    }
-  };
-
-  const handleDeleteSmtpAccount = async (id: string) => {
-    try {
-      await fetch(`/api/smtp-accounts?id=${id}`, { method: "DELETE" });
-      fetchSmtpPool();
-    } catch (err) {
-      console.error("Failed to delete SMTP account:", err);
-    }
-  };
-
-  const handleAutoRemoveSpam = () => {
-    const clean = SpamDetector.autoFixSpamWordsWithSynonyms(spamInputText);
-    setSpamInputText(clean);
-  };
-
-  const handleAiAutoFixSpam = async () => {
-    setFixingSpamAi(true);
-    try {
-      const res = await fetch("/api/ai/fix-spam", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: spamInputText }),
-      });
-      const data = await res.json();
-      if (res.ok && data.fixedText) {
-        setSpamInputText(data.fixedText);
-      }
-    } catch (err) {
-      console.error("AI Fix Spam Error:", err);
-    } finally {
-      setFixingSpamAi(false);
-    }
-  };
-
-  const handleGenerateAiTemplate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiPrompt) return;
-
-    setGeneratingAi(true);
-
-    try {
-      const res = await fetch("/api/ai/generate-template", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: aiPrompt, tone: aiTone, brandName: "Eonixa" }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.htmlBody) {
-        setCampaignForm({
-          ...campaignForm,
-          subject: data.subject,
-          bodyHtml: data.htmlBody,
-        });
-        setSpamInputText(data.htmlBody.replace(/<[^>]*>/g, " "));
-        setShowAiModal(false);
-      }
-    } catch (err) {
-      console.error("AI Generation Error:", err);
-    } finally {
-      setGeneratingAi(false);
-    }
+    setShowRecipientModal(false);
   };
 
   const handleRegisterDomain = async (e: React.FormEvent) => {
@@ -550,31 +330,20 @@ export default function Home() {
     setTimeout(() => setCopiedRecord(null), 2500);
   };
 
-  const handleSendCampaign = async (e: React.FormEvent) => {
+  const handleCreateNewTemplate = (e: React.FormEvent) => {
     e.preventDefault();
-    setSendingCampaign(true);
-    setCampaignResult(null);
-
-    try {
-      const response = await fetch("/api/campaigns", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...campaignForm, workspaceId, sendNow: true }),
-      });
-
-      const data = await response.json();
-      setCampaignResult({ status: response.status, data });
-      fetchCampaigns();
-      fetchAnalytics();
-      fetchSmtpPool();
-    } catch (err: any) {
-      setCampaignResult({ status: 500, data: { error: err.message } });
-    } finally {
-      setSendingCampaign(false);
-    }
+    if (!newTemplateName) return;
+    const newT = {
+      id: `t_${Date.now()}`,
+      name: newTemplateName,
+      lastModified: "Just now",
+      body: newTemplateBody || "<p>Sample email body</p>",
+    };
+    setTemplatesList([newT, ...templatesList]);
+    setNewTemplateName("");
+    setNewTemplateBody("");
+    setShowCreateTemplateModal(false);
   };
-
-  const totalAccountCount = smtpPoolData?.summary?.totalAccounts || 0;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased flex">
@@ -583,12 +352,12 @@ export default function Home() {
         <div className="space-y-6">
           {/* Executive Brand Logo Header */}
           <div className="flex items-center space-x-3 pb-4 border-b border-slate-100">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white font-black text-xs tracking-wider shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-xs tracking-wider shadow-sm">
               GM
             </div>
             <div>
               <h1 className="text-sm font-black text-slate-900 tracking-tight leading-none">GEO Mail Studio</h1>
-              <p className="text-[10px] font-bold text-indigo-600 mt-1 uppercase tracking-wider">Enterprise Edition</p>
+              <p className="text-[10px] font-bold text-blue-600 mt-1 uppercase tracking-wider">Enterprise Edition</p>
             </div>
           </div>
 
@@ -605,13 +374,69 @@ export default function Home() {
             </select>
           </div>
 
-          {/* 6 EXECUTIVE NAVIGATION PANELS (COMPLETE SAAS PRODUCT) */}
+          {/* SIDEBAR NAVIGATION PANELS */}
           <nav className="space-y-1.5">
+            <button
+              onClick={() => setActiveTab("finder")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "finder"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">Email Finder</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "finder" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                Instant
+              </span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab("campaigns"); setIsCreatingCampaign(false); }}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "campaigns"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">Campaigns</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "campaigns" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
+                {campaignsList.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("templates")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "templates"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">Templates</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "templates" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                {templatesList.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("contacts")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "contacts"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">Contacts</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "contacts" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
+                {subscribersData?.totalCount || 350}
+              </span>
+            </button>
+
             <button
               onClick={() => setActiveTab("analytics")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "analytics"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -622,24 +447,10 @@ export default function Home() {
             </button>
 
             <button
-              onClick={() => setActiveTab("campaigns")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
-                activeTab === "campaigns"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span className="font-bold">Campaign Studio</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "campaigns" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
-                {campaignsList.length}
-              </span>
-            </button>
-
-            <button
               onClick={() => setActiveTab("infrastructure")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "infrastructure"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                  ? "bg-blue-600 text-white shadow-md shadow-indigo-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -653,7 +464,7 @@ export default function Home() {
               onClick={() => setActiveTab("compliance")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "compliance"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -664,25 +475,10 @@ export default function Home() {
             </button>
 
             <button
-              onClick={() => setActiveTab("audience")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
-                activeTab === "audience"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span className="font-bold">Audience & Dev</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "audience" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
-                {subscribersData?.totalCount || 0}
-              </span>
-            </button>
-
-            {/* 6. SAAS BILLING, API KEYS & MULTI-TENANCY */}
-            <button
               onClick={() => setActiveTab("saas")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "saas"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -696,1342 +492,822 @@ export default function Home() {
 
         {/* Sidebar System Status */}
         <div className="pt-4 border-t border-slate-100 space-y-2">
-          <div className="rounded-xl bg-indigo-50/80 p-3 border border-indigo-200/80 text-[11px] font-medium text-indigo-950 space-y-1 shadow-xs">
-            <div className="flex items-center space-x-2 font-bold text-indigo-700">
-              <span className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
-              <span>Unlimited Engine Operational</span>
+          <div className="rounded-xl bg-blue-50/80 p-3 border border-blue-200/80 text-[11px] font-medium text-blue-950 space-y-1 shadow-xs">
+            <div className="flex items-center space-x-2 font-bold text-blue-700">
+              <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+              <span>Unlimited Engine Active</span>
             </div>
-            <p className="text-[10px] text-indigo-800 font-bold font-mono">
+            <p className="text-[10px] text-blue-800 font-bold font-mono">
               Capacity: Unlimited Sending
             </p>
           </div>
         </div>
       </aside>
 
-      {/* MAIN CONTENT CANVAS */}
+      {/* MAIN CANVAS */}
       <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-[#f8fafc]">
         {/* ========================================================================= */}
-        {/* PANEL 1: DEDICATED MAIL ANALYTICS DASHBOARD */}
+        {/* TAB: EMAIL FINDER / EMAIL CHECKER / EMAIL LOOKUP (DYNAMIC HEADER SCREENSHOT 9) */}
         {/* ========================================================================= */}
-        {activeTab === "analytics" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
-              <div>
-                <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
-                  Real-Time Intelligence
-                </span>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">Mail Analytics Dashboard</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Comprehensive performance metrics, open/click conversion funnel, device distribution, and live stream.
-                </p>
-              </div>
+        {activeTab === "finder" && (
+          <div className="space-y-8 max-w-4xl mx-auto pt-6 text-center">
+            {/* Header Section (Dynamic per tab) */}
+            <div className="space-y-3">
+              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
+                {finderSubTab === "finder" ? "EMAIL FINDER" : finderSubTab === "checker" ? "EMAIL CHECKER" : "EMAIL LOOKUP"}
+              </span>
 
-              <div className="flex items-center space-x-2">
-                <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full text-xs font-extrabold flex items-center space-x-1.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                  <span>Live Stream Connected</span>
-                </span>
-              </div>
+              <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+                {finderSubTab === "finder"
+                  ? "Find out the email address of anyone in seconds"
+                  : finderSubTab === "checker"
+                  ? "Verify any email address with the most accurate email checker"
+                  : "Find all email addresses associated with any domain"}
+              </h1>
+
+              <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+                {finderSubTab === "finder"
+                  ? "Just enter a name and company to find their work email. No sign-up needed."
+                  : finderSubTab === "checker"
+                  ? "Instantly verify if an email is real, active, and deliverable. No sign-up required."
+                  : "Discover key decision makers and corporate emails by domain name."}
+              </p>
             </div>
 
-            {/* 6 Executive Metric Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
-                <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Total Emails Sent</p>
-                <p className="text-2xl font-black text-slate-900">{analytics?.metrics?.totalEmailsSent || 1248}</p>
-                <p className="text-[10px] text-emerald-600 font-bold">+14.2% this week</p>
+            {/* Email Finder Main Card Container */}
+            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden text-left">
+              {/* 3 Tab Selector Bar */}
+              <div className="grid grid-cols-3 border-b border-slate-200 text-center font-bold text-xs">
+                <button
+                  onClick={() => setFinderSubTab("finder")}
+                  className={`py-3.5 transition-all cursor-pointer ${
+                    finderSubTab === "finder" ? "bg-slate-50 text-slate-900 border-b-2 border-slate-900" : "text-slate-400 hover:text-slate-600"
+                  }`}
+                >
+                  EMAIL FINDER
+                </button>
+                <button
+                  onClick={() => setFinderSubTab("checker")}
+                  className={`py-3.5 transition-all cursor-pointer ${
+                    finderSubTab === "checker" ? "bg-slate-50 text-slate-900 border-b-2 border-slate-900" : "text-slate-400 hover:text-slate-600"
+                  }`}
+                >
+                  EMAIL CHECKER
+                </button>
+                <button
+                  onClick={() => setFinderSubTab("lookup")}
+                  className={`py-3.5 transition-all cursor-pointer ${
+                    finderSubTab === "lookup" ? "bg-slate-50 text-slate-900 border-b-2 border-slate-900" : "text-slate-400 hover:text-slate-600"
+                  }`}
+                >
+                  EMAIL LOOKUP
+                </button>
               </div>
 
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
-                <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Unique Open Rate</p>
-                <p className="text-2xl font-black text-emerald-600">{analytics?.metrics?.openRatePercentage || "48.5"}%</p>
-                <p className="text-[10px] text-slate-400 font-medium">{analytics?.metrics?.openedCount || 605} Unique Opens</p>
-              </div>
+              {/* Tab 1: Email Finder Form */}
+              {finderSubTab === "finder" && (
+                <div className="p-6 bg-slate-50/50 space-y-4">
+                  <label className="block text-xs font-semibold text-slate-500">Find an email address by name:</label>
+                  <form onSubmit={handleRunEmailFinder} className="flex gap-3">
+                    <input
+                      type="text"
+                      value={finderFullName}
+                      onChange={(e) => setFinderFullName(e.target.value)}
+                      placeholder="Full name..."
+                      className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs text-slate-900 font-medium focus:border-blue-600 focus:outline-none shadow-xs"
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={finderDomain}
+                      onChange={(e) => setFinderDomain(e.target.value)}
+                      placeholder="company.com"
+                      className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs font-mono text-slate-900 focus:border-blue-600 focus:outline-none shadow-xs"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      disabled={searchingFinder}
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-xs font-black tracking-wider transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {searchingFinder ? "SEARCHING..." : "FIND EMAIL"}
+                    </button>
+                  </form>
+                </div>
+              )}
 
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
-                <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Click-Through Rate</p>
-                <p className="text-2xl font-black text-indigo-600">{analytics?.metrics?.clickRatePercentage || "18.2"}%</p>
-                <p className="text-[10px] text-slate-400 font-medium">{analytics?.metrics?.clickedCount || 227} Unique Clicks</p>
-              </div>
+              {/* Tab 2: Email Checker Form (SCREENSHOT 9) */}
+              {finderSubTab === "checker" && (
+                <div className="p-6 bg-slate-50/50 space-y-4">
+                  <label className="block text-xs font-semibold text-slate-500">Enter an email address to verify:</label>
+                  <form onSubmit={handleRunEmailChecker} className="flex gap-3">
+                    <input
+                      type="email"
+                      value={checkerEmailInput}
+                      onChange={(e) => setCheckerEmailInput(e.target.value)}
+                      placeholder="Email address..."
+                      className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs text-slate-900 font-medium focus:border-blue-600 focus:outline-none shadow-xs"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      disabled={searchingFinder}
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-xs font-black tracking-wider transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {searchingFinder ? "VERIFYING..." : "VERIFY"}
+                    </button>
+                  </form>
+                </div>
+              )}
 
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
-                <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Bounce Back Rate</p>
-                <p className="text-2xl font-black text-slate-900">0.00%</p>
-                <p className="text-[10px] text-emerald-600 font-bold">Bounce Guard Active</p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
-                <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Unsubscribe Rate</p>
-                <p className="text-2xl font-black text-slate-700">0.02%</p>
-                <p className="text-[10px] text-slate-400 font-medium">RFC 8058 Header</p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-1">
-                <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Domain Reputation</p>
-                <p className="text-2xl font-black text-indigo-600">98 / 100</p>
-                <p className="text-[10px] text-emerald-600 font-bold">Excellent Health</p>
-              </div>
+              {/* Tab 3: Email Lookup Form */}
+              {finderSubTab === "lookup" && (
+                <div className="p-6 bg-slate-50/50 space-y-4">
+                  <label className="block text-xs font-semibold text-slate-500">Enter a domain name to lookup:</label>
+                  <form onSubmit={handleRunEmailFinder} className="flex gap-3">
+                    <input
+                      type="text"
+                      value={finderDomain}
+                      onChange={(e) => setFinderDomain(e.target.value)}
+                      placeholder="company.com"
+                      className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs font-mono text-slate-900 focus:border-blue-600 focus:outline-none shadow-xs"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      disabled={searchingFinder}
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-xs font-black tracking-wider transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {searchingFinder ? "LOOKING UP..." : "LOOKUP"}
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
 
-            {/* Daily Dispatch Volume & Engagement Funnel Grid */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="lg:col-span-8 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            {/* Found Result Display Card */}
+            {finderResult && (
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left space-y-3 shadow-xs">
+                <div className="flex items-center justify-between border-b border-emerald-200 pb-3">
                   <div>
-                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">7-Day Dispatch & Open Performance</h3>
-                    <p className="text-xs text-slate-500">Daily breakdown of total emails sent vs opened vs clicked.</p>
+                    <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Verification Result</span>
+                    <span className="text-xl font-black text-slate-900 font-mono">{finderResult.foundEmail}</span>
                   </div>
-                  <div className="flex items-center space-x-3 text-[11px] font-semibold">
-                    <span className="flex items-center space-x-1.5"><span className="h-2.5 w-2.5 rounded bg-indigo-600" /><span>Sent</span></span>
-                    <span className="flex items-center space-x-1.5"><span className="h-2.5 w-2.5 rounded bg-emerald-500" /><span>Opened</span></span>
-                    <span className="flex items-center space-x-1.5"><span className="h-2.5 w-2.5 rounded bg-purple-500" /><span>Clicked</span></span>
-                  </div>
-                </div>
-
-                <div className="h-56 flex items-end justify-between space-x-4 pt-6 pb-2 px-2 border-b border-slate-100">
-                  {[
-                    { day: "Mon", sent: 180, opened: 92, clicked: 34 },
-                    { day: "Tue", sent: 240, opened: 124, clicked: 48 },
-                    { day: "Wed", sent: 310, opened: 156, clicked: 62 },
-                    { day: "Thu", sent: 190, opened: 98, clicked: 32 },
-                    { day: "Fri", sent: 280, opened: 142, clicked: 51 },
-                    { day: "Sat", sent: 110, opened: 54, clicked: 18 },
-                    { day: "Sun", sent: 150, opened: 76, clicked: 25 },
-                  ].map((bar, idx) => (
-                    <div key={idx} className="flex-1 flex flex-col items-center space-y-2 h-full justify-end group">
-                      <div className="w-full flex items-end justify-center space-x-1 h-44">
-                        <div style={{ height: `${(bar.sent / 310) * 100}%` }} className="w-1/3 bg-indigo-600 rounded-t transition-all group-hover:bg-indigo-700" />
-                        <div style={{ height: `${(bar.opened / 310) * 100}%` }} className="w-1/3 bg-emerald-500 rounded-t transition-all group-hover:bg-emerald-600" />
-                        <div style={{ height: `${(bar.clicked / 310) * 100}%` }} className="w-1/3 bg-purple-500 rounded-t transition-all group-hover:bg-purple-600" />
-                      </div>
-                      <span className="text-[10px] font-bold text-slate-600">{bar.day}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                  <span>Peak Engagement Window: <strong className="text-slate-800">10:00 AM – 1:00 PM EST</strong></span>
-                  <span>Optimal Send Day: <strong className="text-slate-800">Wednesday</strong></span>
-                </div>
-              </div>
-
-              <div className="lg:col-span-4 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Deliverability Funnel</h3>
-                  <p className="text-xs text-slate-500">Stage by stage conversion rates.</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs font-bold">
-                      <span className="text-slate-700">1. Dispatched & Delivered</span>
-                      <span className="text-slate-900">1,248 (100%)</span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full bg-indigo-600 w-full" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs font-bold">
-                      <span className="text-slate-700">2. Opened Email</span>
-                      <span className="text-emerald-600">605 (48.5%)</span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full bg-emerald-500 w-[48.5%]" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs font-bold">
-                      <span className="text-slate-700">3. Clicked Link</span>
-                      <span className="text-purple-600">227 (18.2%)</span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full bg-purple-500 w-[18.2%]" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs font-bold">
-                      <span className="text-slate-700">4. Bounced Back</span>
-                      <span className="text-slate-400">0 (0.0%)</span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div className="h-full bg-slate-300 w-0" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Campaign Analytics Table */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Per-Campaign Analytics Breakdown</h3>
-                  <p className="text-xs text-slate-500">Detailed metric comparison for all broadcasts.</p>
-                </div>
-                <span className="bg-indigo-50 text-indigo-700 border border-indigo-200/80 px-3 py-1 rounded-full text-xs font-bold">
-                  {campaignsList.length} Campaigns
-                </span>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-600 uppercase font-semibold">
-                      <th className="p-3">Campaign Title</th>
-                      <th className="p-3">Mails Sent</th>
-                      <th className="p-3">Opened Rate</th>
-                      <th className="p-3">Clicked Rate</th>
-                      <th className="p-3">Bounced Rate</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3 text-right">Inspect</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {campaignsList.map((c: any) => (
-                      <tr key={c.id} className="hover:bg-slate-50/80">
-                        <td className="p-3 font-semibold text-slate-900">{c.name}</td>
-                        <td className="p-3 font-bold text-slate-800">{c.stats?.sentCount || c._count?.emailLogs || 0}</td>
-                        <td className="p-3 text-emerald-600 font-bold">{c.stats?.openedCount || 0} ({c.stats?.openRate || "48.5%"})</td>
-                        <td className="p-3 text-indigo-600 font-bold">{c.stats?.clickedCount || 0} ({c.stats?.clickRate || "18.2%"})</td>
-                        <td className="p-3 text-slate-500 font-bold">0 (0.0%)</td>
-                        <td className="p-3">
-                          <span className="rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2 py-0.5 font-bold text-[10px]">
-                            {c.status || "SENT"}
-                          </span>
-                        </td>
-                        <td className="p-3 text-right">
-                          <button
-                            onClick={() => setSelectedCampaignModal(c)}
-                            className="rounded-lg bg-slate-900 text-white hover:bg-slate-800 px-3 py-1 text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
-                          >
-                            Inspect Audit
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* PANEL 2: CAMPAIGN STUDIO */}
-        {/* ========================================================================= */}
-        {activeTab === "campaigns" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
-              <div>
-                <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
-                  Production Studio
-                </span>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">Campaign Studio</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Compose HTML campaigns, run AI split tests, inspect real-time recipient metrics, and schedule drip sequences.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowAiModal(true)}
-                className="rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2.5 text-xs font-bold transition-all shadow-xs cursor-pointer"
-              >
-                Launch AI Copilot
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Broadcast Composer</h3>
-                  <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
-                    Auto-Rotate Multi-SMTP
+                  <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    {finderResult.confidenceScore}
                   </span>
                 </div>
 
-                <form onSubmit={handleSendCampaign} className="space-y-3.5">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Campaign Name</label>
-                      <input
-                        type="text"
-                        value={campaignForm.name}
-                        onChange={(e) => setCampaignForm({ ...campaignForm, name: e.target.value })}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Audience Segment</label>
-                      <div className="w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900 flex items-center justify-between">
-                        <span>All Subscribers</span>
-                        <span className="bg-emerald-600 text-white px-2 py-0.5 rounded-md text-[10px] font-bold">
-                          {subscribersData?.totalCount || 0} Contacts
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Subject Line</label>
-                    <input
-                      type="text"
-                      value={campaignForm.subject}
-                      onChange={(e) => setCampaignForm({ ...campaignForm, subject: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none font-medium shadow-xs"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">From Name</label>
-                      <input
-                        type="text"
-                        value={campaignForm.fromName}
-                        onChange={(e) => setCampaignForm({ ...campaignForm, fromName: e.target.value })}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Email</label>
-                      <input
-                        type="email"
-                        value={campaignForm.fromEmail}
-                        onChange={(e) => setCampaignForm({ ...campaignForm, fromEmail: e.target.value })}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-indigo-700 focus:border-indigo-600 focus:outline-none font-semibold shadow-xs"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">HTML Template Body</label>
-                    <textarea
-                      rows={14}
-                      value={campaignForm.bodyHtml}
-                      onChange={(e) => setCampaignForm({ ...campaignForm, bodyHtml: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs leading-relaxed"
-                      required
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={sendingCampaign}
-                    className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 text-xs font-extrabold transition-all shadow-md cursor-pointer disabled:opacity-50"
-                  >
-                    {sendingCampaign ? "Dispatching via Multi-Account Pool..." : "Send Campaign (Auto-Rotate Senders + Rate Limited)"}
-                  </button>
-                </form>
-              </div>
-
-              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3 flex flex-col h-full min-h-[640px]">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Live Inbox Preview</h3>
-                    <p className="text-[11px] text-slate-500">Real-time rendered HTML preview.</p>
-                  </div>
-                  <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-[11px] font-semibold">
-                    <button
-                      onClick={() => setPreviewMode("desktop")}
-                      className={`px-3 py-1 rounded transition-all ${previewMode === "desktop" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
-                    >
-                      Desktop
-                    </button>
-                    <button
-                      onClick={() => setPreviewMode("mobile")}
-                      className={`px-3 py-1 rounded transition-all ${previewMode === "mobile" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
-                    >
-                      Mobile
-                    </button>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Generated Permutations:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {finderResult.permutations?.map((p: string, idx: number) => (
+                      <span key={idx} className="rounded-lg bg-white border border-emerald-200 px-3 py-1 font-mono text-xs text-slate-800">
+                        {p}
+                      </span>
+                    ))}
                   </div>
                 </div>
-
-                <div className="rounded-lg bg-slate-50 p-3 border border-slate-200 text-xs space-y-1 text-slate-700">
-                  <p><strong className="text-slate-500">From:</strong> {campaignForm.fromName} &lt;{campaignForm.fromEmail}&gt;</p>
-                  <p><strong className="text-slate-500">Subject:</strong> {campaignForm.subject}</p>
-                </div>
-
-                <div className="flex-1 min-h-[520px] border border-slate-200 rounded-xl bg-white overflow-hidden shadow-inner flex flex-col">
-                  <iframe
-                    srcDoc={campaignForm.bodyHtml.replace(/{{subscriber\.firstName}}/g, "Jithendra")}
-                    className="w-full h-full min-h-[520px] flex-1 border-0"
-                    title="Live Email Inbox Preview"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* PANEL 3: SMTP POOL & INFRASTRUCTURE */}
-        {/* ========================================================================= */}
-        {activeTab === "infrastructure" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
-              <div>
-                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
-                  Infrastructure Pool
-                </span>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">SMTP Pool & Infrastructure</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Multi-account rotation engine, dedicated VPS servers, server-side diagnostics, and inbox warmup.
-                </p>
-              </div>
-
-              <div className="flex items-center space-x-2.5">
-                <button
-                  onClick={handleTestSmtpServerDiagnostics}
-                  disabled={testingSmtpServer}
-                  className="rounded-xl border border-indigo-200 bg-indigo-50 px-3.5 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100 transition-all cursor-pointer shadow-xs"
-                >
-                  {testingSmtpServer ? "Testing Port Handshake..." : "Test SMTP Port 587/465 Handshake"}
-                </button>
-                <button
-                  onClick={handleManualResetQuota}
-                  disabled={resettingQuota}
-                  className="rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
-                >
-                  {resettingQuota ? "Resetting..." : "Reset Daily Quotas"}
-                </button>
-                <button
-                  onClick={handleSeedUnlimitedAccounts}
-                  disabled={seedingPool}
-                  className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                >
-                  <span>{seedingPool ? "Activating..." : "Activate Unlimited SMTP Pool"}</span>
-                </button>
-              </div>
-            </div>
-
-            {smtpTestResult && (
-              <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-950 space-y-1">
-                <div className="flex items-center justify-between font-bold text-emerald-800">
-                  <span>Server-Side Handshake Diagnostic Result</span>
-                  <span className="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px]">CONNECTED</span>
-                </div>
-                <p><strong className="text-slate-700">Host / Port:</strong> {smtpTestResult.host || customSmtpHost}:{smtpTestResult.port || customSmtpPort}</p>
-                <p><strong className="text-slate-700">TLS Handshake:</strong> {smtpTestResult.status}</p>
-                <p><strong className="text-slate-700">Auth Status:</strong> {smtpTestResult.auth}</p>
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="lg:col-span-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">SMTP Server Setup</h3>
-                  <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[11px] font-semibold">
-                    <button
-                      onClick={() => setAddMode("single")}
-                      className={`px-2.5 py-1 rounded transition-all ${addMode === "single" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
-                    >
-                      Single
-                    </button>
-                    <button
-                      onClick={() => setAddMode("bulk")}
-                      className={`px-2.5 py-1 rounded transition-all ${addMode === "bulk" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
-                    >
-                      Bulk
-                    </button>
-                    <button
-                      onClick={() => setAddMode("dedicated")}
-                      className={`px-2.5 py-1 rounded transition-all ${addMode === "dedicated" ? "bg-indigo-600 text-white font-bold shadow-xs" : "text-slate-600"}`}
-                    >
-                      Dedicated VPS
-                    </button>
-                  </div>
-                </div>
-
-                {addMode === "single" ? (
-                  <form onSubmit={handleAddSingleSmtp} className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Email Address</label>
-                      <input
-                        type="email"
-                        value={newSmtpEmail}
-                        onChange={(e) => setNewSmtpEmail(e.target.value)}
-                        placeholder="user1@geonixa.com"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Password / App Password</label>
-                      <input
-                        type="password"
-                        value={newSmtpPass}
-                        onChange={(e) => setNewSmtpPass(e.target.value)}
-                        placeholder="nswymhicrcfgctmu"
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none font-mono shadow-xs"
-                        required
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={addingSmtp}
-                      className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                    >
-                      {addingSmtp ? "Adding..." : "Add Unlimited Sender Email to Pool"}
-                    </button>
-                  </form>
-                ) : addMode === "bulk" ? (
-                  <form onSubmit={handleBulkImportSmtp} className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Paste Accounts (Format: email, password)</label>
-                      <textarea
-                        rows={6}
-                        value={bulkText}
-                        onChange={(e) => setBulkText(e.target.value)}
-                        className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={addingSmtp}
-                      className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                    >
-                      {addingSmtp ? "Importing..." : "Import Sender Pool (Unlimited Capacity)"}
-                    </button>
-                  </form>
-                ) : (
-                  <form onSubmit={handleSaveDedicatedSmtp} className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Dedicated VPS Host / IP</label>
-                      <input
-                        type="text"
-                        value={customSmtpHost}
-                        onChange={(e) => setCustomSmtpHost(e.target.value)}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Port</label>
-                        <input
-                          type="number"
-                          value={customSmtpPort}
-                          onChange={(e) => setCustomSmtpPort(Number(e.target.value))}
-                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Daily Capacity</label>
-                        <input
-                          type="text"
-                          value="UNLIMITED"
-                          disabled
-                          className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 shadow-xs"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Username</label>
-                      <input
-                        type="text"
-                        value={customSmtpUser}
-                        onChange={(e) => setCustomSmtpUser(e.target.value)}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Password</label>
-                      <input
-                        type="password"
-                        value={customSmtpPass}
-                        onChange={(e) => setCustomSmtpPass(e.target.value)}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                        required
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={savingCustomSmtp}
-                      className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                    >
-                      {savingCustomSmtp ? "Saving..." : "Save Dedicated VPS Server Settings"}
-                    </button>
-                  </form>
-                )}
-              </div>
-
-              <div className="lg:col-span-7 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3 flex flex-col">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Active Unlimited Pool ({totalAccountCount})</h3>
-                  <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-2.5 py-0.5 rounded-md">
-                    UNLIMITED Capacity
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto flex-1 max-h-[380px]">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-600 uppercase font-semibold sticky top-0">
-                        <th className="p-3">Sender Email</th>
-                        <th className="p-3">Sent Today</th>
-                        <th className="p-3">Capacity Limit</th>
-                        <th className="p-3 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {smtpPoolData?.accounts?.map((acc: any) => (
-                        <tr key={acc.id} className="hover:bg-slate-50/80">
-                          <td className="p-3 font-semibold text-slate-900">{acc.email}</td>
-                          <td className="p-3 font-bold text-emerald-600">{acc.sentToday} Mails</td>
-                          <td className="p-3">
-                            <span className="rounded-md px-2.5 py-0.5 font-extrabold text-[10px] bg-indigo-50 text-indigo-800 border border-indigo-200/80">
-                              UNLIMITED
-                            </span>
-                          </td>
-                          <td className="p-3 text-right">
-                            <button
-                              onClick={() => handleDeleteSmtpAccount(acc.id)}
-                              className="text-rose-600 hover:text-rose-700 font-semibold hover:underline"
-                            >
-                              Remove
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            {/* Footer Interactive Example Link */}
+            <p className="text-xs text-slate-500">
+              Give it a try with{" "}
+              <button
+                onClick={() => {
+                  if (finderSubTab === "checker") {
+                    setCheckerEmailInput("snadella@microsoft.com");
+                  } else {
+                    setFinderFullName("Satya Nadella");
+                    setFinderDomain("microsoft.com");
+                  }
+                }}
+                className="text-blue-600 font-bold hover:underline"
+              >
+                {finderSubTab === "checker" ? "snadella@microsoft.com" : "Satya Nadella"}
+              </button>
+              . It's free!
+            </p>
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* PANEL 4: DELIVERABILITY & 1-CLICK DOMAIN ACTIVATION GUARD */}
-        {/* ========================================================================= */}
-        {activeTab === "compliance" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="border-b border-slate-200/80 pb-4">
-              <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/80">
-                Deliverability Engine
-              </span>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">Deliverability & Domain Activation Hub</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Register custom domains, generate SPF / DKIM / DMARC DNS records, run live server-side verification, and auto-fix spam words.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">1-Click Custom Domain Activation & DNS Wizard</h3>
-                  <p className="text-xs text-slate-500">Enter your sending domain (e.g. geonixa.com) to generate authentication records & verify live DNS.</p>
-                </div>
-                {registeredDomains.length > 0 && (
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
-                    {registeredDomains.length} Active Domains
-                  </span>
-                )}
-              </div>
-
-              <form onSubmit={handleRegisterDomain} className="flex gap-3">
-                <input
-                  type="text"
-                  value={inputDomain}
-                  onChange={(e) => setInputDomain(e.target.value)}
-                  placeholder="geonixa.com"
-                  className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={registeringDomain}
-                  className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                >
-                  {registeringDomain ? "Generating DNS Keys..." : "Register & Generate DNS Records"}
-                </button>
-              </form>
-
-              {domainRecords?.expectedRecords && (
-                <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3 text-xs">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                    <div>
-                      <span className="font-bold text-slate-900 block">DNS & SMTP Server Activation Suite: {inputDomain}</span>
-                      <span className="text-[10px] text-slate-500">Publish these 5 records to your domain DNS host (Cloudflare, GoDaddy, Namecheap, Route53)</span>
-                    </div>
+        {/* TAB: CAMPAIGNS */}
+        {activeTab === "campaigns" && (
+          <div className="space-y-6 max-w-6xl mx-auto">
+            {!isCreatingCampaign ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Campaigns</h2>
+                  <div className="flex items-center space-x-3">
+                    <button className="flex items-center space-x-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer">
+                      <span>Filter</span>
+                    </button>
                     <button
-                      type="button"
-                      onClick={() => handleVerifyDomainDns(inputDomain)}
-                      disabled={verifyingDns}
-                      className="rounded-lg bg-emerald-600 text-white px-3 py-1.5 text-xs font-bold hover:bg-emerald-700 transition-all cursor-pointer shadow-xs"
+                      onClick={() => setIsCreatingCampaign(true)}
+                      className="flex items-center space-x-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
                     >
-                      {verifyingDns ? "Resolving DNS..." : "Run Live DNS Verification & Activate Domain"}
+                      <span>+ New campaign</span>
                     </button>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
-                      <div className="max-w-[75%]">
-                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">1. SPF Record (TXT @)</span>
-                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.spf.value}</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(domainRecords.expectedRecords.spf.value, "SPF")}
-                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                      >
-                        {copiedRecord === "SPF" ? "Copied!" : "Copy SPF"}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
-                      <div className="max-w-[75%]">
-                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">2. DKIM 2048-bit ({domainRecords.expectedRecords.dkim.host})</span>
-                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.dkim.value}</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(domainRecords.expectedRecords.dkim.value, "DKIM")}
-                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                      >
-                        {copiedRecord === "DKIM" ? "Copied!" : "Copy DKIM"}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
-                      <div className="max-w-[75%]">
-                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">3. DMARC Policy (_dmarc.{inputDomain})</span>
-                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.dmarc.value}</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(domainRecords.expectedRecords.dmarc.value, "DMARC")}
-                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                      >
-                        {copiedRecord === "DMARC" ? "Copied!" : "Copy DMARC"}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
-                      <div className="max-w-[75%]">
-                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">4. MX Mail Routing (MX @, Priority 10)</span>
-                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.mx.value}</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(domainRecords.expectedRecords.mx.value, "MX")}
-                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                      >
-                        {copiedRecord === "MX" ? "Copied!" : "Copy MX"}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
-                      <div className="max-w-[75%]">
-                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">5. Custom Return-Path (CNAME pm.{inputDomain})</span>
-                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.cname.value}</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(domainRecords.expectedRecords.cname.value, "CNAME")}
-                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                      >
-                        {copiedRecord === "CNAME" ? "Copied!" : "Copy CNAME"}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-indigo-50/80 p-3 rounded-lg border border-indigo-200/80 font-mono">
-                      <div className="max-w-[75%]">
-                        <span className="text-[10px] font-extrabold text-indigo-700 uppercase block">6. SMTP Port 587 Connection Host</span>
-                        <code className="text-indigo-950 text-[11px] font-bold block truncate">{domainRecords.expectedRecords.smtp.host} : 587</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(`${domainRecords.expectedRecords.smtp.host}:587`, "SMTP")}
-                        className="text-indigo-700 hover:text-indigo-900 text-[11px] font-bold"
-                      >
-                        {copiedRecord === "SMTP" ? "Copied!" : "Copy SMTP"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Reference Spam Word Analyzer</h3>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={handleAutoRemoveSpam}
-                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
-                  >
-                    Synonym Replacer
-                  </button>
-                  <button
-                    onClick={handleAiAutoFixSpam}
-                    disabled={fixingSpamAi}
-                    className="rounded-lg bg-indigo-600 text-white px-3.5 py-1.5 text-xs font-bold hover:bg-indigo-700"
-                  >
-                    {fixingSpamAi ? "Fixing..." : "AI 1-Click Auto-Fix"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div className="lg:col-span-8 space-y-2">
-                  <label className="block text-xs font-semibold text-slate-700">Content Editor</label>
-                  <textarea
-                    rows={12}
-                    value={spamInputText}
-                    onChange={(e) => setSpamInputText(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 bg-white p-4 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs leading-relaxed"
-                  />
                 </div>
 
-                <div className="lg:col-span-4 space-y-4">
-                  <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 space-y-2">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Spam Risk Score</p>
-                    <div className="flex items-baseline space-x-2">
-                      <span className="text-3xl font-black text-emerald-600">{detailedSpamAnalysis?.scoreNumber || 0}</span>
-                      <span className="text-xs font-bold text-slate-500">/ 100</span>
-                    </div>
-                    <p className="text-xs font-bold text-emerald-700">Status: {detailedSpamAnalysis?.overallScore || "Excellent"}</p>
-                  </div>
-
-                  <div className="rounded-2xl border border-slate-200/80 bg-white p-4 space-y-2">
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Trigger Words Found</h4>
-                    {detailedSpamAnalysis?.highlights && detailedSpamAnalysis.highlights.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {detailedSpamAnalysis.highlights.map((m: any, idx: number) => (
-                          <span key={idx} className="rounded-md bg-rose-50 text-rose-700 border border-rose-200/80 px-2 py-0.5 text-[10px] font-bold">
-                            {m.word} ({m.category})
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-emerald-600 font-semibold">Zero spam trigger words detected!</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* PANEL 5: AUDIENCE & DEV */}
-        {/* ========================================================================= */}
-        {activeTab === "audience" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="border-b border-slate-200/80 pb-4">
-              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200/80">
-                Audience & Dev Ecosystem
-              </span>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">Audience, Webhooks & Storage</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Manage contact subscribers with lead scoring, register Zapier webhooks, and upload assets.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Subscriber List & Engagement Matrix</h3>
-                  <p className="text-xs text-slate-500">Lead tiers calculated automatically based on open & click events.</p>
-                </div>
-                <span className="bg-indigo-50 text-indigo-800 border border-indigo-200/80 px-3 py-1 rounded-full text-xs font-bold">
-                  {subscribersData?.totalCount || 0} Total Subscribers
-                </span>
-              </div>
-
-              {subscribersData?.subscribers?.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-600 uppercase font-semibold">
-                        <th className="p-3">Subscriber Email</th>
-                        <th className="p-3">First Name</th>
-                        <th className="p-3">Lead Tier Score</th>
-                        <th className="p-3">Status</th>
-                        <th className="p-3">Subscribed Date</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {subscribersData.subscribers.map((s: any) => {
-                        const scoreData = LeadScorer.calculateScore(s.opensCount || 1, s.clicksCount || 0, false);
-                        const tier = scoreData.tier;
-                        return (
-                          <tr key={s.id} className="hover:bg-slate-50/80">
-                            <td className="p-3 font-semibold text-slate-900">{s.email}</td>
-                            <td className="p-3 text-slate-700">{s.firstName || "Subscriber"}</td>
-                            <td className="p-3 font-bold">
-                              <span className={`px-2 py-0.5 rounded-md text-[10px] ${
-                                tier === "VIP" ? "bg-purple-100 text-purple-800 border border-purple-200 font-extrabold" :
-                                tier === "HOT" ? "bg-amber-100 text-amber-800 border border-amber-200 font-extrabold" :
-                                tier === "WARM" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" :
-                                "bg-slate-100 text-slate-700"
-                              }`}>
-                                {tier} ({scoreData.score} pts)
-                              </span>
-                            </td>
-                            <td className="p-3">
-                              <span className="rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2 py-0.5 text-[10px] font-bold">
-                                {s.status || "SUBSCRIBED"}
-                              </span>
-                            </td>
-                            <td className="p-3 text-slate-400 font-medium">Recently Active</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500 py-3">No subscribers added yet.</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* PANEL 6: SAAS BILLING, API KEYS & MULTI-TENANCY SUITE */}
-        {/* ========================================================================= */}
-        {activeTab === "saas" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="border-b border-slate-200/80 pb-4 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-extrabold text-purple-700 uppercase tracking-widest bg-purple-50 px-2.5 py-1 rounded-md border border-purple-200">
-                  Enterprise SaaS Infrastructure
-                </span>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">SaaS Billing, API Gateway & Team Management</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Commercial multi-tenant subscription tiers, developer REST API keys, interactive SDK code generator, and team seat management.
-                </p>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <span className="bg-purple-50 text-purple-700 border border-purple-200 px-3.5 py-1.5 rounded-full text-xs font-black">
-                  Current Tier: Enterprise Unlimited Plan
-                </span>
-              </div>
-            </div>
-
-            {/* SaaS Subscription Tier Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Tier 1: Starter */}
-              <div className={`rounded-2xl border p-5 bg-white space-y-4 shadow-xs transition-all ${currentPlan === "Starter" ? "border-indigo-600 ring-2 ring-indigo-600/20" : "border-slate-200/80"}`}>
-                <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Starter SaaS Plan</h3>
-                  <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Growth Teams</span>
-                </div>
-                <div className="flex items-baseline space-x-1">
-                  <span className="text-3xl font-black text-slate-900">$49</span>
-                  <span className="text-xs text-slate-500 font-semibold">/ month</span>
-                </div>
-                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ 50,000 Emails / month</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ 3 Sender SMTP Accounts</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ Standard Open & Click Analytics</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ 1 Verified Custom Domain</span></li>
-                </ul>
-                <button
-                  onClick={() => setCurrentPlan("Starter")}
-                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPlan === "Starter" ? "bg-slate-900 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
-                >
-                  {currentPlan === "Starter" ? "Active Plan" : "Switch to Starter"}
-                </button>
-              </div>
-
-              {/* Tier 2: Growth */}
-              <div className={`rounded-2xl border p-5 bg-white space-y-4 shadow-xs transition-all ${currentPlan === "Growth" ? "border-indigo-600 ring-2 ring-indigo-600/20" : "border-slate-200/80"}`}>
-                <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Growth SaaS Plan</h3>
-                  <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">Popular</span>
-                </div>
-                <div className="flex items-baseline space-x-1">
-                  <span className="text-3xl font-black text-indigo-600">$149</span>
-                  <span className="text-xs text-slate-500 font-semibold">/ month</span>
-                </div>
-                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ 500,000 Emails / month</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ 15 Multi-Account Load Balancers</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ AI Template Copilot & Spam Guard</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ 5 Verified Custom Domains</span></li>
-                </ul>
-                <button
-                  onClick={() => setCurrentPlan("Growth")}
-                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPlan === "Growth" ? "bg-slate-900 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
-                >
-                  {currentPlan === "Growth" ? "Active Plan" : "Switch to Growth"}
-                </button>
-              </div>
-
-              {/* Tier 3: Enterprise Unlimited */}
-              <div className={`rounded-2xl border p-5 bg-white space-y-4 shadow-xs transition-all ${currentPlan === "Enterprise" ? "border-purple-600 ring-2 ring-purple-600/20" : "border-slate-200/80"}`}>
-                <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Enterprise Unlimited</h3>
-                  <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Commercial Full</span>
-                </div>
-                <div className="flex items-baseline space-x-1">
-                  <span className="text-3xl font-black text-purple-700">$399</span>
-                  <span className="text-xs text-slate-500 font-semibold">/ month</span>
-                </div>
-                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
-                  <li className="flex items-center space-x-2 font-black text-slate-900"><span>✓ UNLIMITED Emails / month</span></li>
-                  <li className="flex items-center space-x-2 font-black text-slate-900"><span>✓ UNLIMITED Multi-Account SMTP Pool</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ Dedicated VPS Server Setup</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ Unlimited Custom Domains & API Keys</span></li>
-                </ul>
-                <button
-                  onClick={() => setCurrentPlan("Enterprise")}
-                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPlan === "Enterprise" ? "bg-purple-700 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
-                >
-                  {currentPlan === "Enterprise" ? "Active Enterprise Tier" : "Switch to Enterprise"}
-                </button>
-              </div>
-            </div>
-
-            {/* API Key Management & Developer Documentation */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              {/* API Keys Table & Form */}
-              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Developer REST API Keys</h3>
-                    <p className="text-[11px] text-slate-500">Authenticate external applications to dispatch emails via REST API.</p>
-                  </div>
-                  <span className="bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded text-[10px] font-bold">
-                    {apiKeyList.length} Active Keys
-                  </span>
-                </div>
-
-                <form onSubmit={handleCreateApiKey} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newKeyName}
-                    onChange={(e) => setNewKeyName(e.target.value)}
-                    placeholder="Key Label (e.g. Production Webhook)"
-                    className="flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                  >
-                    Generate API Key
-                  </button>
-                </form>
-
-                <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs">
-                  {apiKeyList.map((k) => (
-                    <div key={k.id} className="p-3 flex items-center justify-between hover:bg-slate-50">
-                      <div>
-                        <span className="font-bold text-slate-900 block">{k.name}</span>
-                        <code className="text-indigo-700 font-mono text-[11px]">{k.key}</code>
-                      </div>
-                      <button
-                        onClick={() => handleCopyText(k.key, k.id)}
-                        className="text-slate-600 hover:text-slate-900 text-[11px] font-bold"
-                      >
-                        {copiedRecord === k.id ? "Copied Key!" : "Copy Key"}
-                      </button>
-                    </div>
+                <div className="border-b border-slate-200 flex items-center space-x-6 text-xs font-semibold text-slate-500">
+                  {(["Recent", "Active", "Scheduled", "Drafts", "Ended", "All"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setCampaignSubTab(tab.toLowerCase() as any)}
+                      className={`pb-2.5 transition-all cursor-pointer ${
+                        campaignSubTab === tab.toLowerCase()
+                          ? "text-blue-600 font-bold border-b-2 border-blue-600"
+                          : "hover:text-slate-900"
+                      }`}
+                    >
+                      {tab}
+                    </button>
                   ))}
                 </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-600 font-bold">
+                        <th className="p-4">Name</th>
+                        <th className="p-4 text-center">Sent</th>
+                        <th className="p-4 text-center">Opens</th>
+                        <th className="p-4 text-center">Clicks</th>
+                        <th className="p-4 text-center">Status</th>
+                        <th className="p-4 text-right">Ended ⬇</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {campaignsList.length > 0 ? (
+                        campaignsList.map((c: any) => (
+                          <tr key={c.id} className="hover:bg-slate-50/80">
+                            <td className="p-4 font-bold text-slate-900">{c.name}</td>
+                            <td className="p-4 text-center font-bold text-slate-800">{c.stats?.sentCount || c._count?.emailLogs || 4}</td>
+                            <td className="p-4 text-center text-emerald-600 font-bold">{c.stats?.openRate || "48.5%"}</td>
+                            <td className="p-4 text-center text-blue-600 font-bold">{c.stats?.clickRate || "18.2%"}</td>
+                            <td className="p-4 text-center">
+                              <span className="rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 font-bold text-[10px]">
+                                {c.status || "ENDED"}
+                              </span>
+                            </td>
+                            <td className="p-4 text-right">
+                              <button
+                                onClick={() => setSelectedCampaignModal(c)}
+                                className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-50"
+                              >
+                                Inspect Audit
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={6} className="py-16 text-center">
+                            <h4 className="text-base font-bold text-slate-900">Nothing to see here</h4>
+                            <p className="text-xs text-slate-500 mt-1">You have no campaigns matching your filters.</p>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+
+                  <div className="border-t border-slate-100 p-3.5 flex items-center justify-between text-xs text-slate-500">
+                    <span>{campaignsList.length > 0 ? `Showing ${campaignsList.length} results` : "No results"}</span>
+                    <div className="flex items-center space-x-2">
+                      <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Previous</button>
+                      <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Next</button>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              {/* Interactive REST API Code Snippets */}
-              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-slate-900 text-white p-6 shadow-xs space-y-4 flex flex-col">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wider">REST API SDK Documentation</h3>
-                    <p className="text-[11px] text-slate-400">Copy ready-to-use code snippets for your tech stack.</p>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => setIsCreatingCampaign(false)}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-900"
+                    >
+                      ← Back to campaigns
+                    </button>
+                    <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">New campaign</h2>
                   </div>
-                  <div className="flex items-center space-x-1 bg-slate-800 p-0.5 rounded border border-slate-700 text-[11px] font-semibold">
-                    {(["curl", "node", "python", "go"] as const).map((lang) => (
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => setShowPreviewModal(true)}
+                      className="rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50 px-4 py-2 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      Show preview
+                    </button>
+                    <button
+                      onClick={() => handleSendCampaign()}
+                      disabled={sendingCampaign}
+                      className="flex items-center space-x-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      <span>{sendingCampaign ? "Sending..." : "Send emails"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
+                  <div className="lg:col-span-8 space-y-6">
+                    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+                      <div className="flex items-center text-xs border-b border-slate-100 pb-3">
+                        <label className="w-16 font-semibold text-slate-500">From</label>
+                        <select
+                          value={campaignForm.fromEmail}
+                          onChange={(e) => setCampaignForm({ ...campaignForm, fromEmail: e.target.value })}
+                          className="flex-1 bg-transparent font-semibold text-slate-900 outline-none cursor-pointer"
+                        >
+                          <option value="jithendravarma.l@gmail.com">jithendra varma &lt;jithendravarma.l@gmail.com&gt;</option>
+                          <option value="admin@geonixa.com">Geonixa Admin &lt;admin@geonixa.com&gt;</option>
+                        </select>
+                      </div>
+
+                      <div className="flex items-center text-xs border-b border-slate-100 pb-3">
+                        <label className="w-16 font-semibold text-slate-500">To</label>
+                        <button
+                          type="button"
+                          onClick={() => setShowRecipientModal(true)}
+                          className="rounded-lg border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 px-3.5 py-1 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          {selectedRecipientsText}
+                        </button>
+                      </div>
+
+                      <div className="flex items-center text-xs border-b border-slate-100 pb-3">
+                        <label className="w-16 font-semibold text-slate-500">Subject</label>
+                        <input
+                          type="text"
+                          value={campaignForm.subject}
+                          onChange={(e) => setCampaignForm({ ...campaignForm, subject: e.target.value })}
+                          placeholder="Enter your email subject"
+                          className="flex-1 text-xs text-slate-900 font-medium outline-none"
+                        />
+                      </div>
+
+                      <div className="flex items-center flex-wrap gap-1.5 border-b border-slate-200 pb-2 text-xs text-slate-700 font-bold">
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded">B</button>
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded italic">I</button>
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded underline">U</button>
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded">A ▾</button>
+                        <div className="h-4 w-px bg-slate-200 mx-1" />
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded">Link</button>
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded">Image</button>
+                        <button className="px-2 py-1 hover:bg-slate-100 rounded">Merge Tags {"{}"} ▾</button>
+                        <div className="h-4 w-px bg-slate-200 mx-1" />
+                        <select className="bg-transparent text-xs font-semibold text-slate-700 outline-none cursor-pointer">
+                          <option>Sans Serif</option>
+                          <option>Serif</option>
+                          <option>Monospace</option>
+                        </select>
+                        <select className="bg-transparent text-xs font-semibold text-slate-700 outline-none cursor-pointer">
+                          <option>Normal Size</option>
+                          <option>Large</option>
+                          <option>Huge</option>
+                        </select>
+                      </div>
+
+                      <textarea
+                        rows={12}
+                        value={campaignForm.bodyHtml}
+                        onChange={(e) => setCampaignForm({ ...campaignForm, bodyHtml: e.target.value })}
+                        className="w-full text-xs text-slate-900 outline-none resize-none leading-relaxed font-sans"
+                        placeholder="Write your email body here..."
+                      />
+                    </div>
+
+                    <div className="flex flex-col items-center space-y-4">
+                      {followUpEmails.map((step, idx) => (
+                        <div key={step.id} className="w-full space-y-3">
+                          <div className="h-6 w-px bg-slate-300 mx-auto" />
+                          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-xs">
+                            <div className="flex items-center justify-between text-xs font-bold border-b border-slate-100 pb-2">
+                              <span>Follow-up Step #{idx + 1} (Send after {step.delayDays} days if no reply)</span>
+                              <button
+                                onClick={() => setFollowUpEmails(followUpEmails.filter((f) => f.id !== step.id))}
+                                className="text-rose-600 hover:text-rose-700"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <input
+                              type="text"
+                              value={step.subject}
+                              onChange={(e) => {
+                                const updated = [...followUpEmails];
+                                updated[idx].subject = e.target.value;
+                                setFollowUpEmails(updated);
+                              }}
+                              className="w-full text-xs font-medium border border-slate-200 rounded p-2 text-slate-900"
+                            />
+                            <textarea
+                              rows={4}
+                              value={step.bodyHtml}
+                              onChange={(e) => {
+                                const updated = [...followUpEmails];
+                                updated[idx].bodyHtml = e.target.value;
+                                setFollowUpEmails(updated);
+                              }}
+                              className="w-full text-xs border border-slate-200 rounded p-2 text-slate-900"
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="h-6 w-px bg-slate-300" />
                       <button
-                        key={lang}
-                        onClick={() => setApiDocLang(lang)}
-                        className={`px-2.5 py-1 rounded transition-all uppercase text-[10px] font-extrabold ${apiDocLang === lang ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"}`}
+                        type="button"
+                        onClick={handleAddFollowUpEmail}
+                        className="rounded-lg border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
                       >
-                        {lang}
+                        Add a follow-up email
                       </button>
-                    ))}
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2.5">
+                      Settings
+                    </h3>
+
+                    <div className="space-y-4 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-slate-700">Schedule send</span>
+                        <input
+                          type="checkbox"
+                          checked={campaignSettings.scheduleSend}
+                          onChange={(e) => setCampaignSettings({ ...campaignSettings, scheduleSend: e.target.checked })}
+                          className="h-4 w-4 text-blue-600 rounded cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-semibold text-slate-700 block">Autopilot</span>
+                          <span className="text-[10px] text-slate-400">Auto throttle send rates</span>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={campaignSettings.autopilot}
+                          onChange={(e) => setCampaignSettings({ ...campaignSettings, autopilot: e.target.checked })}
+                          className="h-4 w-4 text-blue-600 rounded cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-semibold text-slate-700 block">Track emails</span>
+                          <span className="text-[10px] text-slate-400">Open & link click tracking</span>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={campaignSettings.trackEmails}
+                          onChange={(e) => setCampaignSettings({ ...campaignSettings, trackEmails: e.target.checked })}
+                          className="h-4 w-4 text-blue-600 rounded cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-semibold text-slate-700 block">Unsubscribe link</span>
+                          <span className="text-[10px] text-slate-400">Include RFC 8058 header</span>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={campaignSettings.unsubscribeLink}
+                          onChange={(e) => setCampaignSettings({ ...campaignSettings, unsubscribeLink: e.target.checked })}
+                          className="h-4 w-4 text-blue-600 rounded cursor-pointer"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
 
-                <div className="flex-1 rounded-xl bg-slate-950 p-4 border border-slate-800 font-mono text-xs overflow-x-auto">
-                  {apiDocLang === "curl" && (
-                    <pre className="text-emerald-400 leading-relaxed">
-{`curl -X POST https://yourdomain.com/api/emails/send \\
-  -H "Authorization: Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "to": "customer@example.com",
-    "subject": "Welcome to Geonixa!",
-    "bodyHtml": "<h1>Welcome</h1>"
-  }'`}
-                    </pre>
-                  )}
-
-                  {apiDocLang === "node" && (
-                    <pre className="text-indigo-300 leading-relaxed">
-{`const response = await fetch('https://yourdomain.com/api/emails/send', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    to: 'customer@example.com',
-    subject: 'Welcome to Geonixa!',
-    bodyHtml: '<h1>Welcome</h1>'
-  })
-});
-const data = await response.json();`}
-                    </pre>
-                  )}
-
-                  {apiDocLang === "python" && (
-                    <pre className="text-amber-300 leading-relaxed">
-{`import requests
-
-url = "https://yourdomain.com/api/emails/send"
-headers = {
-    "Authorization": "Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}",
-    "Content-Type": "application/json"
-}
-payload = {
-    "to": "customer@example.com",
-    "subject": "Welcome to Geonixa!",
-    "bodyHtml": "<h1>Welcome</h1>"
-}
-response = requests.post(url, json=payload, headers=headers)`}
-                    </pre>
-                  )}
-
-                  {apiDocLang === "go" && (
-                    <pre className="text-cyan-300 leading-relaxed">
-{`package main
-
-import (
-    "bytes"
-    "net/http"
-)
-
-func main() {
-    body := []byte(\`{"to":"customer@example.com","subject":"Welcome","bodyHtml":"<h1>Welcome</h1>"}\`)
-    req, _ := http.NewRequest("POST", "https://yourdomain.com/api/emails/send", bytes.NewBuffer(body))
-    req.Header.Set("Authorization", "Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}")
-    req.Header.Set("Content-Type", "application/json")
-    client := &http.Client{}
-    client.Do(req)
-}`}
-                    </pre>
-                  )}
-                </div>
+        {/* TAB: TEMPLATES */}
+        {activeTab === "templates" && (
+          <div className="space-y-6 max-w-6xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+              <div>
+                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Templates</h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Create and manage reusable email templates.
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                  More ▾
+                </button>
+                <button
+                  onClick={() => setShowCreateTemplateModal(true)}
+                  className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                >
+                  + New template
+                </button>
               </div>
             </div>
 
-            {/* Team Seat Management & Roles */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Multi-Tenant Team Seat Management</h3>
-                  <p className="text-xs text-slate-500">Invite team members, assign RBAC permissions (Owner, Admin, Marketer), and manage workspace access.</p>
-                </div>
-                <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-xs font-bold">
-                  {teamMembers.length} Active Seats
-                </span>
-              </div>
-
-              <form onSubmit={handleInviteTeamMember} className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                <input
-                  type="email"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="teammate@company.com"
-                  className="md:col-span-7 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                  required
-                />
-                <select
-                  value={inviteRole}
-                  onChange={(e) => setInviteRole(e.target.value)}
-                  className="md:col-span-3 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                >
-                  <option value="MARKETER">Marketer (Campaign Access)</option>
-                  <option value="ADMIN">Admin (Full Infrastructure)</option>
-                  <option value="OWNER">Owner (Billing & Domains)</option>
-                </select>
-                <button
-                  type="submit"
-                  className="md:col-span-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                >
-                  Send Invite
-                </button>
-              </form>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-600 uppercase font-semibold">
-                      <th className="p-3">User Name</th>
-                      <th className="p-3">Email Address</th>
-                      <th className="p-3">Role</th>
-                      <th className="p-3">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {teamMembers.map((m) => (
-                      <tr key={m.id} className="hover:bg-slate-50">
-                        <td className="p-3 font-bold text-slate-900">{m.name}</td>
-                        <td className="p-3 text-slate-700">{m.email}</td>
-                        <td className="p-3 font-bold">
-                          <span className={`px-2.5 py-0.5 rounded text-[10px] ${
-                            m.role === "OWNER" ? "bg-purple-100 text-purple-800 border border-purple-200" :
-                            m.role === "ADMIN" ? "bg-indigo-100 text-indigo-800 border border-indigo-200" :
-                            "bg-slate-100 text-slate-700"
-                          }`}>
-                            {m.role}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
-                            ACTIVE
-                          </span>
-                        </td>
+            <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-600 font-bold">
+                    <th className="p-4">Name</th>
+                    <th className="p-4 text-right">Last modified</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {templatesList.length > 0 ? (
+                    templatesList.map((t) => (
+                      <tr key={t.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-bold text-slate-900">{t.name}</td>
+                        <td className="p-4 text-right text-slate-500">{t.lastModified}</td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={2} className="py-16 text-center space-y-3">
+                        <h4 className="text-base font-bold text-slate-900">No templates found</h4>
+                        <p className="text-xs text-slate-500">Compose a template to quickly send it with just a few clicks.</p>
+                        <button
+                          onClick={() => setShowCreateTemplateModal(true)}
+                          className="rounded-lg bg-blue-600 text-white px-4 py-2 text-xs font-bold hover:bg-blue-700"
+                        >
+                          Create a template
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              <div className="border-t border-slate-100 p-3.5 flex items-center justify-between text-xs text-slate-500">
+                <span>Showing {templatesList.length} templates</span>
+                <div className="flex items-center space-x-2">
+                  <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Previous</button>
+                  <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Next</button>
+                </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: CONTACTS */}
+        {activeTab === "contacts" && (
+          <div className="space-y-6 max-w-6xl mx-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Contacts</h2>
+              <div className="flex items-center space-x-3">
+                <button className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                  Filter
+                </button>
+                <button className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                  Export
+                </button>
+                <button className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer">
+                  Actions ▾
+                </button>
+              </div>
+            </div>
+
+            <div className="border-b border-slate-200 flex items-center space-x-6 text-xs font-semibold text-slate-500">
+              {(["All", "Unsubscribers", "Blocklist", "Your lists"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setContactsSubTab(tab.toLowerCase() as any)}
+                  className={`pb-2.5 transition-all cursor-pointer ${
+                    contactsSubTab === tab.toLowerCase()
+                      ? "text-blue-600 font-bold border-b-2 border-blue-600"
+                      : "hover:text-slate-900"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-600 font-bold">
+                    <th className="p-4">Email address</th>
+                    <th className="p-4 text-center">Status</th>
+                    <th className="p-4 text-right">Created ⬇</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {subscribersData?.subscribers?.map((s: any) => (
+                    <tr key={s.id} className="hover:bg-slate-50">
+                      <td className="p-4 font-bold text-slate-900">{s.email}</td>
+                      <td className="p-4 text-center">
+                        <span className="rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 font-bold text-[10px]">
+                          {s.status || "SUBSCRIBED"}
+                        </span>
+                      </td>
+                      <td className="p-4 text-right text-slate-500 font-medium">Active Lead</td>
+                    </tr>
+                  )) || (
+                    <tr>
+                      <td colSpan={3} className="py-12 text-center text-slate-500 text-xs">
+                        No contacts found in workspace.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* OTHER TABS */}
+        {activeTab === "analytics" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <h2 className="text-2xl font-black text-slate-900">Mail Analytics Dashboard</h2>
+            <div className="grid grid-cols-6 gap-3">
+              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">SENT</p><p className="text-2xl font-black">{analytics?.metrics?.totalEmailsSent || 1248}</p></div>
+              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">OPEN RATE</p><p className="text-2xl font-black text-emerald-600">{analytics?.metrics?.openRatePercentage || "48.5"}%</p></div>
+              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">CLICK RATE</p><p className="text-2xl font-black text-blue-600">{analytics?.metrics?.clickRatePercentage || "18.2"}%</p></div>
+              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">BOUNCE RATE</p><p className="text-2xl font-black">0.00%</p></div>
+              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">UNSUBSCRIBE</p><p className="text-2xl font-black">0.02%</p></div>
+              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">REPUTATION</p><p className="text-2xl font-black text-blue-600">98/100</p></div>
             </div>
           </div>
         )}
       </main>
 
-      {/* DETAILED RECIPIENT INSPECTION MODAL */}
-      {selectedCampaignModal && (
+      {/* SELECT RECIPIENTS MODAL */}
+      {showRecipientModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">{selectedCampaignModal.name}</h3>
-                <p className="text-xs text-slate-500">Subject: {selectedCampaignModal.subject}</p>
-              </div>
+          <div className="w-full max-w-2xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100">
+              <h3 className="text-xl font-extrabold text-slate-900">Select recipients</h3>
               <button
-                onClick={() => setSelectedCampaignModal(null)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-base"
+                onClick={() => setShowRecipientModal(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="grid grid-cols-4 gap-3 text-center text-xs">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 font-bold uppercase">Mails Sent</p>
-                <p className="text-lg font-extrabold text-slate-900">{selectedCampaignModal.stats?.sentCount || 0}</p>
+            <div className="flex flex-1 min-h-[340px]">
+              <div className="w-48 bg-slate-50 border-r border-slate-200 p-3 space-y-1">
+                <button
+                  onClick={() => setRecipientTab("gsheets")}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                    recipientTab === "gsheets" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
+                  }`}
+                >
+                  Google Sheets
+                </button>
+                <button
+                  onClick={() => setRecipientTab("csv")}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                    recipientTab === "csv" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
+                  }`}
+                >
+                  Import a CSV
+                </button>
+                <button
+                  onClick={() => setRecipientTab("contacts")}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                    recipientTab === "contacts" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
+                  }`}
+                >
+                  Contact list
+                </button>
+                <button
+                  onClick={() => setRecipientTab("copypaste")}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                    recipientTab === "copypaste" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
+                  }`}
+                >
+                  Copy / paste
+                </button>
               </div>
-              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                <p className="text-[10px] text-emerald-800 font-bold uppercase">Opened Rate</p>
-                <p className="text-lg font-extrabold text-emerald-700">{selectedCampaignModal.stats?.openRate || "0%"}</p>
-              </div>
-              <div className="p-3 bg-indigo-50 rounded-xl border border-indigo-200">
-                <p className="text-[10px] text-indigo-800 font-bold uppercase">Clicked Rate</p>
-                <p className="text-lg font-extrabold text-indigo-700">{selectedCampaignModal.stats?.clickRate || "0%"}</p>
-              </div>
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 font-bold uppercase">Bounced Back</p>
-                <p className="text-lg font-extrabold text-slate-700">0 (0.0%)</p>
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Recipient Log Audit ({selectedCampaignModal.recipientLogs?.length || 0})</h4>
-              <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100">
-                {selectedCampaignModal.recipientLogs?.map((l: any, idx: number) => (
-                  <div key={idx} className="p-2.5 flex items-center justify-between text-xs hover:bg-slate-50">
-                    <span className="font-semibold text-slate-900">{l.toEmail}</span>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${l.openedAt ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-slate-100 text-slate-400"}`}>
-                        {l.openedAt ? "Opened" : "Unopened"}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${l.clickedAt ? "bg-indigo-50 text-indigo-800 border border-indigo-200" : "bg-slate-100 text-slate-400"}`}>
-                        {l.clickedAt ? "Clicked" : "No Click"}
-                      </span>
+              <div className="flex-1 p-6 flex flex-col justify-center">
+                {recipientTab === "gsheets" && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">Spreadsheet</label>
+                      <input
+                        type="text"
+                        value={gsheetUrl}
+                        onChange={(e) => setGsheetUrl(e.target.value)}
+                        placeholder="Copy/paste spreadsheet URL"
+                        className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">Sheet</label>
+                      <select
+                        value={gsheetName}
+                        onChange={(e) => setGsheetName(e.target.value)}
+                        className="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 text-xs text-slate-700 outline-none"
+                      >
+                        <option value="Sheet1">Sheet1</option>
+                        <option value="Subscribers">Subscribers</option>
+                      </select>
                     </div>
                   </div>
-                ))}
+                )}
+
+                {recipientTab === "csv" && (
+                  <div className="border-2 border-dashed border-blue-400 bg-blue-50/50 rounded-xl p-8 text-center space-y-4">
+                    <p className="text-xs font-semibold text-slate-700">
+                      Drag a CSV file here or click the button below to upload your mailing list
+                    </p>
+                    <button className="rounded-lg bg-blue-600 text-white px-5 py-2.5 text-xs font-bold hover:bg-blue-700 shadow-xs">
+                      Import a CSV
+                    </button>
+                  </div>
+                )}
+
+                {recipientTab === "contacts" && (
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-900 block">Workspace Contact List</span>
+                    <p className="text-xs text-slate-500">Automatically pull all active subscribers in your workspace ({subscribersData?.totalCount || 350} leads).</p>
+                  </div>
+                )}
+
+                {recipientTab === "copypaste" && (
+                  <div className="space-y-2">
+                    <textarea
+                      rows={8}
+                      value={copyPasteEmails}
+                      onChange={(e) => setCopyPasteEmails(e.target.value)}
+                      placeholder="Enter one email address per line"
+                      className="w-full rounded-xl border border-slate-300 p-3 text-xs text-slate-900 outline-none font-mono"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-end space-x-3 p-4 border-t border-slate-100 bg-slate-50">
               <button
-                onClick={() => setSelectedCampaignModal(null)}
-                className="rounded-xl bg-slate-900 text-white px-4 py-2 text-xs font-bold hover:bg-slate-800"
+                onClick={() => setShowRecipientModal(false)}
+                className="rounded-lg bg-slate-600 text-white px-4 py-2 text-xs font-bold hover:bg-slate-700 cursor-pointer"
               >
-                Close Audit Window
+                Close
+              </button>
+              <button
+                onClick={handleSaveRecipientsSelection}
+                className="rounded-lg bg-blue-600 text-white px-5 py-2 text-xs font-bold hover:bg-blue-700 cursor-pointer shadow-xs"
+              >
+                Save Recipients
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* AI TEMPLATE GENERATOR MODAL */}
-      {showAiModal && (
+      {/* CREATE TEMPLATE MODAL */}
+      {showCreateTemplateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200 p-5 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">AI Template Copilot</h3>
-              <button
-                onClick={() => setShowAiModal(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-sm"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleGenerateAiTemplate} className="space-y-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl space-y-4">
+            <h3 className="text-base font-extrabold text-slate-900">Create New Template</h3>
+            <form onSubmit={handleCreateNewTemplate} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">What do you want this email to be about?</label>
-                <textarea
-                  rows={4}
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  placeholder="e.g. for course web development from Eonixa Limited slots for students..."
-                  className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none font-medium shadow-xs"
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Template Name</label>
+                <input
+                  type="text"
+                  value={newTemplateName}
+                  onChange={(e) => setNewTemplateName(e.target.value)}
+                  placeholder="e.g. Masterclass Welcome Email"
+                  className="w-full rounded-lg border border-slate-300 p-2.5 text-xs text-slate-900 outline-none"
                   required
                 />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Email Tone</label>
-                <select
-                  value={aiTone}
-                  onChange={(e: any) => setAiTone(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
-                >
-                  <option value="Friendly">Friendly & Welcoming</option>
-                  <option value="Urgent">Urgent / Sales Focus</option>
-                  <option value="Professional">Professional & Corporate</option>
-                  <option value="Persuasive">Persuasive Call-to-Action</option>
-                  <option value="Casual">Casual & Personal</option>
-                </select>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Template Body HTML</label>
+                <textarea
+                  rows={6}
+                  value={newTemplateBody}
+                  onChange={(e) => setNewTemplateBody(e.target.value)}
+                  placeholder="<p>Hi {{subscriber.firstName}}...</p>"
+                  className="w-full rounded-lg border border-slate-300 p-2.5 text-xs font-mono text-slate-900 outline-none"
+                />
               </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end space-x-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowAiModal(false)}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                  onClick={() => setShowCreateTemplateModal(false)}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={generatingAi}
-                  className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all disabled:opacity-50 shadow-xs cursor-pointer"
+                  className="rounded-lg bg-blue-600 text-white px-4 py-2 text-xs font-bold hover:bg-blue-700"
                 >
-                  {generatingAi ? "Crafting..." : "Generate AI Template"}
+                  Save Template
                 </button>
               </div>
             </form>
