@@ -2,10 +2,54 @@
 
 import { useState, useEffect } from "react";
 import { SpamDetector, DetailedSpamAnalysis } from "@/lib/compliance/spam-detector";
+import { BounceGuard, BounceValidationResult } from "@/lib/compliance/bounce-guard";
+import { WarmupEngine, WarmupScheduleDay } from "@/lib/warmup/warmup-engine";
+import { DripEngine, DripSequence } from "@/lib/campaigns/drip-engine";
+import { LeadScorer } from "@/lib/subscribers/lead-scorer";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"smtppool" | "spamchecker" | "campaigns" | "domains" | "analytics" | "subscribers" | "upload">("smtppool");
+  const [activeTab, setActiveTab] = useState<
+    | "smtppool"
+    | "mailtrackers"
+    | "warmup"
+    | "bounceguard"
+    | "drips"
+    | "spamchecker"
+    | "campaigns"
+    | "domains"
+    | "analytics"
+    | "subscribers"
+    | "webhooks"
+    | "upload"
+  >("smtppool");
+
   const [workspaceId, setWorkspaceId] = useState("ws_geonixa");
+
+  // Mail Trackers State
+  const [liveEvents, setLiveEvents] = useState<any[]>([
+    { id: "e1", type: "OPEN", email: "jithendravarma.l@gmail.com", subject: "Web Development Masterclass", device: "Desktop", time: "2 mins ago" },
+    { id: "e2", type: "CLICK", email: "student.test@geonixa.com", subject: "Web Development Masterclass", link: "https://geonixa.com", device: "Mobile", time: "14 mins ago" },
+    { id: "e3", type: "OPEN", email: "contact@company.org", subject: "Geonixa Internship Roadmap", device: "Desktop", time: "1 hour ago" },
+  ]);
+
+  // Bounce Guard State
+  const [singleTestEmail, setSingleTestEmail] = useState("user.test@gmail.com");
+  const [validatingEmail, setValidatingEmail] = useState(false);
+  const [validationResult, setValidationResult] = useState<BounceValidationResult | null>(null);
+
+  // Warmup Engine State
+  const [warmupSchedule, setWarmupSchedule] = useState<WarmupScheduleDay[]>([]);
+  const [targetWarmupVol, setTargetWarmupVol] = useState(2000);
+
+  // Drip Sequence State
+  const [dripSequence, setDripSequence] = useState<DripSequence>(
+    DripEngine.createDefaultSequence("Web Dev Masterclass Onboarding", "ws_geonixa")
+  );
+
+  // Webhooks State
+  const [webhookUrl, setWebhookUrl] = useState("https://hooks.zapier.com/hooks/catch/sample/geo-mail");
+  const [webhooksList, setWebhooksList] = useState<any[]>([]);
+  const [addingWebhook, setAddingWebhook] = useState(false);
 
   // Reference-Inspired Spam Checker State
   const [spamInputText, setSpamInputText] = useState<string>(
@@ -80,7 +124,24 @@ export default function Home() {
     fetchDomains();
     fetchCampaigns();
     fetchSmtpPool();
+    fetchWarmup();
+    fetchWebhooks();
   }, [workspaceId]);
+
+  const fetchWarmup = () => {
+    const sched = WarmupEngine.calculateWarmupSchedule(targetWarmupVol);
+    setWarmupSchedule(sched);
+  };
+
+  const fetchWebhooks = async () => {
+    try {
+      const res = await fetch(`/api/webhooks?workspaceId=${workspaceId}`);
+      const data = await res.json();
+      setWebhooksList(data.webhooks || []);
+    } catch (err) {
+      console.error("Failed to fetch webhooks:", err);
+    }
+  };
 
   const fetchAnalytics = async () => {
     try {
@@ -129,6 +190,52 @@ export default function Home() {
       setSmtpPoolData(data);
     } catch (err) {
       console.error("Failed to fetch SMTP pool:", err);
+    }
+  };
+
+  const handleRunBounceGuard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!singleTestEmail) return;
+
+    setValidatingEmail(true);
+    setValidationResult(null);
+
+    try {
+      const res = await fetch("/api/validate-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: singleTestEmail }),
+      });
+      const data = await res.json();
+      setValidationResult(data.result);
+    } catch (err) {
+      console.error("Validation error:", err);
+    } finally {
+      setValidatingEmail(false);
+    }
+  };
+
+  const handleAddWebhook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!webhookUrl) return;
+
+    setAddingWebhook(true);
+    try {
+      await fetch("/api/webhooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: webhookUrl,
+          workspaceId,
+          events: ["email.opened", "email.clicked", "contact.unsubscribed"],
+        }),
+      });
+      setWebhookUrl("");
+      fetchWebhooks();
+    } catch (err) {
+      console.error("Failed to add webhook:", err);
+    } finally {
+      setAddingWebhook(false);
     }
   };
 
@@ -400,9 +507,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased flex">
-      {/* 1. PROFESSIONAL LIGHT SLATE SIDEBAR */}
+      {/* 1. EXECUTIVE LIGHT SLATE SIDEBAR NAVIGATION */}
       <aside className="w-64 border-r border-slate-200 bg-white min-h-screen flex flex-col justify-between p-4 sticky top-0 h-screen overflow-y-auto shadow-sm">
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Executive Brand Logo Header */}
           <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-xs tracking-wider">
@@ -410,12 +517,12 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-sm font-bold text-slate-900 tracking-tight">GEO Mail Studio</h1>
-              <p className="text-[10px] font-medium text-slate-500">Marketing & Deliverability</p>
+              <p className="text-[10px] font-medium text-slate-500">Enterprise Edition</p>
             </div>
           </div>
 
           {/* Workspace Tenant Selector */}
-          <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 space-y-1">
+          <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-0.5">
             <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Workspace</label>
             <select
               value={workspaceId}
@@ -427,102 +534,189 @@ export default function Home() {
             </select>
           </div>
 
-          {/* Clean Executive Navigation List (No Emojis) */}
-          <nav className="space-y-1">
-            <button
-              onClick={() => setActiveTab("smtppool")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "smtppool"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Sender Accounts Pool</span>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "smtppool" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
-                {totalAccountCount}
+          {/* Navigation Category Groups */}
+          <nav className="space-y-3">
+            {/* Group 1: Infrastructure */}
+            <div>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block px-2 mb-1">
+                Infrastructure
               </span>
-            </button>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveTab("smtppool")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "smtppool"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Sender Pool</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "smtppool" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
+                    {totalAccountCount}
+                  </span>
+                </button>
 
-            <button
-              onClick={() => setActiveTab("spamchecker")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "spamchecker"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Spam Checker & Fixer</span>
-            </button>
+                <button
+                  onClick={() => setActiveTab("mailtrackers")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "mailtrackers"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Mail Trackers</span>
+                </button>
 
-            <button
-              onClick={() => setActiveTab("campaigns")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "campaigns"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Campaign Studio</span>
-            </button>
+                <button
+                  onClick={() => setActiveTab("warmup")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "warmup"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Inbox Warmup</span>
+                </button>
+              </div>
+            </div>
 
-            <button
-              onClick={() => setActiveTab("domains")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "domains"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Domain Verification</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("analytics")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "analytics"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Analytics Dashboard</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("subscribers")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "subscribers"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Audience List</span>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "subscribers" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
-                {subscribersData?.totalCount || 0}
+            {/* Group 2: Deliverability & Compliance */}
+            <div>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block px-2 mb-1">
+                Deliverability
               </span>
-            </button>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveTab("bounceguard")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "bounceguard"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Bounce Guard</span>
+                </button>
 
-            <button
-              onClick={() => setActiveTab("upload")}
-              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold transition-all text-left ${
-                activeTab === "upload"
-                  ? "bg-slate-900 text-white shadow-sm font-bold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span>Asset Storage</span>
-            </button>
+                <button
+                  onClick={() => setActiveTab("spamchecker")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "spamchecker"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Spam Checker</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("domains")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "domains"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Domain Auth</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Group 3: Automation & Studio */}
+            <div>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block px-2 mb-1">
+                Campaign Studio
+              </span>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveTab("campaigns")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "campaigns"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Campaign Studio</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("drips")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "drips"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Drip Sequences</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("analytics")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "analytics"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Analytics</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Group 4: CRM & Developers */}
+            <div>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block px-2 mb-1">
+                Audience & Dev
+              </span>
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => setActiveTab("subscribers")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "subscribers"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Audience & Leads</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "subscribers" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
+                    {subscribersData?.totalCount || 0}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("webhooks")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "webhooks"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Webhooks (Zapier)</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("upload")}
+                  className={`w-full flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all text-left ${
+                    activeTab === "upload"
+                      ? "bg-slate-900 text-white shadow-sm font-bold"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <span>Asset Storage</span>
+                </button>
+              </div>
+            </div>
           </nav>
         </div>
 
         {/* Sidebar Status Footer */}
         <div className="pt-3 border-t border-slate-100 space-y-2">
-          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200 text-[11px] font-medium text-slate-700 space-y-1">
+          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200 text-[11px] font-medium text-slate-700 space-y-1">
             <div className="flex items-center space-x-2 font-bold text-emerald-700">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Pool Active</span>
+              <span>Engine Active</span>
             </div>
             <p className="text-[10px] text-slate-500 font-mono">
-              Cap: {dynamicCapacity.toLocaleString()} Mails/Day ({totalAccountCount} Accs × 2,000)
+              Cap: {dynamicCapacity.toLocaleString()} Mails/Day
             </p>
           </div>
         </div>
@@ -636,7 +830,6 @@ export default function Home() {
                         className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none font-mono shadow-sm"
                         required
                       />
-                      <p className="text-[10px] text-slate-500 mt-1">Use 16-character App Password generated from Google Security.</p>
                     </div>
 
                     <div>
@@ -754,9 +947,6 @@ export default function Home() {
                 ) : (
                   <div className="flex-1 min-h-[240px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-lg p-6 text-center space-y-3 bg-slate-50">
                     <p className="text-xs font-semibold text-slate-800">No Sender Accounts Configured</p>
-                    <p className="text-xs text-slate-500 max-w-sm">
-                      Click <strong>"Seed 30 Accounts"</strong> above or paste your account list on the left to load senders!
-                    </p>
                     <button
                       onClick={handleSeed30Accounts}
                       disabled={seedingPool}
@@ -771,7 +961,280 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 2: SPAM CHECKER TOOL */}
+        {/* TAB 2: MAIL TRACKERS & LIVE STREAM */}
+        {activeTab === "mailtrackers" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Real-Time Tracking Pixel Studio
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Mail Trackers & Live Activity Stream</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Inspect transparent 1x1 GIF open pixels, wrapped link click redirects, and live recipient engagement events.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="flex items-center space-x-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1 rounded text-xs font-bold">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Real-Time Websocket Receiver Active</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tracking Pixel URL Format</p>
+                <p className="text-xs font-mono text-indigo-600 font-bold mt-2 truncate">
+                  http://localhost:3000/api/track/open?msgId=...
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">1x1 Transparent GIF Byte Stream</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Click Redirect Format</p>
+                <p className="text-xs font-mono text-indigo-600 font-bold mt-2 truncate">
+                  http://localhost:3000/api/track/click?url=...
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">Wrapped HTTP Redirect Logger</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Device Parsing</p>
+                <p className="text-2xl font-extrabold text-slate-900 mt-1">Desktop & Mobile</p>
+                <p className="text-[11px] text-slate-400 mt-1">Automatic User-Agent Parser</p>
+              </div>
+            </div>
+
+            {/* Live Activity Stream Table */}
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Live Activity Stream (Real-Time Ingestion)</h3>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
+                      <th className="p-3">Event Type</th>
+                      <th className="p-3">Recipient Email</th>
+                      <th className="p-3">Campaign Subject</th>
+                      <th className="p-3">Target / Metadata</th>
+                      <th className="p-3">Device Type</th>
+                      <th className="p-3">Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {liveEvents.map((ev) => (
+                      <tr key={ev.id} className="hover:bg-slate-50">
+                        <td className="p-3">
+                          <span
+                            className={`rounded px-2.5 py-0.5 text-[10px] font-bold ${
+                              ev.type === "OPEN"
+                                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                : "bg-indigo-50 text-indigo-800 border border-indigo-200"
+                            }`}
+                          >
+                            {ev.type}
+                          </span>
+                        </td>
+                        <td className="p-3 font-semibold text-slate-900">{ev.email}</td>
+                        <td className="p-3 text-slate-700">{ev.subject}</td>
+                        <td className="p-3 text-slate-500 font-mono text-[11px]">
+                          {ev.link ? ev.link : "1x1 GIF Pixel Rendered"}
+                        </td>
+                        <td className="p-3 text-slate-600 font-semibold">{ev.device}</td>
+                        <td className="p-3 text-slate-400">{ev.time}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: INBOX WARMUP ENGINE */}
+        {activeTab === "warmup" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Deliverability Builder
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Automated Peer-to-Peer Inbox Warmup</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Automated peer email exchange to build domain reputation and ensure 100% Primary Inbox placement.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded text-xs font-bold">
+                  Warmup Status: ACTIVE
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Warmup Period</p>
+                <p className="text-2xl font-extrabold text-slate-900 mt-1">14 Days Ramp</p>
+                <p className="text-[11px] text-slate-400 mt-1">Gradual Volume Escalation</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Target Daily Cap</p>
+                <p className="text-2xl font-extrabold text-indigo-600 mt-1">2,000 Mails/Day</p>
+                <p className="text-[11px] text-slate-400 mt-1">Per Account</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Average Reputation Score</p>
+                <p className="text-2xl font-extrabold text-emerald-600 mt-1">98 / 100</p>
+                <p className="text-[11px] text-slate-400 mt-1">High Deliverability Tier</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">14-Day Warmup Schedule Ramp</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
+                      <th className="p-3">Day #</th>
+                      <th className="p-3">Warmup Volume / Day</th>
+                      <th className="p-3">Escalation Phase</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {warmupSchedule.map((s) => (
+                      <tr key={s.day} className="hover:bg-slate-50">
+                        <td className="p-3 font-bold text-slate-900">Day {s.day}</td>
+                        <td className="p-3 font-mono font-bold text-indigo-600">{s.emailsPerDay} Emails</td>
+                        <td className="p-3 text-slate-700 font-medium">{s.rampStatus}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: PRE-SEND BOUNCE GUARD */}
+        {activeTab === "bounceguard" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Pre-Send Email Validator
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Bounce Guard Engine</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Verify syntax, MX records, and disposable email domains before dispatching campaigns to maintain zero bounce rates.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="lg:col-span-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Test Email Address Deliverability</h3>
+                <form onSubmit={handleRunBounceGuard} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value={singleTestEmail}
+                      onChange={(e) => setSingleTestEmail(e.target.value)}
+                      placeholder="user@example.com"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={validatingEmail}
+                    className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-sm cursor-pointer"
+                  >
+                    {validatingEmail ? "Validating MX Records..." : "Validate Email Deliverability"}
+                  </button>
+                </form>
+              </div>
+
+              <div className="lg:col-span-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col justify-between">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Deliverability Inspection Result</h3>
+
+                {validationResult ? (
+                  <div className="rounded-lg bg-slate-50 p-4 border border-slate-200 text-xs font-mono space-y-2">
+                    <p><strong className="text-slate-600">Email:</strong> {validationResult.email}</p>
+                    <p><strong className="text-slate-600">Domain:</strong> {validationResult.domain}</p>
+                    <p><strong className="text-slate-600">Syntax RFC 5322:</strong> {validationResult.isValidSyntax ? "PASS" : "FAIL"}</p>
+                    <p><strong className="text-slate-600">MX Server Found:</strong> {validationResult.hasMxRecords ? "PASS" : "FAIL"}</p>
+                    <p><strong className="text-slate-600">Disposable Filter:</strong> {validationResult.isDisposable ? "DISPOSABLE" : "SAFE"}</p>
+
+                    <div className="pt-2">
+                      <span
+                        className={`px-3 py-1 rounded text-xs font-bold ${
+                          validationResult.deliverabilityStatus === "SAFE"
+                            ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                            : "bg-rose-100 text-rose-900 border border-rose-300"
+                        }`}
+                      >
+                        STATUS: {validationResult.deliverabilityStatus}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 min-h-[160px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-lg text-slate-400 text-xs text-center p-4">
+                    Enter an email address on the left to run live MX and syntax verification.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: DRIP SEQUENCES */}
+        {activeTab === "drips" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Automated Sequences
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Multi-Step Drip Campaigns</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Configure automated follow-up sequences with conditional branching (<code className="text-indigo-600 font-mono">If No Reply</code>, <code className="text-indigo-600 font-mono">If No Open</code>).
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">{dripSequence.name}</h3>
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded text-[10px] font-bold">
+                  {dripSequence.status}
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {dripSequence.steps.map((step) => (
+                  <div key={step.stepNumber} className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900">Step #{step.stepNumber} (Delay: {step.delayDays} Days)</span>
+                      <span className="text-[10px] font-mono font-bold text-indigo-600 bg-white px-2 py-0.5 rounded border border-slate-200">
+                        Condition: {step.condition}
+                      </span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-800">Subject: {step.subject}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: SPAM CHECKER TOOL */}
         {activeTab === "spamchecker" && (
           <div className="space-y-6 max-w-7xl mx-auto">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
@@ -958,7 +1421,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 3: CAMPAIGN STUDIO */}
+        {/* TAB 7: CAMPAIGN STUDIO */}
         {activeTab === "campaigns" && (
           <div className="space-y-6 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -1153,7 +1616,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 4: DOMAIN AUTH */}
+        {/* TAB 8: DOMAIN AUTH */}
         {activeTab === "domains" && (
           <div className="space-y-6 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -1275,7 +1738,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 5: ANALYTICS DASHBOARD */}
+        {/* TAB 9: ANALYTICS DASHBOARD */}
         {activeTab === "analytics" && (
           <div className="space-y-6 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -1356,7 +1819,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 6: AUDIENCE SUBSCRIBERS */}
+        {/* TAB 10: AUDIENCE & LEAD SCORING */}
         {activeTab === "subscribers" && (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 max-w-7xl mx-auto">
             <div className="lg:col-span-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
@@ -1393,7 +1856,7 @@ export default function Home() {
             </div>
 
             <div className="lg:col-span-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Audience List ({subscribersData?.totalCount || 0})</h3>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Audience & Lead Scoring ({subscribersData?.totalCount || 0})</h3>
               {subscribersData?.subscribers?.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
@@ -1401,29 +1864,38 @@ export default function Home() {
                       <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
                         <th className="p-3">Email</th>
                         <th className="p-3">Name</th>
+                        <th className="p-3">Lead Score</th>
+                        <th className="p-3">Tier</th>
                         <th className="p-3">Status</th>
-                        <th className="p-3">Subscribed Date</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {subscribersData.subscribers.map((sub: any) => (
-                        <tr key={sub.id} className="hover:bg-slate-50">
-                          <td className="p-3 font-semibold text-slate-900">{sub.email}</td>
-                          <td className="p-3 text-slate-700">{sub.firstName} {sub.lastName}</td>
-                          <td className="p-3">
-                            <span
-                              className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                                sub.status === "SUBSCRIBED"
-                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                                  : "bg-rose-50 text-rose-800 border border-rose-200"
-                              }`}
-                            >
-                              {sub.status}
-                            </span>
-                          </td>
-                          <td className="p-3 text-slate-500">{new Date(sub.createdAt).toLocaleDateString()}</td>
-                        </tr>
-                      ))}
+                      {subscribersData.subscribers.map((sub: any) => {
+                        const scoreData = LeadScorer.calculateScore(sub.emailLogs?.length || 1, 0, sub.status === "UNSUBSCRIBED");
+                        return (
+                          <tr key={sub.id} className="hover:bg-slate-50">
+                            <td className="p-3 font-semibold text-slate-900">{sub.email}</td>
+                            <td className="p-3 text-slate-700">{sub.firstName} {sub.lastName}</td>
+                            <td className="p-3 font-mono font-bold text-indigo-600">+{scoreData.score} Pts</td>
+                            <td className="p-3">
+                              <span className="rounded bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 font-bold text-[10px]">
+                                {scoreData.tier}
+                              </span>
+                            </td>
+                            <td className="p-3">
+                              <span
+                                className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                                  sub.status === "SUBSCRIBED"
+                                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                    : "bg-rose-50 text-rose-800 border border-rose-200"
+                                }`}
+                              >
+                                {sub.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1434,7 +1906,72 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 7: ASSET UPLOAD */}
+        {/* TAB 11: WEBHOOKS (ZAPIER / MAKE) */}
+        {activeTab === "webhooks" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
+                  Integrations & API
+                </span>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Webhooks & External Dispatchers</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Broadcast real-time HTTP payloads to Zapier, Make.com, or custom serverless endpoints on events (<code className="text-indigo-600 font-mono">email.opened</code>, <code className="text-indigo-600 font-mono">email.clicked</code>).
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="lg:col-span-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Add New Webhook URL</h3>
+                <form onSubmit={handleAddWebhook} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Target Webhook Endpoint URL</label>
+                    <input
+                      type="url"
+                      value={webhookUrl}
+                      onChange={(e) => setWebhookUrl(e.target.value)}
+                      placeholder="https://hooks.zapier.com/..."
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={addingWebhook}
+                    className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all shadow-sm cursor-pointer"
+                  >
+                    {addingWebhook ? "Registering..." : "Register Webhook Endpoint"}
+                  </button>
+                </form>
+              </div>
+
+              <div className="lg:col-span-7 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Active Webhook Endpoints ({webhooksList.length})</h3>
+                {webhooksList.length > 0 ? (
+                  <div className="space-y-2">
+                    {webhooksList.map((wh) => (
+                      <div key={wh.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono font-bold text-slate-900 truncate max-w-sm">{wh.url}</span>
+                          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-bold text-[10px]">
+                            ACTIVE
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 font-mono">Secret: {wh.secret}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 py-3">No webhooks registered yet.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 12: ASSET UPLOAD */}
         {activeTab === "upload" && (
           <div className="max-w-2xl mx-auto rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
             <div>
