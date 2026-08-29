@@ -98,8 +98,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, count: addedCount, message: `Successfully imported ${addedCount} sender accounts!` });
     }
 
-    // 2. Demo Seed 30 Accounts Action
-    if (body.action === "seed_30") {
+    // 2. Seed Dedicated Unlimited SMTP Pool Action
+    if (body.action === "seed_30" || body.action === "seed_unlimited") {
       const workspaceId = body.workspaceId || "ws_geonixa";
 
       const seedAccounts = Array.from({ length: 30 }).map((_, i) => ({
@@ -107,9 +107,9 @@ export async function POST(request: Request) {
         email: `geonixa.sender${i + 1}@geonixa.com`,
         username: `geonixa.sender${i + 1}@geonixa.com`,
         password: process.env.SMTP_PASS || "nswymhicrcfgctmu",
-        host: "smtp.gmail.com",
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
         port: 587,
-        dailyLimit: 2000,
+        dailyLimit: 999999999, // Unlimited Capacity (No 60k limit!)
         sentToday: Math.floor(Math.random() * 120),
         isActive: true,
         quotaResetAt: new Date(),
@@ -123,12 +123,12 @@ export async function POST(request: Request) {
               email: acc.email,
             },
           },
-          update: { dailyLimit: 2000, isActive: true },
+          update: { dailyLimit: 999999999, isActive: true },
           create: acc,
         });
       }
 
-      return NextResponse.json({ success: true, message: "Successfully seeded 30 Geonixa SMTP Accounts into Load Balancer Pool!" });
+      return NextResponse.json({ success: true, message: "Successfully activated Dedicated Unlimited SMTP Pool (Unlimited Daily Sending)!" });
     }
 
     // 3. Single Account Creation

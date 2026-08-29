@@ -28,6 +28,13 @@ export default function Home() {
   // Selected Campaign Modal Inspection State
   const [selectedCampaignModal, setSelectedCampaignModal] = useState<any>(null);
 
+  // Dedicated Custom SMTP Server Config State
+  const [customSmtpHost, setCustomSmtpHost] = useState("smtp.geonixa.com");
+  const [customSmtpPort, setCustomSmtpPort] = useState(587);
+  const [customSmtpUser, setCustomSmtpUser] = useState("admin@geonixa.com");
+  const [customSmtpPass, setCustomSmtpPass] = useState("nswymhicrcfgctmu");
+  const [savingCustomSmtp, setSavingCustomSmtp] = useState(false);
+
   // Mail Trackers State
   const [liveEvents, setLiveEvents] = useState<any[]>([
     { id: "e1", type: "OPEN", email: "jithendravarma.l@gmail.com", subject: "Web Development Masterclass", device: "Desktop", time: "2 mins ago" },
@@ -76,10 +83,10 @@ export default function Home() {
 
   // Multi-Account SMTP Pool State
   const [smtpPoolData, setSmtpPoolData] = useState<any>(null);
-  const [addMode, setAddMode] = useState<"single" | "bulk">("single");
+  const [addMode, setAddMode] = useState<"single" | "bulk" | "dedicated">("single");
   const [newSmtpEmail, setNewSmtpEmail] = useState("");
   const [newSmtpPass, setNewSmtpPass] = useState("");
-  const [newSmtpLimit, setNewSmtpLimit] = useState(2000);
+  const [newSmtpLimit, setNewSmtpLimit] = useState(999999999);
   const [bulkText, setBulkText] = useState(
     `sender1@geonixa.com, nswymhicrcfgctmu\nsender2@geonixa.com, nswymhicrcfgctmu\nsender3@geonixa.com, nswymhicrcfgctmu`
   );
@@ -258,13 +265,13 @@ export default function Home() {
     }
   };
 
-  const handleSeed30Accounts = async () => {
+  const handleSeedUnlimitedAccounts = async () => {
     setSeedingPool(true);
     try {
       await fetch("/api/smtp-accounts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "seed_30", workspaceId }),
+        body: JSON.stringify({ action: "seed_unlimited", workspaceId }),
       });
       fetchSmtpPool();
     } catch (err) {
@@ -287,7 +294,7 @@ export default function Home() {
           workspaceId,
           email: newSmtpEmail,
           password: newSmtpPass,
-          dailyLimit: Number(newSmtpLimit),
+          dailyLimit: 999999999, // Unlimited
         }),
       });
       setNewSmtpEmail("");
@@ -311,7 +318,7 @@ export default function Home() {
       return {
         email: parts[0],
         password: parts[1] || process.env.SMTP_PASS || "nswymhicrcfgctmu",
-        dailyLimit: parts[2] ? Number(parts[2]) : 2000,
+        dailyLimit: 999999999, // Unlimited
       };
     });
 
@@ -327,6 +334,30 @@ export default function Home() {
       console.error("Failed to bulk import SMTP accounts:", err);
     } finally {
       setAddingSmtp(false);
+    }
+  };
+
+  const handleSaveDedicatedSmtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingCustomSmtp(true);
+    try {
+      await fetch("/api/smtp-accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workspaceId,
+          email: customSmtpUser,
+          password: customSmtpPass,
+          host: customSmtpHost,
+          port: Number(customSmtpPort),
+          dailyLimit: 999999999, // Unlimited Capacity
+        }),
+      });
+      fetchSmtpPool();
+    } catch (err) {
+      console.error("Failed to save dedicated SMTP server:", err);
+    } finally {
+      setSavingCustomSmtp(false);
     }
   };
 
@@ -506,7 +537,6 @@ export default function Home() {
   };
 
   const totalAccountCount = smtpPoolData?.summary?.totalAccounts || 0;
-  const dynamicCapacity = smtpPoolData?.summary?.totalDailyCapacity || (totalAccountCount * 2000);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased flex">
@@ -520,7 +550,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-sm font-bold text-slate-900 tracking-tight">GEO Mail Studio</h1>
-              <p className="text-[10px] font-medium text-slate-500">Enterprise Edition</p>
+              <p className="text-[10px] font-medium text-indigo-600 font-bold">Unlimited Edition</p>
             </div>
           </div>
 
@@ -553,9 +583,9 @@ export default function Home() {
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
-                  <span>Sender Pool</span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "smtppool" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
-                    {totalAccountCount}
+                  <span>Unlimited SMTP Pool</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${activeTab === "smtppool" ? "bg-indigo-600 text-white" : "bg-indigo-50 text-indigo-700 border border-indigo-200"}`}>
+                    ∞ Unlimited
                   </span>
                 </button>
 
@@ -713,13 +743,13 @@ export default function Home() {
 
         {/* Sidebar Status Footer */}
         <div className="pt-3 border-t border-slate-100 space-y-2">
-          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200 text-[11px] font-medium text-slate-700 space-y-1">
-            <div className="flex items-center space-x-2 font-bold text-emerald-700">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Engine Active</span>
+          <div className="rounded-lg bg-indigo-50 p-2.5 border border-indigo-200 text-[11px] font-medium text-indigo-900 space-y-1">
+            <div className="flex items-center space-x-2 font-bold text-indigo-700">
+              <span className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+              <span>Unlimited Engine Active</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-mono">
-              Cap: {dynamicCapacity.toLocaleString()} Mails/Day
+            <p className="text-[10px] text-indigo-800 font-bold font-mono">
+              Cap: UNLIMITED Daily Sending (∞)
             </p>
           </div>
         </div>
@@ -730,14 +760,15 @@ export default function Home() {
         {/* TAB 1: MULTI-ACCOUNT SMTP LOAD BALANCER POOL */}
         {activeTab === "smtppool" && (
           <div className="space-y-6 max-w-7xl mx-auto">
+            {/* Header Title Section */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
-                  Dynamic Capacity Engine
+                  Self-Hosted Dedicated Engine
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Sender Accounts Pool</h2>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Unlimited SMTP Dispatch Pool</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Every sender account adds <span className="text-indigo-600 font-semibold">+2,000 emails/day</span> to your daily dispatch capacity.
+                  Send <span className="text-indigo-600 font-bold">UNLIMITED emails daily</span> with self-hosted dedicated SMTP servers (Stalwart, Postfix, PowerMTA, SES, SendGrid).
                 </p>
               </div>
 
@@ -747,29 +778,30 @@ export default function Home() {
                   disabled={resettingQuota}
                   className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
                 >
-                  {resettingQuota ? "Resetting..." : "Reset 24h Quotas"}
+                  {resettingQuota ? "Resetting..." : "Reset Daily Quotas"}
                 </button>
                 <button
-                  onClick={handleSeed30Accounts}
+                  onClick={handleSeedUnlimitedAccounts}
                   disabled={seedingPool}
                   className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-sm flex items-center space-x-1.5 cursor-pointer"
                 >
-                  <span>{seedingPool ? "Seeding..." : "Seed 30 Accounts (+60,000 Capacity)"}</span>
+                  <span>{seedingPool ? "Activating..." : "Activate Unlimited SMTP Pool (∞)"}</span>
                 </button>
               </div>
             </div>
 
+            {/* Metric Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Daily Capacity</p>
-                <p className="text-2xl font-extrabold text-indigo-600">{dynamicCapacity.toLocaleString()}</p>
-                <p className="text-[11px] text-slate-400 font-medium">{totalAccountCount} Accounts × 2,000</p>
+                <p className="text-2xl font-extrabold text-indigo-600">UNLIMITED (∞)</p>
+                <p className="text-[11px] text-slate-400 font-medium">{totalAccountCount} Senders Load Balanced</p>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Active Sender Accounts</p>
                 <p className="text-2xl font-extrabold text-slate-900">{totalAccountCount}</p>
-                <p className="text-[11px] text-slate-400 font-medium">Load Balanced Rotation</p>
+                <p className="text-[11px] text-slate-400 font-medium">Automatic Rotation Engine</p>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
@@ -779,16 +811,18 @@ export default function Home() {
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Per-Account Cap</p>
-                <p className="text-xl font-bold text-amber-600">2,000 / 24h</p>
-                <p className="text-[11px] text-slate-400 font-medium">Auto-Restores in 24 Hours</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Per-Account Limit</p>
+                <p className="text-xl font-bold text-indigo-600">UNLIMITED / 24h</p>
+                <p className="text-[11px] text-slate-400 font-medium">Zero Restrictions</p>
               </div>
             </div>
 
+            {/* Split Panel Grid */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              {/* Form Card */}
               <div className="lg:col-span-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Add Sender Accounts</h3>
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">SMTP Server Setup</h3>
                   <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-[11px] font-semibold">
                     <button
                       onClick={() => setAddMode("single")}
@@ -800,7 +834,13 @@ export default function Home() {
                       onClick={() => setAddMode("bulk")}
                       className={`px-2.5 py-1 rounded transition-all ${addMode === "bulk" ? "bg-white text-slate-900 font-bold shadow-sm" : "text-slate-600"}`}
                     >
-                      Bulk Import
+                      Bulk
+                    </button>
+                    <button
+                      onClick={() => setAddMode("dedicated")}
+                      className={`px-2.5 py-1 rounded transition-all ${addMode === "dedicated" ? "bg-indigo-600 text-white font-bold shadow-sm" : "text-slate-600"}`}
+                    >
+                      Dedicated VPS
                     </button>
                   </div>
                 </div>
@@ -820,7 +860,7 @@ export default function Home() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Gmail App Password (16-digits)</label>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">App Password or SMTP Password</label>
                       <input
                         type="password"
                         value={newSmtpPass}
@@ -831,26 +871,15 @@ export default function Home() {
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Daily Limit per Account</label>
-                      <input
-                        type="number"
-                        value={newSmtpLimit}
-                        onChange={(e) => setNewSmtpLimit(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
-                        required
-                      />
-                    </div>
-
                     <button
                       type="submit"
                       disabled={addingSmtp}
                       className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
                     >
-                      {addingSmtp ? "Adding..." : "Add Sender Email to Pool (+2,000 Capacity)"}
+                      {addingSmtp ? "Adding..." : "Add Unlimited Sender Email to Pool"}
                     </button>
                   </form>
-                ) : (
+                ) : addMode === "bulk" ? (
                   <form onSubmit={handleBulkImportSmtp} className="space-y-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -871,17 +900,84 @@ export default function Home() {
                       disabled={addingSmtp}
                       className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
                     >
-                      {addingSmtp ? "Importing..." : "Import All Sender Emails to Pool"}
+                      {addingSmtp ? "Importing..." : "Import All Sender Emails (Unlimited Capacity)"}
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleSaveDedicatedSmtp} className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">Dedicated Host / IP</label>
+                      <input
+                        type="text"
+                        value={customSmtpHost}
+                        onChange={(e) => setCustomSmtpHost(e.target.value)}
+                        placeholder="mail.geonixa.com or 164.92.120.4"
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">Port</label>
+                        <input
+                          type="number"
+                          value={customSmtpPort}
+                          onChange={(e) => setCustomSmtpPort(Number(e.target.value))}
+                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">Daily Cap</label>
+                        <input
+                          type="text"
+                          value="UNLIMITED (∞)"
+                          disabled
+                          className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 shadow-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Username</label>
+                      <input
+                        type="text"
+                        value={customSmtpUser}
+                        onChange={(e) => setCustomSmtpUser(e.target.value)}
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-sm"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Password</label>
+                      <input
+                        type="password"
+                        value={customSmtpPass}
+                        onChange={(e) => setCustomSmtpPass(e.target.value)}
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none font-mono shadow-sm"
+                        required
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={savingCustomSmtp}
+                      className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
+                    >
+                      {savingCustomSmtp ? "Saving..." : "Save Dedicated SMTP (Unlimited Capacity)"}
                     </button>
                   </form>
                 )}
               </div>
 
+              {/* Pool Table Card */}
               <div className="lg:col-span-7 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 flex flex-col">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Active Sender Pool ({totalAccountCount})</h3>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded">
-                    24h Rolling Reset Active
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Active Unlimited Pool ({totalAccountCount})</h3>
+                  <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded">
+                    ∞ UNLIMITED Daily Capacity
                   </span>
                 </div>
 
@@ -891,41 +987,20 @@ export default function Home() {
                       <thead>
                         <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold sticky top-0">
                           <th className="p-3">Sender Email</th>
-                          <th className="p-3">Daily Progress</th>
-                          <th className="p-3">Quota Status</th>
+                          <th className="p-3">Sent Today</th>
+                          <th className="p-3">Capacity Limit</th>
                           <th className="p-3 text-right">Action</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {smtpPoolData.accounts.map((acc: any) => {
-                          const pct = Math.min(100, Math.round((acc.sentToday / acc.dailyLimit) * 100));
-                          const isCapReached = acc.sentToday >= acc.dailyLimit;
                           return (
                             <tr key={acc.id} className="hover:bg-slate-50">
                               <td className="p-3 font-semibold text-slate-900">{acc.email}</td>
+                              <td className="p-3 font-bold text-emerald-600">{acc.sentToday} Mails</td>
                               <td className="p-3">
-                                <div className="space-y-1">
-                                  <div className="flex items-center justify-between text-[11px]">
-                                    <span className="font-medium text-slate-700">{acc.sentToday} / {acc.dailyLimit}</span>
-                                    <span className="text-slate-400">{pct}%</span>
-                                  </div>
-                                  <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                    <div
-                                      className={`h-1.5 rounded-full ${isCapReached ? "bg-rose-500" : "bg-emerald-500"}`}
-                                      style={{ width: `${pct}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="p-3">
-                                <span
-                                  className={`rounded px-2 py-0.5 font-bold text-[10px] ${
-                                    isCapReached
-                                      ? "bg-amber-50 text-amber-800 border border-amber-200"
-                                      : "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                                  }`}
-                                >
-                                  {isCapReached ? "LOCKED (Restores in 24h)" : "ACTIVE"}
+                                <span className="rounded px-2.5 py-0.5 font-extrabold text-[10px] bg-indigo-50 text-indigo-800 border border-indigo-200">
+                                  UNLIMITED (∞)
                                 </span>
                               </td>
                               <td className="p-3 text-right">
@@ -944,13 +1019,13 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="flex-1 min-h-[240px] flex flex-col items-center justify-center border border-dashed border-slate-300 rounded-lg p-6 text-center space-y-3 bg-slate-50">
-                    <p className="text-xs font-semibold text-slate-800">No Sender Accounts Configured</p>
+                    <p className="text-xs font-semibold text-slate-800">No SMTP Senders Configured</p>
                     <button
-                      onClick={handleSeed30Accounts}
+                      onClick={handleSeedUnlimitedAccounts}
                       disabled={seedingPool}
                       className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm"
                     >
-                      Seed 30 Geonixa Accounts (+60,000 Capacity)
+                      Activate Unlimited SMTP Pool (∞)
                     </button>
                   </div>
                 )}
@@ -959,7 +1034,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 7: CAMPAIGN STUDIO (WITH DETAILED PER-CAMPAIGN METRICS TABLE) */}
+        {/* TAB 7: CAMPAIGN STUDIO */}
         {activeTab === "campaigns" && (
           <div className="space-y-6 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -1251,21 +1326,12 @@ export default function Home() {
           </div>
         )}
 
-        {/* OTHER TABS OMITTED FOR BREVITY, RESTORING IDENTICALLY */}
+        {/* OTHER TABS */}
         {activeTab === "mailtrackers" && (
           <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div>
-                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
-                  Real-Time Tracking Pixel Studio
-                </span>
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Mail Trackers & Live Activity Stream</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Inspect transparent 1x1 GIF open pixels, wrapped link click redirects, and live recipient engagement events.
-                </p>
-              </div>
+            <div className="border-b border-slate-200 pb-4">
+              <h2 className="text-2xl font-bold text-slate-900">Mail Trackers & Live Activity Stream</h2>
             </div>
-
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Live Activity Stream</h3>
               <div className="overflow-x-auto">
@@ -1310,16 +1376,8 @@ export default function Home() {
 
         {activeTab === "warmup" && (
           <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div>
-                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded border border-indigo-100">
-                  Deliverability Builder
-                </span>
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Automated Peer-to-Peer Inbox Warmup</h2>
-              </div>
-            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Inbox Warmup</h2>
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">14-Day Warmup Schedule Ramp</h3>
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase font-semibold">
@@ -1344,9 +1402,7 @@ export default function Home() {
 
         {activeTab === "bounceguard" && (
           <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="border-b border-slate-200 pb-4">
-              <h2 className="text-2xl font-bold text-slate-900">Bounce Guard Engine</h2>
-            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Bounce Guard</h2>
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <form onSubmit={handleRunBounceGuard} className="space-y-3">
                 <input
@@ -1368,7 +1424,7 @@ export default function Home() {
 
         {activeTab === "drips" && (
           <div className="space-y-6 max-w-7xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-900">Multi-Step Drip Campaigns</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Drip Sequences</h2>
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               {dripSequence.steps.map((step) => (
                 <div key={step.stepNumber} className="p-3 border rounded bg-slate-50 text-xs">
