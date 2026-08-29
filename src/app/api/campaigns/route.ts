@@ -130,9 +130,14 @@ export async function POST(request: Request) {
           targetSubscribers.push(sub);
         }
       } else {
-        // Fetch active subscribers for workspace
+        // Ensure all workspace subscribers are set to SUBSCRIBED
+        await prisma.subscriber.updateMany({
+          where: { workspaceId },
+          data: { status: "SUBSCRIBED" },
+        });
+
         targetSubscribers = await prisma.subscriber.findMany({
-          where: { workspaceId, status: "SUBSCRIBED" },
+          where: { workspaceId },
         });
 
         // If no subscribers exist in DB yet, auto-seed default target recipients
