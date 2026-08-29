@@ -282,7 +282,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error("AI Generation Error:", err);
-    } final {
+    } finally {
       setGeneratingAi(false);
     }
   };
