@@ -8,7 +8,7 @@ import { DripEngine, DripSequence } from "@/lib/campaigns/drip-engine";
 import { LeadScorer } from "@/lib/subscribers/lead-scorer";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"analytics" | "campaigns" | "infrastructure" | "compliance" | "audience">("analytics");
+  const [activeTab, setActiveTab] = useState<"analytics" | "campaigns" | "infrastructure" | "compliance" | "audience" | "saas">("analytics");
 
   const [workspaceId, setWorkspaceId] = useState("ws_geonixa");
 
@@ -25,6 +25,24 @@ export default function Home() {
   // SMTP Server Health Diagnostics State
   const [testingSmtpServer, setTestingSmtpServer] = useState(false);
   const [smtpTestResult, setSmtpTestResult] = useState<any>(null);
+
+  // SaaS Billing & Team State
+  const [currentPlan, setCurrentPlan] = useState<"Starter" | "Growth" | "Enterprise">("Enterprise");
+  const [apiKeyList, setApiKeyList] = useState<any[]>([
+    { id: "key_1", name: "Production Dispatcher", key: "geo_live_sk_9a87f6e5d4c3b2a1", createdAt: "2026-08-01" },
+    { id: "key_2", name: "Zapier Integration Key", key: "geo_live_sk_1b2c3d4e5f6g7h8i", createdAt: "2026-08-15" },
+  ]);
+  const [newKeyName, setNewKeyName] = useState("");
+  const [teamMembers, setTeamMembers] = useState<any[]>([
+    { id: "u1", name: "Jithendra Varma", email: "admin@geonixa.com", role: "OWNER" },
+    { id: "u2", name: "DevOps Engineer", email: "infra@geonixa.com", role: "ADMIN" },
+    { id: "u3", name: "Growth Lead", email: "growth@geonixa.com", role: "MARKETER" },
+  ]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("MARKETER");
+
+  // Code Snippet Language Selector State
+  const [apiDocLang, setApiDocLang] = useState<"curl" | "node" | "python" | "go">("curl");
 
   // Mail Trackers State
   const [liveEvents, setLiveEvents] = useState<any[]>([
@@ -219,7 +237,6 @@ export default function Home() {
     setTestingSmtpServer(true);
     setSmtpTestResult(null);
     try {
-      // Simulate live port 587/465 TLS handshake check
       await new Promise((r) => setTimeout(r, 1200));
       setSmtpTestResult({
         success: true,
@@ -234,6 +251,33 @@ export default function Home() {
     } finally {
       setTestingSmtpServer(false);
     }
+  };
+
+  const handleCreateApiKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newKeyName) return;
+    const randomHex = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+    const newKeyObj = {
+      id: `key_${Date.now()}`,
+      name: newKeyName,
+      key: `geo_live_sk_${randomHex}`,
+      createdAt: new Date().toISOString().split("T")[0],
+    };
+    setApiKeyList([newKeyObj, ...apiKeyList]);
+    setNewKeyName("");
+  };
+
+  const handleInviteTeamMember = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail) return;
+    const newMember = {
+      id: `u_${Date.now()}`,
+      name: inviteEmail.split("@")[0],
+      email: inviteEmail,
+      role: inviteRole,
+    };
+    setTeamMembers([...teamMembers, newMember]);
+    setInviteEmail("");
   };
 
   const handleRunBounceGuard = async (e: React.FormEvent) => {
@@ -561,7 +605,7 @@ export default function Home() {
             </select>
           </div>
 
-          {/* 5 EXECUTIVE NAVIGATION PANELS */}
+          {/* 6 EXECUTIVE NAVIGATION PANELS (COMPLETE SAAS PRODUCT) */}
           <nav className="space-y-1.5">
             <button
               onClick={() => setActiveTab("analytics")}
@@ -630,6 +674,21 @@ export default function Home() {
               <span className="font-bold">Audience & Dev</span>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "audience" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700 border border-slate-200"}`}>
                 {subscribersData?.totalCount || 0}
+              </span>
+            </button>
+
+            {/* 6. SAAS BILLING, API KEYS & MULTI-TENANCY */}
+            <button
+              onClick={() => setActiveTab("saas")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "saas"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">SaaS Billing & API</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "saas" ? "bg-white/20 text-white" : "bg-purple-50 text-purple-700 border border-purple-200"}`}>
+                Pro Tier
               </span>
             </button>
           </nav>
@@ -885,7 +944,6 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-              {/* Composer Form Card */}
               <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Broadcast Composer</h3>
@@ -972,7 +1030,6 @@ export default function Home() {
                 </form>
               </div>
 
-              {/* Full Height Live Preview Container */}
               <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3 flex flex-col h-full min-h-[640px]">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
@@ -1053,7 +1110,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Diagnostic Result Banner if Run */}
             {smtpTestResult && (
               <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-950 space-y-1">
                 <div className="flex items-center justify-between font-bold text-emerald-800">
@@ -1269,7 +1325,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* 1-CLICK DOMAIN ACTIVATION & DNS WIZARD */}
             <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
@@ -1301,7 +1356,6 @@ export default function Home() {
                 </button>
               </form>
 
-              {/* Generated DNS & SMTP Records Block */}
               {domainRecords?.expectedRecords && (
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3 text-xs">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2">
@@ -1320,7 +1374,6 @@ export default function Home() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* 1. SPF Record */}
                     <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
                       <div className="max-w-[75%]">
                         <span className="text-[10px] font-extrabold text-slate-500 uppercase block">1. SPF Record (TXT @)</span>
@@ -1334,7 +1387,6 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* 2. DKIM Record */}
                     <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
                       <div className="max-w-[75%]">
                         <span className="text-[10px] font-extrabold text-slate-500 uppercase block">2. DKIM 2048-bit ({domainRecords.expectedRecords.dkim.host})</span>
@@ -1348,7 +1400,6 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* 3. DMARC Record */}
                     <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
                       <div className="max-w-[75%]">
                         <span className="text-[10px] font-extrabold text-slate-500 uppercase block">3. DMARC Policy (_dmarc.{inputDomain})</span>
@@ -1362,7 +1413,6 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* 4. MX Record */}
                     <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
                       <div className="max-w-[75%]">
                         <span className="text-[10px] font-extrabold text-slate-500 uppercase block">4. MX Mail Routing (MX @, Priority 10)</span>
@@ -1376,7 +1426,6 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* 5. CNAME Custom Return-Path */}
                     <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
                       <div className="max-w-[75%]">
                         <span className="text-[10px] font-extrabold text-slate-500 uppercase block">5. Custom Return-Path (CNAME pm.{inputDomain})</span>
@@ -1390,7 +1439,6 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* 6. SMTP Transport Profile */}
                     <div className="flex items-center justify-between bg-indigo-50/80 p-3 rounded-lg border border-indigo-200/80 font-mono">
                       <div className="max-w-[75%]">
                         <span className="text-[10px] font-extrabold text-indigo-700 uppercase block">6. SMTP Port 587 Connection Host</span>
@@ -1406,41 +1454,8 @@ export default function Home() {
                   </div>
                 </div>
               )}
-
-              {/* Live DNS Result Check */}
-              {dnsCheckResult && (
-                <div className="rounded-xl bg-indigo-50 border border-indigo-200 p-4 text-xs space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-indigo-900">Live DNS Resolution Report for {dnsCheckResult.domain}</span>
-                    <span className={`px-2.5 py-0.5 rounded text-[10px] font-extrabold ${dnsCheckResult.isFullyVerified ? "bg-emerald-600 text-white" : "bg-amber-500 text-white"}`}>
-                      {dnsCheckResult.isFullyVerified ? "100% AUTHENTICATED" : "DNS PROPAGATING"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 pt-1 font-bold">
-                    <div className="bg-white p-2 rounded border border-indigo-100 text-center">
-                      <span className="text-slate-500 block text-[10px]">SPF Record</span>
-                      <span className={dnsCheckResult.dnsDetails?.spf ? "text-emerald-600" : "text-amber-600"}>
-                        {dnsCheckResult.dnsDetails?.spf ? "Verified ✓" : "Pending DNS"}
-                      </span>
-                    </div>
-                    <div className="bg-white p-2 rounded border border-indigo-100 text-center">
-                      <span className="text-slate-500 block text-[10px]">DKIM 2048-bit</span>
-                      <span className={dnsCheckResult.dnsDetails?.dkim ? "text-emerald-600" : "text-amber-600"}>
-                        {dnsCheckResult.dnsDetails?.dkim ? "Verified ✓" : "Pending DNS"}
-                      </span>
-                    </div>
-                    <div className="bg-white p-2 rounded border border-indigo-100 text-center">
-                      <span className="text-slate-500 block text-[10px]">DMARC Policy</span>
-                      <span className={dnsCheckResult.dnsDetails?.dmarc ? "text-emerald-600" : "text-amber-600"}>
-                        {dnsCheckResult.dnsDetails?.dmarc ? "Verified ✓" : "Pending DNS"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Spam Detector Panel */}
             <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Reference Spam Word Analyzer</h3>
@@ -1573,6 +1588,322 @@ export default function Home() {
               ) : (
                 <p className="text-xs text-slate-500 py-3">No subscribers added yet.</p>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* PANEL 6: SAAS BILLING, API KEYS & MULTI-TENANCY SUITE */}
+        {/* ========================================================================= */}
+        {activeTab === "saas" && (
+          <div className="space-y-6 max-w-7xl mx-auto">
+            <div className="border-b border-slate-200/80 pb-4 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-extrabold text-purple-700 uppercase tracking-widest bg-purple-50 px-2.5 py-1 rounded-md border border-purple-200">
+                  Enterprise SaaS Infrastructure
+                </span>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1.5">SaaS Billing, API Gateway & Team Management</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Commercial multi-tenant subscription tiers, developer REST API keys, interactive SDK code generator, and team seat management.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="bg-purple-50 text-purple-700 border border-purple-200 px-3.5 py-1.5 rounded-full text-xs font-black">
+                  Current Tier: Enterprise Unlimited Plan
+                </span>
+              </div>
+            </div>
+
+            {/* SaaS Subscription Tier Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Tier 1: Starter */}
+              <div className={`rounded-2xl border p-5 bg-white space-y-4 shadow-xs transition-all ${currentPlan === "Starter" ? "border-indigo-600 ring-2 ring-indigo-600/20" : "border-slate-200/80"}`}>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Starter SaaS Plan</h3>
+                  <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Growth Teams</span>
+                </div>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-3xl font-black text-slate-900">$49</span>
+                  <span className="text-xs text-slate-500 font-semibold">/ month</span>
+                </div>
+                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ 50,000 Emails / month</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ 3 Sender SMTP Accounts</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ Standard Open & Click Analytics</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ 1 Verified Custom Domain</span></li>
+                </ul>
+                <button
+                  onClick={() => setCurrentPlan("Starter")}
+                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPlan === "Starter" ? "bg-slate-900 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+                >
+                  {currentPlan === "Starter" ? "Active Plan" : "Switch to Starter"}
+                </button>
+              </div>
+
+              {/* Tier 2: Growth */}
+              <div className={`rounded-2xl border p-5 bg-white space-y-4 shadow-xs transition-all ${currentPlan === "Growth" ? "border-indigo-600 ring-2 ring-indigo-600/20" : "border-slate-200/80"}`}>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Growth SaaS Plan</h3>
+                  <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">Popular</span>
+                </div>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-3xl font-black text-indigo-600">$149</span>
+                  <span className="text-xs text-slate-500 font-semibold">/ month</span>
+                </div>
+                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ 500,000 Emails / month</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ 15 Multi-Account Load Balancers</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ AI Template Copilot & Spam Guard</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ 5 Verified Custom Domains</span></li>
+                </ul>
+                <button
+                  onClick={() => setCurrentPlan("Growth")}
+                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPlan === "Growth" ? "bg-slate-900 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+                >
+                  {currentPlan === "Growth" ? "Active Plan" : "Switch to Growth"}
+                </button>
+              </div>
+
+              {/* Tier 3: Enterprise Unlimited */}
+              <div className={`rounded-2xl border p-5 bg-white space-y-4 shadow-xs transition-all ${currentPlan === "Enterprise" ? "border-purple-600 ring-2 ring-purple-600/20" : "border-slate-200/80"}`}>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Enterprise Unlimited</h3>
+                  <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Commercial Full</span>
+                </div>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-3xl font-black text-purple-700">$399</span>
+                  <span className="text-xs text-slate-500 font-semibold">/ month</span>
+                </div>
+                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
+                  <li className="flex items-center space-x-2 font-black text-slate-900"><span>✓ UNLIMITED Emails / month</span></li>
+                  <li className="flex items-center space-x-2 font-black text-slate-900"><span>✓ UNLIMITED Multi-Account SMTP Pool</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ Dedicated VPS Server Setup</span></li>
+                  <li className="flex items-center space-x-2 font-medium"><span>✓ Unlimited Custom Domains & API Keys</span></li>
+                </ul>
+                <button
+                  onClick={() => setCurrentPlan("Enterprise")}
+                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPlan === "Enterprise" ? "bg-purple-700 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+                >
+                  {currentPlan === "Enterprise" ? "Active Enterprise Tier" : "Switch to Enterprise"}
+                </button>
+              </div>
+            </div>
+
+            {/* API Key Management & Developer Documentation */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              {/* API Keys Table & Form */}
+              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Developer REST API Keys</h3>
+                    <p className="text-[11px] text-slate-500">Authenticate external applications to dispatch emails via REST API.</p>
+                  </div>
+                  <span className="bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded text-[10px] font-bold">
+                    {apiKeyList.length} Active Keys
+                  </span>
+                </div>
+
+                <form onSubmit={handleCreateApiKey} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newKeyName}
+                    onChange={(e) => setNewKeyName(e.target.value)}
+                    placeholder="Key Label (e.g. Production Webhook)"
+                    className="flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    Generate API Key
+                  </button>
+                </form>
+
+                <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs">
+                  {apiKeyList.map((k) => (
+                    <div key={k.id} className="p-3 flex items-center justify-between hover:bg-slate-50">
+                      <div>
+                        <span className="font-bold text-slate-900 block">{k.name}</span>
+                        <code className="text-indigo-700 font-mono text-[11px]">{k.key}</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(k.key, k.id)}
+                        className="text-slate-600 hover:text-slate-900 text-[11px] font-bold"
+                      >
+                        {copiedRecord === k.id ? "Copied Key!" : "Copy Key"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Interactive REST API Code Snippets */}
+              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-slate-900 text-white p-6 shadow-xs space-y-4 flex flex-col">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wider">REST API SDK Documentation</h3>
+                    <p className="text-[11px] text-slate-400">Copy ready-to-use code snippets for your tech stack.</p>
+                  </div>
+                  <div className="flex items-center space-x-1 bg-slate-800 p-0.5 rounded border border-slate-700 text-[11px] font-semibold">
+                    {(["curl", "node", "python", "go"] as const).map((lang) => (
+                      <button
+                        key={lang}
+                        onClick={() => setApiDocLang(lang)}
+                        className={`px-2.5 py-1 rounded transition-all uppercase text-[10px] font-extrabold ${apiDocLang === lang ? "bg-indigo-600 text-white shadow-xs" : "text-slate-400 hover:text-white"}`}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex-1 rounded-xl bg-slate-950 p-4 border border-slate-800 font-mono text-xs overflow-x-auto">
+                  {apiDocLang === "curl" && (
+                    <pre className="text-emerald-400 leading-relaxed">
+{`curl -X POST https://yourdomain.com/api/emails/send \\
+  -H "Authorization: Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "to": "customer@example.com",
+    "subject": "Welcome to Geonixa!",
+    "bodyHtml": "<h1>Welcome</h1>"
+  }'`}
+                    </pre>
+                  )}
+
+                  {apiDocLang === "node" && (
+                    <pre className="text-indigo-300 leading-relaxed">
+{`const response = await fetch('https://yourdomain.com/api/emails/send', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    to: 'customer@example.com',
+    subject: 'Welcome to Geonixa!',
+    bodyHtml: '<h1>Welcome</h1>'
+  })
+});
+const data = await response.json();`}
+                    </pre>
+                  )}
+
+                  {apiDocLang === "python" && (
+                    <pre className="text-amber-300 leading-relaxed">
+{`import requests
+
+url = "https://yourdomain.com/api/emails/send"
+headers = {
+    "Authorization": "Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "to": "customer@example.com",
+    "subject": "Welcome to Geonixa!",
+    "bodyHtml": "<h1>Welcome</h1>"
+}
+response = requests.post(url, json=payload, headers=headers)`}
+                    </pre>
+                  )}
+
+                  {apiDocLang === "go" && (
+                    <pre className="text-cyan-300 leading-relaxed">
+{`package main
+
+import (
+    "bytes"
+    "net/http"
+)
+
+func main() {
+    body := []byte(\`{"to":"customer@example.com","subject":"Welcome","bodyHtml":"<h1>Welcome</h1>"}\`)
+    req, _ := http.NewRequest("POST", "https://yourdomain.com/api/emails/send", bytes.NewBuffer(body))
+    req.Header.Set("Authorization", "Bearer ${apiKeyList[0]?.key || "geo_live_sk_9a87f6e5d4c3b2a1"}")
+    req.Header.Set("Content-Type", "application/json")
+    client := &http.Client{}
+    client.Do(req)
+}`}
+                    </pre>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Team Seat Management & Roles */}
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Multi-Tenant Team Seat Management</h3>
+                  <p className="text-xs text-slate-500">Invite team members, assign RBAC permissions (Owner, Admin, Marketer), and manage workspace access.</p>
+                </div>
+                <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-xs font-bold">
+                  {teamMembers.length} Active Seats
+                </span>
+              </div>
+
+              <form onSubmit={handleInviteTeamMember} className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="teammate@company.com"
+                  className="md:col-span-7 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
+                  required
+                />
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="md:col-span-3 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
+                >
+                  <option value="MARKETER">Marketer (Campaign Access)</option>
+                  <option value="ADMIN">Admin (Full Infrastructure)</option>
+                  <option value="OWNER">Owner (Billing & Domains)</option>
+                </select>
+                <button
+                  type="submit"
+                  className="md:col-span-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                >
+                  Send Invite
+                </button>
+              </form>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-600 uppercase font-semibold">
+                      <th className="p-3">User Name</th>
+                      <th className="p-3">Email Address</th>
+                      <th className="p-3">Role</th>
+                      <th className="p-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {teamMembers.map((m) => (
+                      <tr key={m.id} className="hover:bg-slate-50">
+                        <td className="p-3 font-bold text-slate-900">{m.name}</td>
+                        <td className="p-3 text-slate-700">{m.email}</td>
+                        <td className="p-3 font-bold">
+                          <span className={`px-2.5 py-0.5 rounded text-[10px] ${
+                            m.role === "OWNER" ? "bg-purple-100 text-purple-800 border border-purple-200" :
+                            m.role === "ADMIN" ? "bg-indigo-100 text-indigo-800 border border-indigo-200" :
+                            "bg-slate-100 text-slate-700"
+                          }`}>
+                            {m.role}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
+                            ACTIVE
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
