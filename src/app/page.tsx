@@ -72,6 +72,40 @@ export default function Home() {
   const [webhooksList, setWebhooksList] = useState<any[]>([]);
   const [addingWebhook, setAddingWebhook] = useState(false);
 
+  // Pre-Built HTML Templates Dictionary
+  const PREBUILT_TEMPLATES: Record<string, { name: string; subject: string; html: string }> = {
+    web_dev: {
+      name: "Web Development Masterclass",
+      subject: "Master Web Development with Eonixa: Registration Now Open",
+      html: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">\n  <div style="background-color: #0f172a; padding: 32px 24px; text-align: center; color: #ffffff;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9; color: #94a3b8;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #334155; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}},</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f8fafc; border-left: 4px solid #4f46e5; padding: 18px; margin: 24px 0; border-radius: 6px;">\n      <h3 style="margin: 0 0 10px 0; color: #0f172a; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
+    },
+    saas_launch: {
+      name: "SaaS Product Launch & Free Trial",
+      subject: "🚀 Introducing GEO Mail Studio: 14-Day Free Unlimited Trial",
+      html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px;">\n  <h1 style="color: #4f46e5; margin-top: 0; font-size: 26px;">Revolutionize Your Cold Email Reach</h1>\n  <p style="color: #475569; font-size: 16px; line-height: 1.6;">Hi {{subscriber.firstName}},</p>\n  <p style="color: #475569; font-size: 15px; line-height: 1.6;">We are thrilled to launch GEO Mail Studio — the ultimate self-hosted multi-account cold email platform with built-in bounce guard and AI copilot.</p>\n  <div style="text-align: center; margin: 30px 0;">\n    <a href="https://geonixa.com" style="background: #4f46e5; color: #ffffff; padding: 16px 32px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block;">Start 14-Day Free Trial</a>\n  </div>\n  <p style="color: #94a3b8; font-size: 12px; text-align: center;">No credit card required. <a href="{{unsubscribeUrl}}" style="color: #4f46e5;">Unsubscribe</a></p>\n</div>`,
+    },
+    black_friday: {
+      name: "Special Flash Sale (50% Off)",
+      subject: "⚡ Exclusive 50% Off Limited-Time Promotion",
+      html: `<div style="font-family: Helvetica, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; color: #ffffff; border-radius: 12px; padding: 40px; text-align: center;">\n  <span style="background: #ef4444; color: #ffffff; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Limited Time Deal</span>\n  <h1 style="font-size: 32px; margin: 20px 0 10px 0;">50% OFF Enterprise Annual Plan</h1>\n  <p style="color: #94a3b8; font-size: 16px; margin-bottom: 30px;">Hi {{subscriber.firstName}}, claim your 50% discount before spots run out!</p>\n  <a href="https://geonixa.com" style="background: #22c55e; color: #ffffff; padding: 16px 36px; border-radius: 8px; font-weight: bold; font-size: 18px; text-decoration: none; display: inline-block;">Claim 50% Off Now</a>\n</div>`,
+    },
+    cold_outreach: {
+      name: "Minimalist B2B Cold Outreach",
+      subject: "Quick question regarding your outbound pipeline",
+      html: `<div style="font-family: Arial, sans-serif; max-width: 550px; margin: 0 auto; color: #1e293b; font-size: 15px; line-height: 1.7;">\n  <p>Hi {{subscriber.firstName}},</p>\n  <p>I came across your profile and noticed you are scaling your lead generation and sales outreach.</p>\n  <p>We built GEO Mail Studio to help teams dispatch cold email campaigns with dedicated VPS IPs and 100% deliverability.</p>\n  <p>Would you be open to a quick 5-minute chat this Thursday to see how it works?</p>\n  <p>Best regards,<br/><strong>Jithendra Varma</strong><br/>Founder, Geonixa</p>\n  <p style="font-size: 11px; color: #94a3b8; margin-top: 30px;"><a href="{{unsubscribeUrl}}">Unsubscribe</a></p>\n</div>`,
+    },
+    newsletter: {
+      name: "Executive Weekly Newsletter",
+      subject: "📰 Weekly Insights: Scaling B2B SaaS & Cold Infrastructure",
+      html: `<div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">\n  <div style="background: #3b82f6; padding: 24px; color: #ffffff;">\n    <h2 style="margin: 0; font-size: 22px;">Geonixa Weekly Dispatch</h2>\n  </div>\n  <div style="padding: 24px; color: #334155; font-size: 15px; line-height: 1.6;">\n    <p>Hi {{subscriber.firstName}},</p>\n    <p>Here are this week's top 3 strategies for maintaining 99%+ deliverability on custom domain sending infrastructure.</p>\n    <ul>\n      <li><strong>1. Always authenticate SPF & DKIM 2048-bit keys</strong></li>\n      <li><strong>2. Keep bounce rates under 0.5% with live MX checks</strong></li>\n      <li><strong>3. Warm up dedicated IPs gradually</strong></li>\n    </ul>\n    <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 24px;"><a href="{{unsubscribeUrl}}">Unsubscribe</a></p>\n  </div>\n</div>`,
+    },
+    event_invitation: {
+      name: "Live Webinar & Event Invitation",
+      subject: "🎟️ You are invited: Live Masterclass on Outbound AI Infrastructure",
+      html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px;">\n  <h2 style="color: #0f172a; margin-top: 0;">Live Webinar: Building 100K/Mo Cold Email Systems</h2>\n  <p style="color: #475569; font-size: 15px;">Hi {{subscriber.firstName}}, join us live this Friday as we demonstrate live VPS setup, multi-account load balancing, and AI template generation.</p>\n  <div style="background: #f1f5f9; padding: 16px; border-radius: 8px; margin: 20px 0; font-weight: bold; color: #334155;">\n    📅 Date: This Friday | 🕒 Time: 2:00 PM EST\n  </div>\n  <div style="text-align: center;">\n    <a href="https://geonixa.com" style="background: #6366f1; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block;">Reserve Your Spot</a>\n  </div>\n</div>`,
+    },
+  };
+
   // Spam Checker State
   const [spamInputText, setSpamInputText] = useState<string>(
     `Hello Future Innovator,\n\nWe are thrilled to welcome you to the Geonixa Internship & Skill Development Program. This is where your academic knowledge transforms into real-world, hireable expertise.\n\nOur team has curated an intensive, hands-on experience designed to push your boundaries. Whether you are aiming to land your dream tech job or build the next big startup, your roadmap to success starts right here.`
@@ -1026,11 +1060,48 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">HTML Template Body</label>
+                    <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                      <label className="block text-xs font-semibold text-slate-700">HTML Template Body</label>
+                      <div className="flex items-center space-x-2">
+                        <select
+                          onChange={(e) => {
+                            const key = e.target.value;
+                            if (PREBUILT_TEMPLATES[key]) {
+                              const tmpl = PREBUILT_TEMPLATES[key];
+                              setCampaignForm({
+                                ...campaignForm,
+                                name: tmpl.name,
+                                subject: tmpl.subject,
+                                bodyHtml: tmpl.html,
+                              });
+                            }
+                          }}
+                          className="rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-900 focus:outline-none cursor-pointer hover:bg-indigo-100 transition-all"
+                        >
+                          <option value="">🎨 Load Pre-Built Template...</option>
+                          <option value="web_dev">🎓 Web Development Masterclass</option>
+                          <option value="saas_launch">🚀 SaaS Product Launch & Free Trial</option>
+                          <option value="black_friday">⚡ Black Friday 50% Off Sale</option>
+                          <option value="cold_outreach">✉️ Minimalist Cold Email Outreach</option>
+                          <option value="newsletter">📰 Executive Weekly Newsletter</option>
+                          <option value="event_invitation">🎟️ Live Webinar & Event Invitation</option>
+                        </select>
+
+                        <button
+                          type="button"
+                          onClick={() => setShowAiModal(true)}
+                          className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center space-x-1"
+                        >
+                          <span>✨ AI Generator</span>
+                        </button>
+                      </div>
+                    </div>
+
                     <textarea
                       rows={14}
                       value={campaignForm.bodyHtml}
                       onChange={(e) => setCampaignForm({ ...campaignForm, bodyHtml: e.target.value })}
+                      placeholder="Select a pre-built template from the dropdown above, or click AI Generator..."
                       className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs leading-relaxed"
                       required
                     />
