@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  geo-mail-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: geo_mail_studio
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - DATABASE_URL=file:./dev.db
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=jithendravarma.l@gmail.com
+      - SMTP_PASS=nswymhicrcfgctmu
+    volumes:
+      - geo_mail_data:/app/prisma
+      - geo_mail_uploads:/app/public/uploads
+
+volumes:
+  geo_mail_data:
+  geo_mail_uploads:

@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Workspace {
+  id                  String   @id @default(cuid())
+  name                String
+  slug                String   @unique
+  authenticatedDomain String   @default("geonixa.com")
+  physicalAddress     String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  users               User[]
+  subscribers         Subscriber[]
+  events              Event[]
+  workflows           Workflow[]
+  campaigns           Campaign[]
+  emailLogs           EmailLog[]
+  trackingLinks       TrackingLink[]
+  domainVerifications DomainVerification[]
+  smtpAccounts        SmtpAccount[]
+
+  @@map("workspaces")
+}
+
+model SmtpAccount {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String
+  host        String    @default("smtp.gmail.com")
+  port        Int       @default(587)
+  username    String
+  password    String
+  dailyLimit  Int       @default(2000)
+  sentToday   Int       @default(0)
+  isActive    Boolean   @default(true)
+  lastUsedAt  DateTime?
+  quotaResetAt DateTime @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, email])
+  @@index([workspaceId, isActive])
+  @@map("smtp_accounts")
+}
+
+model DomainVerification {
+  id            String    @id @default(cuid())
+  workspaceId   String
+  domain        String
+  dkimSelector  String    @default("geo1")
+  dkimPublicKey String
+  spfVerified   Boolean   @default(false)
+  dkimVerified  Boolean   @default(false)
+  dmarcVerified Boolean   @default(false)
+  isVerified    Boolean   @default(false)
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, domain])
+  @@index([workspaceId])
+  @@map("domain_verifications")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  workspaceId String
+  email       String   @unique
+  name        String?
+  avatarUrl   String?
+  role        String   @default("MEMBER")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("users")
+}
+
+model Subscriber {
+  id             String    @id @default(cuid())
+  workspaceId    String
+  email          String
+  firstName      String?
+  lastName       String?
+  attributes     String?   @default("{}")
+  status         String    @default("SUBSCRIBED")
+  unsubscribedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  events    Event[]
+  emailLogs EmailLog[]
+
+  @@unique([workspaceId, email])
+  @@index([workspaceId, status])
+  @@map("subscribers")
+}
+
+model Event {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  subscriberId String?
+  name         String
+  payload      String?  @default("{}")
+  timestamp    DateTime @default(now())
+
+  workspace  Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  subscriber Subscriber? @relation(fields: [subscriberId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, name])
+  @@index([workspaceId, timestamp])
+  @@map("events")
+}
+
+model EmailLog {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  subscriberId String?
+  campaignId   String?
+  messageId    String    @unique
+  toEmail      String
+  fromEmail    String
+  subject      String
+  openedAt     DateTime?
+  clickedAt    DateTime?
+  deliveredAt  DateTime  @default(now())
+
+  workspace  Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  subscriber Subscriber? @relation(fields: [subscriberId], references: [id], onDelete: SetNull)
+  campaign   Campaign?   @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, toEmail])
+  @@map("email_logs")
+}
+
+model TrackingLink {
+  id          String   @id @default(cuid())
+  workspaceId String
+  originalUrl String
+  trackingId  String   @unique
+  clickCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, trackingId])
+  @@map("tracking_links")
+}
+
+model Workflow {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  status      String   @default("DRAFT")
+  triggerName String
+  definition  String   @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, triggerName])
+  @@map("workflows")
+}
+
+model Campaign {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  subject     String
+  bodyHtml    String
+  bodyText    String?
+  fromEmail   String
+  fromName    String
+  status      String    @default("DRAFT")
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  emailLogs EmailLog[]
+
+  @@index([workspaceId, status])
+  @@map("campaigns")
+}
