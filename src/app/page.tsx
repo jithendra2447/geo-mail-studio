@@ -20,7 +20,7 @@ export default function Home() {
     subject: "🎓 Web Development Masterclass by Eonixa — Limited Seats",
     fromName: "Jithendra Varma",
     fromEmail: "jithendravarma.l@gmail.com",
-    bodyHtml: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e4e4e7; border-radius: 12px; overflow: hidden;">\n  <div style="background-color: #09090b; padding: 32px 24px; text-align: center; color: #ffffff;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; color: #a1a1aa;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #27272a; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #09090b; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}}! 👋</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f4f4f5; border-left: 4px solid #18181b; padding: 18px; margin: 24px 0; border-radius: 6px;">\n      <h3 style="margin: 0 0 10px 0; color: #09090b; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #3f3f46; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #09090b; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f4f4f5; padding: 20px; text-align: center; font-size: 11px; color: #71717a; border-top: 1px solid #e4e4e7;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #09090b; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
+    bodyHtml: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e4e4e7; border-radius: 12px; overflow: hidden;">\n  <div style="background-color: #4f46e5; padding: 32px 24px; text-align: center; color: #ffffff;">\n    <h1 style="margin: 0; font-size: 24px; font-weight: 800;">Web Development Masterclass — Eonixa</h1>\n    <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9;">Powered by Eonixa</p>\n  </div>\n  <div style="padding: 32px 24px; color: #27272a; line-height: 1.6; font-size: 15px;">\n    <h2 style="color: #09090b; margin-top: 0; font-size: 20px;">Hi {{subscriber.firstName}}! 👋</h2>\n    <p style="margin-bottom: 20px;">Registration is officially open for the Web Development Masterclass from Eonixa. Designed for students and aspiring developers, this program gives you practical hands-on experience building modern web applications.</p>\n    <div style="background-color: #f8fafc; border-left: 4px solid #4f46e5; padding: 18px; margin: 24px 0; border-radius: 6px;">\n      <h3 style="margin: 0 0 10px 0; color: #09090b; font-size: 13px; text-transform: uppercase; font-weight: 800;">Program Highlights:</h3>\n      <ul style="margin: 0; padding-left: 20px; color: #3f3f46; font-size: 14px;">\n        <li style="margin-bottom: 8px;">Full-Stack Web Development: HTML, CSS, JS & Next.js</li>\n        <li style="margin-bottom: 8px;">Real-world project portfolio & live deployment guidance</li>\n        <li style="margin-bottom: 0;">Reserved capacity to ensure personalized mentorship</li>\n      </ul>\n    </div>\n    <div style="text-align: center; margin: 32px 0 16px 0;">\n      <a href="https://geonixa.com" style="background-color: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 15px; display: inline-block;">Secure Your Seat Now →</a>\n    </div>\n  </div>\n  <div style="background-color: #f4f4f5; padding: 20px; text-align: center; font-size: 11px; color: #71717a; border-top: 1px solid #e4e4e7;">\n    <p style="margin: 0 0 6px 0;">Office Address: {{workspace.physicalAddress}}</p>\n    <p style="margin: 0;"><a href="{{unsubscribeUrl}}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe from emails</a></p>\n  </div>\n</div>`,
   });
 
   const [sendingCampaign, setSendingCampaign] = useState(false);
@@ -400,17 +400,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans flex">
-      {/* 1. MONOCHROME LEFT SIDEBAR NAVIGATION */}
+      {/* 1. LEFT SIDEBAR NAVIGATION WITH FUNCTIONAL COLOR ACCENTS */}
       <aside className="w-72 border-r border-zinc-800 bg-zinc-900 min-h-screen flex flex-col justify-between p-5 sticky top-0 h-screen overflow-y-auto">
         <div className="space-y-6">
           {/* Brand Header */}
           <div className="flex items-center space-x-3 pb-4 border-b border-zinc-800">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-zinc-950 font-extrabold shadow-md text-base tracking-tighter">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-emerald-500 text-white font-extrabold shadow-md text-base tracking-tighter">
               GM
             </div>
             <div>
               <h1 className="text-base font-extrabold tracking-tight text-white">GEO Mail Studio</h1>
-              <p className="text-[11px] font-semibold text-zinc-400">Marketing & Deliverability</p>
+              <p className="text-[11px] font-semibold text-indigo-400">Marketing & Deliverability</p>
             </div>
           </div>
 
@@ -420,7 +420,7 @@ export default function Home() {
             <select
               value={workspaceId}
               onChange={(e) => setWorkspaceId(e.target.value)}
-              className="w-full bg-transparent text-xs font-bold text-zinc-200 outline-none cursor-pointer"
+              className="w-full bg-transparent text-xs font-bold text-indigo-400 outline-none cursor-pointer"
             >
               <option value="ws_geonixa" className="bg-zinc-900 text-white">Geonixa Inc (ws_geonixa)</option>
               <option value="ws_demo" className="bg-zinc-900 text-white">Demo Workspace (ws_demo)</option>
@@ -433,7 +433,7 @@ export default function Home() {
               onClick={() => setActiveTab("smtppool")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "smtppool"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -441,7 +441,7 @@ export default function Home() {
                 <span className="text-base">📫</span>
                 <span>Sender Accounts Pool</span>
               </div>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === "smtppool" ? "bg-zinc-900 text-white" : "bg-zinc-800 text-zinc-300"}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === "smtppool" ? "bg-indigo-700 text-white" : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"}`}>
                 {totalAccountCount}
               </span>
             </button>
@@ -450,7 +450,7 @@ export default function Home() {
               onClick={() => setActiveTab("spamchecker")}
               className={`w-full flex items-center space-x-3 rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "spamchecker"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -462,7 +462,7 @@ export default function Home() {
               onClick={() => setActiveTab("campaigns")}
               className={`w-full flex items-center space-x-3 rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "campaigns"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -474,7 +474,7 @@ export default function Home() {
               onClick={() => setActiveTab("domains")}
               className={`w-full flex items-center space-x-3 rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "domains"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -486,7 +486,7 @@ export default function Home() {
               onClick={() => setActiveTab("analytics")}
               className={`w-full flex items-center space-x-3 rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "analytics"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -498,7 +498,7 @@ export default function Home() {
               onClick={() => setActiveTab("subscribers")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "subscribers"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -506,7 +506,7 @@ export default function Home() {
                 <span className="text-base">👥</span>
                 <span>Audience List</span>
               </div>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === "subscribers" ? "bg-zinc-900 text-white" : "bg-zinc-800 text-zinc-300"}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === "subscribers" ? "bg-indigo-700 text-white" : "bg-zinc-800 text-zinc-300"}`}>
                 {subscribersData?.totalCount || 0}
               </span>
             </button>
@@ -515,7 +515,7 @@ export default function Home() {
               onClick={() => setActiveTab("upload")}
               className={`w-full flex items-center space-x-3 rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "upload"
-                  ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 font-extrabold"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
@@ -527,19 +527,19 @@ export default function Home() {
 
         {/* Sidebar Status Footer */}
         <div className="pt-4 border-t border-zinc-800 space-y-3">
-          <div className="rounded-xl bg-zinc-950 p-3 border border-zinc-800 text-[11px] font-medium text-zinc-300 space-y-1">
-            <div className="flex items-center space-x-1.5 font-extrabold text-white">
-              <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+          <div className="rounded-xl bg-emerald-950/40 p-3 border border-emerald-500/30 text-[11px] font-medium text-emerald-300 space-y-1">
+            <div className="flex items-center space-x-1.5 font-extrabold text-emerald-400">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Multi-Account Pool Active</span>
             </div>
-            <p className="text-[10px] text-zinc-400 font-mono">
+            <p className="text-[10px] text-emerald-300 font-mono">
               Cap: {dynamicCapacity.toLocaleString()} Mails/Day ({totalAccountCount} Accs × 2,000)
             </p>
           </div>
         </div>
       </aside>
 
-      {/* 2. MAIN MONOCHROME CONTENT AREA */}
+      {/* 2. MAIN CONTENT AREA WITH FUNCTIONAL COLORS */}
       <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-zinc-950">
         {/* TAB 1: MULTI-ACCOUNT SMTP LOAD BALANCER POOL */}
         {activeTab === "smtppool" && (
@@ -547,12 +547,12 @@ export default function Home() {
             {/* Page Title & Instructions */}
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-extrabold text-zinc-300 uppercase tracking-widest bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
-                  MONOCHROME SYSTEM
+                <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+                  2,000 MAILS / ACC DYNAMIC CAPACITY
                 </span>
                 <h2 className="text-3xl font-extrabold text-white tracking-tight mt-2">Sender Accounts Pool</h2>
                 <p className="text-sm text-zinc-400 mt-1">
-                  Every sender account adds <span className="text-white font-bold underline">+2,000 emails/day</span> to your daily dispatch capacity.
+                  Every sender account adds <span className="text-emerald-400 font-bold underline">+2,000 emails/day</span> to your daily dispatch capacity.
                 </p>
               </div>
 
@@ -567,7 +567,7 @@ export default function Home() {
                 <button
                   onClick={handleSeed30Accounts}
                   disabled={seedingPool}
-                  className="rounded-2xl bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 shadow-lg hover:bg-zinc-200 transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer"
+                  className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-emerald-950 hover:from-emerald-500 hover:to-teal-500 transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer"
                 >
                   <span>⚡</span>
                   <span>{seedingPool ? "Seeding..." : "Seed 30 Accounts (+60,000 Cap)"}</span>
@@ -579,7 +579,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm">
                 <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Total Daily Capacity</p>
-                <p className="text-3xl font-extrabold text-white mt-2">
+                <p className="text-3xl font-extrabold text-indigo-400 mt-2">
                   {dynamicCapacity.toLocaleString()}
                 </p>
                 <p className="text-xs text-zinc-500 mt-1">{totalAccountCount} Accs × 2,000 Mails/Day</p>
@@ -595,7 +595,7 @@ export default function Home() {
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm">
                 <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Sent Today Across Pool</p>
-                <p className="text-3xl font-extrabold text-zinc-200 mt-2">
+                <p className="text-3xl font-extrabold text-emerald-400 mt-2">
                   {smtpPoolData?.summary?.totalSentToday || 0}
                 </p>
                 <p className="text-xs text-zinc-500 mt-1">Inter-Email Throttling Active</p>
@@ -603,7 +603,7 @@ export default function Home() {
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm">
                 <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Per-Account Cap</p>
-                <p className="text-xl font-extrabold text-white mt-2">
+                <p className="text-xl font-extrabold text-amber-400 mt-2">
                   2,000 / Account / 24h
                 </p>
                 <p className="text-xs text-zinc-500 mt-1">Auto-Restores in 24h</p>
@@ -618,13 +618,13 @@ export default function Home() {
                   <div className="flex items-center space-x-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs font-bold">
                     <button
                       onClick={() => setAddMode("single")}
-                      className={`px-2.5 py-1 rounded-md transition-colors ${addMode === "single" ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-400"}`}
+                      className={`px-2.5 py-1 rounded-md transition-colors ${addMode === "single" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400"}`}
                     >
                       Single
                     </button>
                     <button
                       onClick={() => setAddMode("bulk")}
-                      className={`px-2.5 py-1 rounded-md transition-colors ${addMode === "bulk" ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-400"}`}
+                      className={`px-2.5 py-1 rounded-md transition-colors ${addMode === "bulk" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400"}`}
                     >
                       📋 Bulk Paste Accounts
                     </button>
@@ -640,7 +640,7 @@ export default function Home() {
                         value={newSmtpEmail}
                         onChange={(e) => setNewSmtpEmail(e.target.value)}
                         placeholder="user1@geonixa.com"
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-600 focus:border-white focus:outline-none font-medium"
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none font-medium"
                         required
                       />
                     </div>
@@ -652,7 +652,7 @@ export default function Home() {
                         value={newSmtpPass}
                         onChange={(e) => setNewSmtpPass(e.target.value)}
                         placeholder="nswymhicrcfgctmu"
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-600 focus:border-white focus:outline-none font-mono"
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none font-mono"
                         required
                       />
                       <p className="text-[10px] text-zinc-500 mt-1">Use 16-character App Password generated from Google Security settings.</p>
@@ -664,7 +664,7 @@ export default function Home() {
                         type="number"
                         value={newSmtpLimit}
                         onChange={(e) => setNewSmtpLimit(Number(e.target.value))}
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-white focus:outline-none"
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
                         required
                       />
                     </div>
@@ -672,7 +672,7 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={addingSmtp}
-                      className="w-full rounded-xl bg-white py-3 text-xs font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors disabled:opacity-50 cursor-pointer"
+                      className="w-full rounded-xl bg-indigo-600 py-3 text-xs font-extrabold text-white shadow-md hover:bg-indigo-500 transition-colors disabled:opacity-50 cursor-pointer"
                     >
                       {addingSmtp ? "Adding..." : "➕ Add Sender Email to Pool (+2,000 Capacity)"}
                     </button>
@@ -681,14 +681,14 @@ export default function Home() {
                   <form onSubmit={handleBulkImportSmtp} className="space-y-4">
                     <div>
                       <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                        Paste Sender Emails & Passwords (Format: <code className="text-zinc-200">email, password</code>)
+                        Paste Sender Emails & Passwords (Format: <code className="text-indigo-400">email, password</code>)
                       </label>
                       <textarea
                         rows={8}
                         value={bulkText}
                         onChange={(e) => setBulkText(e.target.value)}
                         placeholder={`sender1@geonixa.com, app_password_1\nsender2@geonixa.com, app_password_2\nsender3@geonixa.com, app_password_3`}
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-xs font-mono text-zinc-100 placeholder-zinc-600 focus:border-white focus:outline-none leading-relaxed"
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-xs font-mono text-zinc-100 placeholder-zinc-600 focus:border-indigo-500 focus:outline-none leading-relaxed"
                         required
                       />
                     </div>
@@ -696,7 +696,7 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={addingSmtp}
-                      className="w-full rounded-xl bg-white py-3 text-xs font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors disabled:opacity-50 cursor-pointer"
+                      className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3 text-xs font-extrabold text-white shadow-md hover:from-violet-500 hover:to-indigo-500 transition-colors disabled:opacity-50 cursor-pointer"
                     >
                       {addingSmtp ? "Importing Sender Emails..." : "🚀 Import All Sender Emails to Pool"}
                     </button>
@@ -708,7 +708,7 @@ export default function Home() {
               <div className="lg:col-span-7 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm space-y-4 flex flex-col">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white">Active Sender Pool Rotation ({totalAccountCount})</h3>
-                  <span className="text-[11px] font-bold text-zinc-300 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800">
+                  <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/30">
                     24h Rolling Quota Auto-Reset
                   </span>
                 </div>
@@ -739,7 +739,7 @@ export default function Home() {
                                   </div>
                                   <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                                     <div
-                                      className={`h-1.5 rounded-full ${isCapReached ? "bg-zinc-500" : "bg-white"}`}
+                                      className={`h-1.5 rounded-full ${isCapReached ? "bg-rose-500" : "bg-emerald-400"}`}
                                       style={{ width: `${pct}%` }}
                                     />
                                   </div>
@@ -749,8 +749,8 @@ export default function Home() {
                                 <span
                                   className={`rounded px-2 py-0.5 font-bold text-[10px] ${
                                     isCapReached
-                                      ? "bg-zinc-800 text-zinc-400 border border-zinc-700"
-                                      : "bg-zinc-100 text-zinc-950 border border-zinc-300 font-extrabold"
+                                      ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                                      : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-extrabold"
                                   }`}
                                 >
                                   {isCapReached ? "🔒 LOCKED (Restores in 24h)" : "🟢 ACTIVE"}
@@ -759,7 +759,7 @@ export default function Home() {
                               <td className="p-3 text-right">
                                 <button
                                   onClick={() => handleDeleteSmtpAccount(acc.id)}
-                                  className="text-zinc-400 hover:text-white font-bold hover:underline"
+                                  className="text-rose-400 hover:text-rose-300 font-bold hover:underline"
                                 >
                                   Remove
                                 </button>
@@ -779,7 +779,7 @@ export default function Home() {
                     <button
                       onClick={handleSeed30Accounts}
                       disabled={seedingPool}
-                      className="rounded-xl bg-white px-4 py-2 text-xs font-extrabold text-zinc-950 shadow-sm hover:bg-zinc-200"
+                      className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-extrabold text-white shadow-sm hover:bg-emerald-500"
                     >
                       ⚡ Seed 30 Geonixa Accounts (+60,000 Capacity)
                     </button>
@@ -790,17 +790,17 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 2: SPAM CHECKER TOOL */}
+        {/* TAB 2: SPAM CHECKER TOOL WITH COLORFUL SPAM HIGHLIGHTS */}
         {activeTab === "spamchecker" && (
           <div className="space-y-6 max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-extrabold text-zinc-300 uppercase tracking-widest bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
+                <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/30">
                   SPAM INSPECTOR
                 </span>
                 <h2 className="text-3xl font-extrabold text-white tracking-tight mt-2">Spam Checker</h2>
                 <p className="text-sm text-zinc-400 mt-1">
-                  Copy/paste an email message to detect and optimize <span className="text-white underline font-semibold">spam words with professional synonyms</span>.
+                  Copy/paste an email message to detect and optimize <span className="text-indigo-400 underline font-semibold">spam words with professional synonyms</span>.
                 </p>
               </div>
 
@@ -820,7 +820,7 @@ export default function Home() {
                 <button
                   onClick={handleAiAutoFixSpam}
                   disabled={fixingSpamAi}
-                  className="rounded-2xl bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 shadow-lg hover:bg-zinc-200 transition-all disabled:opacity-50 flex items-center space-x-2 cursor-pointer"
+                  className="rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-indigo-950 hover:from-violet-500 hover:to-indigo-500 transition-all disabled:opacity-50 flex items-center space-x-2 cursor-pointer"
                 >
                   <span>✨</span>
                   <span>{fixingSpamAi ? "Rewriting with Smart AI..." : "Replace Spam Words with AI Synonyms"}</span>
@@ -834,7 +834,17 @@ export default function Home() {
                 <div className="flex items-center space-x-6">
                   <div>
                     <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Overall score:</span>
-                    <span className="text-xl font-black text-white">
+                    <span
+                      className={`text-xl font-black ${
+                        detailedSpamAnalysis?.overallScore === "Poor"
+                          ? "text-rose-400"
+                          : detailedSpamAnalysis?.overallScore === "Needs Work"
+                          ? "text-amber-400"
+                          : detailedSpamAnalysis?.overallScore === "Good"
+                          ? "text-blue-400"
+                          : "text-emerald-400"
+                      }`}
+                    >
                       {detailedSpamAnalysis?.overallScore || "Clean"}
                     </span>
                   </div>
@@ -859,32 +869,41 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Categorized Breakdown Cards Bar */}
+              {/* Categorized Breakdown Cards Bar with Functional Colors */}
               <div>
                 <span className="text-[11px] font-extrabold text-zinc-500 uppercase tracking-wider block mb-2">Detected Categories:</span>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {detailedSpamAnalysis?.categorySummaries.map((cat) => (
-                    <div
-                      key={cat.category}
-                      className={`flex items-center justify-between rounded-2xl p-3.5 border text-xs font-bold transition-all ${
-                        cat.count > 0
-                          ? "bg-zinc-950 border-zinc-700 text-white shadow-sm"
-                          : "bg-zinc-950/40 border-zinc-800/80 text-zinc-500 opacity-60"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm">{cat.icon}</span>
-                        <span>{cat.category}</span>
-                      </div>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
-                          cat.count > 0 ? "bg-white text-zinc-950" : "bg-zinc-800 text-zinc-500"
+                  {detailedSpamAnalysis?.categorySummaries.map((cat) => {
+                    const colorStyles =
+                      cat.category === "Urgency"
+                        ? "bg-rose-500/10 border-rose-500/40 text-rose-300"
+                        : cat.category === "Shady"
+                        ? "bg-pink-500/10 border-pink-500/40 text-pink-300"
+                        : cat.category === "Overpromise"
+                        ? "bg-amber-500/10 border-amber-500/40 text-amber-300"
+                        : "bg-purple-500/10 border-purple-500/40 text-purple-300";
+
+                    return (
+                      <div
+                        key={cat.category}
+                        className={`flex items-center justify-between rounded-2xl p-3.5 border text-xs font-bold transition-all ${
+                          cat.count > 0 ? `${colorStyles} shadow-sm` : "bg-zinc-950 border-zinc-800 text-zinc-600 opacity-60"
                         }`}
                       >
-                        ({cat.count})
-                      </span>
-                    </div>
-                  ))}
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm">{cat.icon}</span>
+                          <span>{cat.category}</span>
+                        </div>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                            cat.count > 0 ? "bg-white text-zinc-950" : "bg-zinc-800 text-zinc-500"
+                          }`}
+                        >
+                          ({cat.count})
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -905,7 +924,7 @@ export default function Home() {
                   value={spamInputText}
                   onChange={(e) => setSpamInputText(e.target.value)}
                   placeholder="Paste or type your email content here to scan for spam words..."
-                  className="w-full flex-1 rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-xs font-sans text-white focus:border-white focus:outline-none leading-relaxed"
+                  className="w-full flex-1 rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-xs font-sans text-white focus:border-indigo-500 focus:outline-none leading-relaxed"
                 />
               </div>
 
@@ -937,8 +956,8 @@ export default function Home() {
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                         detailedSpamAnalysis?.highlights.length === 0
-                          ? "bg-zinc-100 text-zinc-950"
-                          : "bg-zinc-800 text-zinc-200"
+                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                          : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
                       }`}
                     >
                       {detailedSpamAnalysis?.highlights.length === 0
@@ -956,7 +975,7 @@ export default function Home() {
                         {detailedSpamAnalysis.highlights.map((h, i) => (
                           <span
                             key={i}
-                            className="px-2 py-0.5 rounded text-[11px] font-bold border border-zinc-700 bg-zinc-950 text-white"
+                            className={`px-2 py-0.5 rounded text-[11px] font-bold border ${h.color}`}
                           >
                             {h.word} ({h.category})
                           </span>
@@ -964,7 +983,7 @@ export default function Home() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-xl bg-zinc-950 p-3 border border-zinc-800 text-xs text-zinc-200 flex items-center space-x-2">
+                    <div className="rounded-xl bg-emerald-950/40 p-3 border border-emerald-500/30 text-xs text-emerald-300 flex items-center space-x-2">
                       <span className="text-base">🎉</span>
                       <span className="font-semibold">
                         Zero spam triggers detected! Your email has a 0% Spam Risk Score and is 100% ready for maximum inbox deliverability.
@@ -977,7 +996,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 3: LIVE CAMPAIGN STUDIO */}
+        {/* TAB 3: LIVE CAMPAIGN STUDIO WITH RICH EMAIL TEMPLATES */}
         {activeTab === "campaigns" && (
           <div className="space-y-8 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -990,7 +1009,7 @@ export default function Home() {
                   </div>
                   <button
                     onClick={() => setShowAiModal(true)}
-                    className="flex items-center space-x-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-all cursor-pointer"
+                    className="flex items-center space-x-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-3.5 py-2 text-xs font-extrabold text-white shadow-md shadow-indigo-950 hover:from-violet-500 hover:to-indigo-500 transition-all cursor-pointer"
                   >
                     <span>✨</span>
                     <span>Generate with AI Copilot</span>
@@ -1005,15 +1024,15 @@ export default function Home() {
                         type="text"
                         value={campaignForm.name}
                         onChange={(e) => setCampaignForm({ ...campaignForm, name: e.target.value })}
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
                         required
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-zinc-300 mb-1">Target Audience</label>
-                      <div className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-zinc-200 flex items-center justify-between">
+                      <div className="w-full rounded-lg border border-emerald-500/30 bg-emerald-950/20 px-3 py-2 text-xs font-bold text-emerald-300 flex items-center justify-between">
                         <span>All Active Subscribers</span>
-                        <span className="bg-white text-zinc-950 px-2 py-0.5 rounded font-bold">
+                        <span className="bg-emerald-500 text-zinc-950 px-2 py-0.5 rounded font-bold">
                           {subscribersData?.totalCount || 0} Recipients
                         </span>
                       </div>
@@ -1026,7 +1045,7 @@ export default function Home() {
                       type="text"
                       value={campaignForm.subject}
                       onChange={(e) => setCampaignForm({ ...campaignForm, subject: e.target.value })}
-                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none font-medium"
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none font-medium"
                       required
                     />
                   </div>
@@ -1038,7 +1057,7 @@ export default function Home() {
                         type="text"
                         value={campaignForm.fromName}
                         onChange={(e) => setCampaignForm({ ...campaignForm, fromName: e.target.value })}
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
                         required
                       />
                     </div>
@@ -1048,7 +1067,7 @@ export default function Home() {
                         type="email"
                         value={campaignForm.fromEmail}
                         onChange={(e) => setCampaignForm({ ...campaignForm, fromEmail: e.target.value })}
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none font-bold"
+                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-indigo-400 focus:border-indigo-500 focus:outline-none font-bold"
                         required
                       />
                     </div>
@@ -1060,7 +1079,7 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => setShowAiModal(true)}
-                        className="text-[11px] font-bold text-zinc-300 hover:underline"
+                        className="text-[11px] font-bold text-indigo-400 hover:underline"
                       >
                         ✨ Write with AI Copilot
                       </button>
@@ -1069,7 +1088,7 @@ export default function Home() {
                       rows={10}
                       value={campaignForm.bodyHtml}
                       onChange={(e) => setCampaignForm({ ...campaignForm, bodyHtml: e.target.value })}
-                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-3 text-xs font-mono text-white focus:border-white focus:outline-none"
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 p-3 text-xs font-mono text-white focus:border-indigo-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -1077,7 +1096,7 @@ export default function Home() {
                   <button
                     type="submit"
                     disabled={sendingCampaign}
-                    className="w-full rounded-xl bg-white py-3.5 text-sm font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer"
+                    className="w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-extrabold text-white shadow-md shadow-emerald-950 hover:bg-emerald-500 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer"
                   >
                     <span>🚀</span>
                     <span>{sendingCampaign ? "Dispatching via Multi-Account Pool..." : "Send Campaign (Auto-Rotate Senders + Rate Limited)"}</span>
@@ -1093,13 +1112,13 @@ export default function Home() {
                     <div className="flex items-center space-x-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs font-bold">
                       <button
                         onClick={() => setPreviewMode("desktop")}
-                        className={`px-2.5 py-1 rounded-md transition-colors ${previewMode === "desktop" ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-400"}`}
+                        className={`px-2.5 py-1 rounded-md transition-colors ${previewMode === "desktop" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400"}`}
                       >
                         🖥️ Desktop
                       </button>
                       <button
                         onClick={() => setPreviewMode("mobile")}
-                        className={`px-2.5 py-1 rounded-md transition-colors ${previewMode === "mobile" ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-400"}`}
+                        className={`px-2.5 py-1 rounded-md transition-colors ${previewMode === "mobile" ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-400"}`}
                       >
                         📱 Mobile
                       </button>
@@ -1127,7 +1146,7 @@ export default function Home() {
 
                 {campaignResult && (
                   <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-xs font-mono text-zinc-100 overflow-x-auto space-y-2">
-                    <p className="text-white font-bold">// Live Multi-Account Dispatch Output</p>
+                    <p className="text-emerald-400 font-bold">// Live Multi-Account Dispatch Output</p>
                     <pre>{JSON.stringify(campaignResult.data, null, 2)}</pre>
                   </div>
                 )}
@@ -1156,9 +1175,9 @@ export default function Home() {
                           <td className="p-3 font-bold text-white">{c.name}</td>
                           <td className="p-3 text-zinc-300">{c.subject}</td>
                           <td className="p-3 text-zinc-400">{c.fromName} &lt;{c.fromEmail}&gt;</td>
-                          <td className="p-3 font-bold text-white">{c._count?.emailLogs || 0} Emails</td>
+                          <td className="p-3 font-bold text-indigo-400">{c._count?.emailLogs || 0} Emails</td>
                           <td className="p-3">
-                            <span className="rounded bg-white px-2 py-0.5 font-extrabold text-zinc-950">
+                            <span className="rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 font-extrabold">
                               {c.status}
                             </span>
                           </td>
@@ -1175,14 +1194,14 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 4: DOMAIN VERIFICATION CENTER */}
+        {/* TAB 4: DOMAIN VERIFICATION CENTER WITH COLOR VERIFICATION BADGES */}
         {activeTab === "domains" && (
           <div className="space-y-8 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
               <div className="lg:col-span-6 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm space-y-4">
                 <h3 className="text-lg font-bold text-white">Register Domain for Verification</h3>
                 <p className="text-xs text-zinc-400">
-                  Enter your sending domain (e.g. <code className="text-white font-bold bg-zinc-950 px-1 py-0.5 rounded">gmail.com</code>) to generate 2048-bit RSA DKIM keys and required DNS TXT records.
+                  Enter your sending domain (e.g. <code className="text-indigo-400 font-bold bg-zinc-950 px-1 py-0.5 rounded">gmail.com</code>) to generate 2048-bit RSA DKIM keys and required DNS TXT records.
                 </p>
 
                 <form onSubmit={handleRegisterDomain} className="space-y-4">
@@ -1193,7 +1212,7 @@ export default function Home() {
                       value={inputDomain}
                       onChange={(e) => setInputDomain(e.target.value)}
                       placeholder="example.com"
-                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -1201,7 +1220,7 @@ export default function Home() {
                   <button
                     type="submit"
                     disabled={registeringDomain}
-                    className="w-full rounded-xl bg-white py-3 text-sm font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors disabled:opacity-50 cursor-pointer"
+                    className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-extrabold text-white shadow-md hover:bg-indigo-500 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {registeringDomain ? "Generating DKIM Keys..." : "🔑 Register & Generate DNS Keys"}
                   </button>
@@ -1212,15 +1231,15 @@ export default function Home() {
                     <h4 className="font-bold text-zinc-200 uppercase tracking-wider text-[11px]">Required DNS TXT Records to Add:</h4>
 
                     <div className="rounded-lg bg-zinc-950 p-3 text-zinc-300 font-mono text-[11px] overflow-x-auto space-y-2 border border-zinc-800">
-                      <p className="text-white font-bold">// 1. DKIM Record (TXT)</p>
+                      <p className="text-indigo-400 font-bold">// 1. DKIM Record (TXT)</p>
                       <p><span className="text-zinc-500">Host:</span> {domainRecords.expectedRecords.dkim.host}</p>
                       <p><span className="text-zinc-500">Value:</span> {domainRecords.expectedRecords.dkim.value.substring(0, 70)}...</p>
 
-                      <p className="text-white font-bold pt-2">// 2. SPF Record (TXT)</p>
+                      <p className="text-indigo-400 font-bold pt-2">// 2. SPF Record (TXT)</p>
                       <p><span className="text-zinc-500">Host:</span> {domainRecords.expectedRecords.spf.host}</p>
                       <p><span className="text-zinc-500">Value:</span> {domainRecords.expectedRecords.spf.value}</p>
 
-                      <p className="text-white font-bold pt-2">// 3. DMARC Record (TXT)</p>
+                      <p className="text-indigo-400 font-bold pt-2">// 3. DMARC Record (TXT)</p>
                       <p><span className="text-zinc-500">Host:</span> {domainRecords.expectedRecords.dmarc.host}</p>
                       <p><span className="text-zinc-500">Value:</span> {domainRecords.expectedRecords.dmarc.value}</p>
                     </div>
@@ -1228,7 +1247,7 @@ export default function Home() {
                     <button
                       onClick={() => handleRunDNSCheck(inputDomain)}
                       disabled={checkingDNS}
-                      className="w-full rounded-xl bg-white py-2.5 text-xs font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors disabled:opacity-50 cursor-pointer"
+                      className="w-full rounded-xl bg-emerald-600 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-emerald-500 transition-colors disabled:opacity-50 cursor-pointer"
                     >
                       {checkingDNS ? "Querying Public DNS Servers..." : "🔍 Run Live Real-Time DNS Check"}
                     </button>
@@ -1249,8 +1268,8 @@ export default function Home() {
                             <span
                               className={`rounded px-2 py-0.5 text-[10px] font-bold ${
                                 d.isVerified
-                                  ? "bg-white text-zinc-950 font-extrabold"
-                                  : "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-extrabold"
+                                  : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                               }`}
                             >
                               {d.isVerified ? "VERIFIED" : "PENDING DNS"}
@@ -1259,20 +1278,20 @@ export default function Home() {
                           <button
                             onClick={() => handleRunDNSCheck(d.domain)}
                             disabled={checkingDNS}
-                            className="rounded bg-zinc-800 px-2.5 py-1 text-xs font-bold text-zinc-200 hover:bg-zinc-700 border border-zinc-700 cursor-pointer"
+                            className="rounded bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 text-xs font-bold hover:bg-indigo-600/40 cursor-pointer"
                           >
                             Re-Check DNS
                           </button>
                         </div>
 
                         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                          <div className={`p-2 rounded border ${d.spfVerified ? "bg-zinc-100 text-zinc-950 font-extrabold" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}>
+                          <div className={`p-2 rounded border ${d.spfVerified ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-extrabold" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}>
                             SPF: {d.spfVerified ? "PASS" : "FAIL"}
                           </div>
-                          <div className={`p-2 rounded border ${d.dkimVerified ? "bg-zinc-100 text-zinc-950 font-extrabold" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}>
+                          <div className={`p-2 rounded border ${d.dkimVerified ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-extrabold" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}>
                             DKIM: {d.dkimVerified ? "PASS" : "FAIL"}
                           </div>
-                          <div className={`p-2 rounded border ${d.dmarcVerified ? "bg-zinc-100 text-zinc-950 font-extrabold" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}>
+                          <div className={`p-2 rounded border ${d.dmarcVerified ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-extrabold" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}>
                             DMARC: {d.dmarcVerified ? "PASS" : "FAIL"}
                           </div>
                         </div>
@@ -1281,7 +1300,7 @@ export default function Home() {
 
                     {dnsResult && (
                       <div className="rounded-xl bg-zinc-950 p-4 text-xs font-mono text-zinc-200 overflow-x-auto space-y-2 border border-zinc-800">
-                        <p className="text-white font-bold">// Live DNS Query Output</p>
+                        <p className="text-emerald-400 font-bold">// Live DNS Query Output</p>
                         <p className="text-zinc-300">Domain: {dnsResult.domain}</p>
                         <p className="text-zinc-300">Status: {dnsResult.isFullyVerified ? "100% VERIFIED" : "Records Pending DNS Propagation"}</p>
                         <pre className="text-zinc-400 mt-2">{JSON.stringify(dnsResult.dnsDetails, null, 2)}</pre>
@@ -1311,19 +1330,19 @@ export default function Home() {
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm">
                 <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Open Rate %</p>
-                <p className="text-3xl font-extrabold text-white mt-2">{analytics?.metrics?.openRatePercentage || 0}%</p>
+                <p className="text-3xl font-extrabold text-emerald-400 mt-2">{analytics?.metrics?.openRatePercentage || 0}%</p>
                 <p className="text-xs text-zinc-500 mt-1">{analytics?.metrics?.openedCount || 0} opened</p>
               </div>
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm">
                 <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Click Rate %</p>
-                <p className="text-3xl font-extrabold text-white mt-2">{analytics?.metrics?.clickRatePercentage || 0}%</p>
+                <p className="text-3xl font-extrabold text-indigo-400 mt-2">{analytics?.metrics?.clickRatePercentage || 0}%</p>
                 <p className="text-xs text-zinc-500 mt-1">{analytics?.metrics?.clickedCount || 0} clicked</p>
               </div>
 
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-sm">
                 <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Unsubscribes</p>
-                <p className="text-3xl font-extrabold text-zinc-400 mt-2">{analytics?.metrics?.unsubscribedCount || 0}</p>
+                <p className="text-3xl font-extrabold text-rose-400 mt-2">{analytics?.metrics?.unsubscribedCount || 0}</p>
                 <p className="text-xs text-zinc-500 mt-1">RFC 8058 Compliant</p>
               </div>
             </div>
@@ -1351,7 +1370,7 @@ export default function Home() {
                           <td className="p-3 text-zinc-300">{log.subject}</td>
                           <td className="p-3">
                             {log.openedAt ? (
-                              <span className="rounded bg-white px-2 py-0.5 font-extrabold text-zinc-950">
+                              <span className="rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 font-extrabold">
                                 Opened
                               </span>
                             ) : (
@@ -1360,7 +1379,7 @@ export default function Home() {
                           </td>
                           <td className="p-3">
                             {log.clickedAt ? (
-                              <span className="rounded bg-zinc-200 px-2 py-0.5 font-bold text-zinc-950">
+                              <span className="rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 font-bold">
                                 Clicked
                               </span>
                             ) : (
@@ -1393,7 +1412,7 @@ export default function Home() {
                     value={newSubEmail}
                     onChange={(e) => setNewSubEmail(e.target.value)}
                     placeholder="user@example.com"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
                     required
                   />
                 </div>
@@ -1404,12 +1423,12 @@ export default function Home() {
                     value={newSubFirstName}
                     onChange={(e) => setNewSubFirstName(e.target.value)}
                     placeholder="John"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-white py-2.5 text-xs font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors"
+                  className="w-full rounded-xl bg-indigo-600 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-indigo-500 transition-colors"
                 >
                   ➕ Add Subscriber to List
                 </button>
@@ -1438,8 +1457,8 @@ export default function Home() {
                             <span
                               className={`rounded px-2 py-0.5 font-bold ${
                                 sub.status === "SUBSCRIBED"
-                                  ? "bg-white text-zinc-950 font-extrabold"
-                                  : "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-extrabold"
+                                  : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
                               }`}
                             >
                               {sub.status}
@@ -1464,7 +1483,7 @@ export default function Home() {
             <div>
               <h3 className="text-xl font-bold text-white">Self-Hosted Media Asset Upload</h3>
               <p className="text-xs text-zinc-400 mt-1">
-                Upload image banners, logos, or attachment assets directly to your self-hosted <code className="text-white bg-zinc-950 px-1 py-0.5 rounded">/public/uploads</code> directory.
+                Upload image banners, logos, or attachment assets directly to your self-hosted <code className="text-indigo-400 bg-zinc-950 px-1 py-0.5 rounded">/public/uploads</code> directory.
               </p>
             </div>
 
@@ -1478,7 +1497,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={uploading || !uploadFile}
-                className="w-full rounded-xl bg-white py-3 text-sm font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-colors disabled:opacity-50 cursor-pointer"
+                className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-extrabold text-white shadow-md hover:bg-indigo-500 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {uploading ? "Uploading..." : "Upload File to Local Storage"}
               </button>
@@ -1488,8 +1507,8 @@ export default function Home() {
               <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-xs font-mono text-zinc-100 overflow-x-auto space-y-2">
                 {uploadResult.url ? (
                   <>
-                    <p className="text-white font-bold">✅ Asset Uploaded Successfully!</p>
-                    <p className="text-zinc-300">Public URL: <a href={uploadResult.url} target="_blank" rel="noreferrer" className="text-zinc-400 underline">{uploadResult.url}</a></p>
+                    <p className="text-emerald-400 font-bold">✅ Asset Uploaded Successfully!</p>
+                    <p className="text-zinc-300">Public URL: <a href={uploadResult.url} target="_blank" rel="noreferrer" className="text-indigo-400 underline">{uploadResult.url}</a></p>
                     {uploadResult.url.match(/\.(png|jpg|jpeg|gif|webp)$/i) && (
                       <div className="mt-3 border border-zinc-800 rounded-lg p-2 bg-zinc-900">
                         <img src={uploadResult.url} alt="Uploaded asset preview" className="max-h-40 rounded mx-auto" />
@@ -1497,7 +1516,7 @@ export default function Home() {
                     )}
                   </>
                 ) : (
-                  <p className="text-zinc-400 font-bold">❌ Upload Error: {uploadResult.error}</p>
+                  <p className="text-rose-400 font-bold">❌ Upload Error: {uploadResult.error}</p>
                 )}
               </div>
             )}
@@ -1530,7 +1549,7 @@ export default function Home() {
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   placeholder="e.g. for course web development from Eonixa Limited slots for students..."
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-xs text-white placeholder-zinc-600 focus:border-white focus:outline-none font-medium"
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-xs text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none font-medium"
                   required
                 />
               </div>
@@ -1540,7 +1559,7 @@ export default function Home() {
                 <select
                   value={aiTone}
                   onChange={(e: any) => setAiTone(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-white focus:border-white focus:outline-none"
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-white focus:border-indigo-500 focus:outline-none"
                 >
                   <option value="Friendly" className="bg-zinc-900 text-white">😊 Friendly & Welcoming</option>
                   <option value="Urgent" className="bg-zinc-900 text-white">🚨 Urgent / Sales Focus</option>
@@ -1561,7 +1580,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={generatingAi}
-                  className="rounded-xl bg-white px-5 py-2 text-xs font-extrabold text-zinc-950 shadow-md hover:bg-zinc-200 transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer"
+                  className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2 text-xs font-extrabold text-white shadow-md hover:from-violet-500 hover:to-indigo-500 transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer"
                 >
                   <span>✨</span>
                   <span>{generatingAi ? "Crafting Customized Email..." : "Generate AI Template"}</span>
