@@ -8,7 +8,6 @@ import { DripEngine, DripSequence } from "@/lib/campaigns/drip-engine";
 import { LeadScorer } from "@/lib/subscribers/lead-scorer";
 
 export default function Home() {
-  // 5 Executive Panels (Clean, Concise, Zero Truncation)
   const [activeTab, setActiveTab] = useState<"analytics" | "campaigns" | "infrastructure" | "compliance" | "audience">("analytics");
 
   const [workspaceId, setWorkspaceId] = useState("ws_geonixa");
@@ -503,7 +502,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans antialiased flex">
-      {/* 280PX WIDE EXECUTIVE SIDEBAR — ZERO TRUNCATION, PERFECT SPACING */}
+      {/* 280PX WIDE EXECUTIVE SIDEBAR */}
       <aside className="w-72 border-r border-slate-200/80 bg-white min-h-screen flex flex-col justify-between p-5 sticky top-0 h-screen overflow-y-auto shadow-xs">
         <div className="space-y-6">
           {/* Executive Brand Logo Header */}
@@ -530,9 +529,8 @@ export default function Home() {
             </select>
           </div>
 
-          {/* 5 EXECUTIVE NAVIGATION PANELS — CLEAN TYPOGRAPHY, NO TRUNCATION */}
+          {/* 5 EXECUTIVE NAVIGATION PANELS */}
           <nav className="space-y-1.5">
-            {/* 1. ANALYTICS */}
             <button
               onClick={() => setActiveTab("analytics")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
@@ -547,7 +545,6 @@ export default function Home() {
               </span>
             </button>
 
-            {/* 2. CAMPAIGNS */}
             <button
               onClick={() => setActiveTab("campaigns")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
@@ -562,7 +559,6 @@ export default function Home() {
               </span>
             </button>
 
-            {/* 3. SMTP INFRASTRUCTURE */}
             <button
               onClick={() => setActiveTab("infrastructure")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
@@ -577,7 +573,6 @@ export default function Home() {
               </span>
             </button>
 
-            {/* 4. DELIVERABILITY */}
             <button
               onClick={() => setActiveTab("compliance")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
@@ -592,7 +587,6 @@ export default function Home() {
               </span>
             </button>
 
-            {/* 5. AUDIENCE & INTEGRATIONS */}
             <button
               onClick={() => setActiveTab("audience")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
@@ -623,7 +617,7 @@ export default function Home() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT CANVAS */}
+      {/* MAIN CONTENT CANVAS — OPTIMIZED SPACING & HEIGHTS */}
       <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-[#f8fafc]">
         {/* ========================================================================= */}
         {/* PANEL 1: DEDICATED MAIL ANALYTICS DASHBOARD */}
@@ -691,7 +685,6 @@ export default function Home() {
 
             {/* Daily Dispatch Volume & Engagement Funnel Grid */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              {/* Daily Volume Bar Chart */}
               <div className="lg:col-span-8 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
@@ -705,8 +698,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Visual Bar Chart Render */}
-                <div className="h-48 flex items-end justify-between space-x-4 pt-6 pb-2 px-2 border-b border-slate-100">
+                <div className="h-56 flex items-end justify-between space-x-4 pt-6 pb-2 px-2 border-b border-slate-100">
                   {[
                     { day: "Mon", sent: 180, opened: 92, clicked: 34 },
                     { day: "Tue", sent: 240, opened: 124, clicked: 48 },
@@ -717,7 +709,7 @@ export default function Home() {
                     { day: "Sun", sent: 150, opened: 76, clicked: 25 },
                   ].map((bar, idx) => (
                     <div key={idx} className="flex-1 flex flex-col items-center space-y-2 h-full justify-end group">
-                      <div className="w-full flex items-end justify-center space-x-1 h-36">
+                      <div className="w-full flex items-end justify-center space-x-1 h-44">
                         <div style={{ height: `${(bar.sent / 310) * 100}%` }} className="w-1/3 bg-indigo-600 rounded-t transition-all group-hover:bg-indigo-700" />
                         <div style={{ height: `${(bar.opened / 310) * 100}%` }} className="w-1/3 bg-emerald-500 rounded-t transition-all group-hover:bg-emerald-600" />
                         <div style={{ height: `${(bar.clicked / 310) * 100}%` }} className="w-1/3 bg-purple-500 rounded-t transition-all group-hover:bg-purple-600" />
@@ -733,20 +725,19 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Conversion Funnel */}
               <div className="lg:col-span-4 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Deliverability Funnel</h3>
                   <p className="text-xs text-slate-500">Stage by stage conversion rates.</p>
                 </div>
 
-                <div className="space-y-3.5">
+                <div className="space-y-4">
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold">
                       <span className="text-slate-700">1. Dispatched & Delivered</span>
                       <span className="text-slate-900">1,248 (100%)</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                       <div className="h-full bg-indigo-600 w-full" />
                     </div>
                   </div>
@@ -756,7 +747,7 @@ export default function Home() {
                       <span className="text-slate-700">2. Opened Email</span>
                       <span className="text-emerald-600">605 (48.5%)</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                       <div className="h-full bg-emerald-500 w-[48.5%]" />
                     </div>
                   </div>
@@ -766,7 +757,7 @@ export default function Home() {
                       <span className="text-slate-700">3. Clicked Link</span>
                       <span className="text-purple-600">227 (18.2%)</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                       <div className="h-full bg-purple-500 w-[18.2%]" />
                     </div>
                   </div>
@@ -776,7 +767,7 @@ export default function Home() {
                       <span className="text-slate-700">4. Bounced Back</span>
                       <span className="text-slate-400">0 (0.0%)</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                       <div className="h-full bg-slate-300 w-0" />
                     </div>
                   </div>
@@ -786,7 +777,6 @@ export default function Home() {
 
             {/* ISP Domain & Device Distribution Breakdown */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              {/* ISP Domains */}
               <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2.5">
                   Target ISP Domain Breakdown
@@ -811,7 +801,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Recipient Devices */}
               <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2.5">
                   Recipient Device Breakdown
@@ -889,7 +878,7 @@ export default function Home() {
         )}
 
         {/* ========================================================================= */}
-        {/* PANEL 2: CAMPAIGN STUDIO */}
+        {/* PANEL 2: CAMPAIGN STUDIO — FULL HEIGHT LIVE PREVIEW CONTAINER */}
         {/* ========================================================================= */}
         {activeTab === "campaigns" && (
           <div className="space-y-6 max-w-7xl mx-auto">
@@ -911,8 +900,9 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="lg:col-span-7 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
+              {/* Composer Form Card */}
+              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Broadcast Composer</h3>
                   <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
@@ -920,7 +910,7 @@ export default function Home() {
                   </span>
                 </div>
 
-                <form onSubmit={handleSendCampaign} className="space-y-3">
+                <form onSubmit={handleSendCampaign} className="space-y-3.5">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Campaign Name</label>
@@ -980,10 +970,10 @@ export default function Home() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">HTML Template Body</label>
                     <textarea
-                      rows={9}
+                      rows={14}
                       value={campaignForm.bodyHtml}
                       onChange={(e) => setCampaignForm({ ...campaignForm, bodyHtml: e.target.value })}
-                      className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs"
+                      className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs leading-relaxed"
                       required
                     />
                   </div>
@@ -991,42 +981,46 @@ export default function Home() {
                   <button
                     type="submit"
                     disabled={sendingCampaign}
-                    className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-xs font-extrabold transition-all shadow-md cursor-pointer disabled:opacity-50"
+                    className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 text-xs font-extrabold transition-all shadow-md cursor-pointer disabled:opacity-50"
                   >
                     {sendingCampaign ? "Dispatching via Multi-Account Pool..." : "Send Campaign (Auto-Rotate Senders + Rate Limited)"}
                   </button>
                 </form>
               </div>
 
-              <div className="lg:col-span-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3 flex flex-col">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Inbox Preview</h3>
+              {/* Full Height Live Preview Container */}
+              <div className="lg:col-span-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-3 flex flex-col h-full min-h-[640px]">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Live Inbox Preview</h3>
+                    <p className="text-[11px] text-slate-500">Real-time rendered HTML preview.</p>
+                  </div>
                   <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-[11px] font-semibold">
                     <button
                       onClick={() => setPreviewMode("desktop")}
-                      className={`px-2.5 py-1 rounded transition-all ${previewMode === "desktop" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
+                      className={`px-3 py-1 rounded transition-all ${previewMode === "desktop" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
                     >
                       Desktop
                     </button>
                     <button
                       onClick={() => setPreviewMode("mobile")}
-                      className={`px-2.5 py-1 rounded transition-all ${previewMode === "mobile" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
+                      className={`px-3 py-1 rounded transition-all ${previewMode === "mobile" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
                     >
                       Mobile
                     </button>
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200 text-xs space-y-0.5 text-slate-700">
+                <div className="rounded-lg bg-slate-50 p-3 border border-slate-200 text-xs space-y-1 text-slate-700">
                   <p><strong className="text-slate-500">From:</strong> {campaignForm.fromName} &lt;{campaignForm.fromEmail}&gt;</p>
                   <p><strong className="text-slate-500">Subject:</strong> {campaignForm.subject}</p>
                 </div>
 
-                <div className="flex-1 min-h-[320px] border border-slate-200 rounded-lg bg-white overflow-hidden shadow-inner">
+                <div className="flex-1 min-h-[520px] border border-slate-200 rounded-xl bg-white overflow-hidden shadow-inner flex flex-col">
                   <iframe
                     srcDoc={campaignForm.bodyHtml.replace(/{{subscriber\.firstName}}/g, "Jithendra")}
-                    className="w-full h-full min-h-[320px] border-0"
-                    title="Live Preview"
+                    className="w-full h-full min-h-[520px] flex-1 border-0"
+                    title="Live Email Inbox Preview"
                   />
                 </div>
               </div>
