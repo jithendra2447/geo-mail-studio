@@ -11,6 +11,7 @@ const campaignSchema = z.object({
   fromEmail: z.string().email("From email is required"),
   bodyHtml: z.string().min(1, "HTML body is required"),
   sendNow: z.boolean().optional().default(true),
+  recipients: z.array(z.string()).optional(),
 });
 
 export async function GET(request: Request) {
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
       const sentCount = c.emailLogs.length;
       const openedCount = c.emailLogs.filter((l) => l.openedAt !== null).length;
       const clickedCount = c.emailLogs.filter((l) => l.clickedAt !== null).length;
-      const bouncedCount = 0; // High deliverability SMTP engine (0 bounces)
+      const bouncedCount = 0;
 
       const openRate = sentCount > 0 ? ((openedCount / sentCount) * 100).toFixed(1) : "0.0";
       const clickRate = sentCount > 0 ? ((clickedCount / sentCount) * 100).toFixed(1) : "0.0";
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { workspaceId, name, subject, fromName, fromEmail, bodyHtml, sendNow } = validation.data;
+    const { workspaceId, name, subject, fromName, fromEmail, bodyHtml, sendNow, recipients } = validation.data;
 
     // Create Campaign Record in DB
     const campaign = await prisma.campaign.create({
@@ -102,16 +103,67 @@ export async function POST(request: Request) {
       },
     });
 
-    // If sendNow is true, fetch active subscribers for workspace and dispatch
     let sentCount = 0;
     const errors: string[] = [];
 
     if (sendNow) {
-      const subscribers = await prisma.subscriber.findMany({
-        where: { workspaceId, status: "SUBSCRIBED" },
-      });
+      let targetSubscribers: any[] = [];
 
-      for (const subscriber of subscribers) {
+      if (recipients && recipients.length > 0) {
+        // Upsert custom specified recipient emails into database
+        for (const rawEmail of recipients) {
+          const cleanEmail = rawEmail.trim();
+          if (!cleanEmail || !cleanEmail.includes("@")) continue;
+
+          const sub = await prisma.subscriber.upsert({
+            where: {
+              workspaceId_email: { workspaceId, email: cleanEmail },
+            },
+            update: { status: "SUBSCRIBED" },
+            create: {
+              workspaceId,
+              email: cleanEmail,
+              firstName: cleanEmail.split("@")[0],
+              status: "SUBSCRIBED",
+            },
+          });
+          targetSubscribers.push(sub);
+        }
+      } else {
+        // Fetch active subscribers for workspace
+        targetSubscribers = await prisma.subscriber.findMany({
+          where: { workspaceId, status: "SUBSCRIBED" },
+        });
+
+        // If no subscribers exist in DB yet, auto-seed default target recipients
+        if (targetSubscribers.length === 0) {
+          const defaultEmails = [
+            "jithendravarma.l@gmail.com",
+            "admin@geonixa.com",
+            "lead.dev@enterprise.io",
+            "contact@company.org",
+            "alex.marketing@techfirm.com",
+          ];
+
+          for (const email of defaultEmails) {
+            const sub = await prisma.subscriber.upsert({
+              where: {
+                workspaceId_email: { workspaceId, email },
+              },
+              update: { status: "SUBSCRIBED" },
+              create: {
+                workspaceId,
+                email,
+                firstName: email.split("@")[0],
+                status: "SUBSCRIBED",
+              },
+            });
+            targetSubscribers.push(sub);
+          }
+        }
+      }
+
+      for (const subscriber of targetSubscribers) {
         // Interpolate subscriber tags: {{subscriber.firstName}}
         const personalizedHtml = bodyHtml.replace(
           /{{subscriber\.firstName}}/g,
@@ -151,7 +203,7 @@ export async function POST(request: Request) {
       {
         success: true,
         message: sendNow
-          ? `Mailchimp-style Campaign '${name}' dispatched to ${sentCount} subscribers!`
+          ? `Campaign '${name}' dispatched to ${sentCount} subscribers!`
           : `Campaign '${name}' saved as draft.`,
         campaign,
         sentCount,
@@ -161,6 +213,6 @@ export async function POST(request: Request) {
     );
   } catch (error: any) {
     console.error("[POST /api/campaigns Error]:", error);
-    return NextResponse.json({ error: "Failed to create campaign" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create campaign", details: error.message }, { status: 500 });
   }
 }

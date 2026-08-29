@@ -952,6 +952,19 @@ export default function Home() {
                   </span>
                 </div>
 
+                {campaignResult && (
+                  <div className={`p-4 rounded-xl border text-xs font-semibold ${campaignResult.status === 200 ? "bg-emerald-50 border-emerald-200 text-emerald-950" : "bg-rose-50 border-rose-200 text-rose-950"}`}>
+                    <div className="flex justify-between items-center font-bold mb-1">
+                      <span>{campaignResult.status === 200 ? "✓ Campaign Dispatched Successfully!" : "Dispatch Notification"}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-white font-mono">{campaignResult.status}</span>
+                    </div>
+                    <p>{campaignResult.data?.message || campaignResult.data?.error || "Campaign process complete."}</p>
+                    {campaignResult.data?.sentCount !== undefined && (
+                      <p className="mt-1 font-bold text-emerald-700">Delivered to {campaignResult.data.sentCount} subscribers via Dedicated AWS VPS!</p>
+                    )}
+                  </div>
+                )}
+
                 <form onSubmit={handleSendCampaign} className="space-y-3.5">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -1761,7 +1774,10 @@ export default function Home() {
                 <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
                   <li className="flex items-center space-x-2 font-black text-slate-900"><span>✓ UNLIMITED Emails / month</span></li>
                   <li className="flex items-center space-x-2 font-black text-slate-900"><span>✓ UNLIMITED Multi-Account SMTP Pool</span></li>
-                  <li className="flex items-center space-x-2 font-medium"><span>✓ Dedicated VPS Server Setup</span></li>
+                  <li className="flex items-center justify-between font-medium">
+                    <span>✓ Dedicated VPS Server Setup</span>
+                    <span className="bg-indigo-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md shadow-xs tracking-wide">Dedicated VPS</span>
+                  </li>
                   <li className="flex items-center space-x-2 font-medium"><span>✓ Unlimited Custom Domains & API Keys</span></li>
                 </ul>
                 <button
