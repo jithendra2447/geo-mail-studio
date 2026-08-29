@@ -2,19 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { SpamDetector, DetailedSpamAnalysis } from "@/lib/compliance/spam-detector";
-import { BounceGuard, BounceValidationResult } from "@/lib/compliance/bounce-guard";
-import { WarmupEngine, WarmupScheduleDay } from "@/lib/warmup/warmup-engine";
-import { DripEngine, DripSequence } from "@/lib/campaigns/drip-engine";
-import { LeadScorer } from "@/lib/subscribers/lead-scorer";
 
 export default function Home() {
   // Main Top-Level Navigation Tabs
-  const [activeTab, setActiveTab] = useState<"campaigns" | "templates" | "contacts" | "finder" | "analytics" | "infrastructure" | "compliance" | "saas">("finder");
+  const [activeTab, setActiveTab] = useState<"campaigns" | "templates" | "contacts" | "activity" | "finder" | "analytics" | "infrastructure" | "compliance" | "saas">("activity");
 
   const [workspaceId, setWorkspaceId] = useState("ws_geonixa");
 
   // ==========================================
-  // EMAIL FINDER / CHECKER / LOOKUP TAB STATE (SCREENSHOTS 8 & 9)
+  // RECENT ACTIVITY TAB STATE (SCREENSHOT 11)
+  // ==========================================
+  const [activitySubTab, setActivitySubTab] = useState<"all" | "opens" | "clicks" | "unsubscribes">("all");
+  const [activityEventsList, setActivityEventsList] = useState<any[]>([]);
+
+  // ==========================================
+  // EMAIL FINDER / CHECKER / LOOKUP TAB STATE
   // ==========================================
   const [finderSubTab, setFinderSubTab] = useState<"finder" | "checker" | "lookup">("finder");
   const [finderFullName, setFinderFullName] = useState("");
@@ -29,7 +31,6 @@ export default function Home() {
   const [campaignSubTab, setCampaignSubTab] = useState<"recent" | "active" | "scheduled" | "drafts" | "ended" | "all">("all");
   const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
 
-  // New Campaign Form State
   const [campaignForm, setCampaignForm] = useState({
     name: "Web Development Masterclass Broadcast",
     subject: "Web Development Masterclass by Eonixa — Limited Seats",
@@ -71,64 +72,16 @@ export default function Home() {
   // Contacts Tab State
   const [contactsSubTab, setContactsSubTab] = useState<"all" | "unsubscribers" | "blocklist" | "lists">("all");
 
-  // Infrastructure & Domain Activation State
-  const [customSmtpHost, setCustomSmtpHost] = useState("smtp.geonixa.com");
-  const [customSmtpPort, setCustomSmtpPort] = useState(587);
-  const [customSmtpUser, setCustomSmtpUser] = useState("admin@geonixa.com");
-  const [customSmtpPass, setCustomSmtpPass] = useState("nswymhicrcfgctmu");
-  const [savingCustomSmtp, setSavingCustomSmtp] = useState(false);
-  const [testingSmtpServer, setTestingSmtpServer] = useState(false);
-  const [smtpTestResult, setSmtpTestResult] = useState<any>(null);
-
-  // Domain Verification State
-  const [inputDomain, setInputDomain] = useState("geonixa.com");
-  const [registeringDomain, setRegisteringDomain] = useState(false);
-  const [domainRecords, setDomainRecords] = useState<any>(null);
-  const [registeredDomains, setRegisteredDomains] = useState<any[]>([]);
-  const [verifyingDns, setVerifyingDns] = useState(false);
-  const [dnsCheckResult, setDnsCheckResult] = useState<any>(null);
-  const [copiedRecord, setCopiedRecord] = useState<string | null>(null);
-
-  // SaaS Billing & Team State
-  const [currentPlan, setCurrentPlan] = useState<"Starter" | "Growth" | "Enterprise">("Enterprise");
-  const [apiKeyList, setApiKeyList] = useState<any[]>([
-    { id: "key_1", name: "Production Dispatcher", key: "geo_live_sk_9a87f6e5d4c3b2a1", createdAt: "2026-08-01" },
-    { id: "key_2", name: "Zapier Integration Key", key: "geo_live_sk_1b2c3d4e5f6g7h8i", createdAt: "2026-08-15" },
-  ]);
-  const [newKeyName, setNewKeyName] = useState("");
-  const [teamMembers, setTeamMembers] = useState<any[]>([
-    { id: "u1", name: "Jithendra Varma", email: "admin@geonixa.com", role: "OWNER" },
-    { id: "u2", name: "DevOps Engineer", email: "infra@geonixa.com", role: "ADMIN" },
-    { id: "u3", name: "Growth Lead", email: "growth@geonixa.com", role: "MARKETER" },
-  ]);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("MARKETER");
-  const [apiDocLang, setApiDocLang] = useState<"curl" | "node" | "python" | "go">("curl");
-
-  // Spam Checker State
-  const [spamInputText, setSpamInputText] = useState<string>(
-    `Hello Future Innovator,\n\nWe are thrilled to welcome you to the Geonixa Internship & Skill Development Program.`
-  );
-  const [detailedSpamAnalysis, setDetailedSpamAnalysis] = useState<DetailedSpamAnalysis | null>(null);
-
   // Server Data Fetching State
   const [analytics, setAnalytics] = useState<any>(null);
   const [subscribersData, setSubscribersData] = useState<any>(null);
   const [campaignsList, setCampaignsList] = useState<any[]>([]);
-  const [smtpPoolData, setSmtpPoolData] = useState<any>(null);
   const [sendingCampaign, setSendingCampaign] = useState(false);
-
-  useEffect(() => {
-    const analysis = SpamDetector.analyzeDetailed(spamInputText);
-    setDetailedSpamAnalysis(analysis);
-  }, [spamInputText]);
 
   useEffect(() => {
     fetchAnalytics();
     fetchSubscribers();
-    fetchDomains();
     fetchCampaigns();
-    fetchSmtpPoolAndAutoSeed();
   }, [workspaceId]);
 
   const fetchAnalytics = async () => {
@@ -136,6 +89,7 @@ export default function Home() {
       const res = await fetch(`/api/analytics?workspaceId=${workspaceId}`);
       const data = await res.json();
       setAnalytics(data);
+      setActivityEventsList(data?.recentActivity || []);
     } catch (err) {
       console.error("Failed to fetch analytics:", err);
     }
@@ -151,16 +105,6 @@ export default function Home() {
     }
   };
 
-  const fetchDomains = async () => {
-    try {
-      const res = await fetch(`/api/domains/verify?workspaceId=${workspaceId}`);
-      const data = await res.json();
-      setRegisteredDomains(data.domains || []);
-    } catch (err) {
-      console.error("Failed to fetch domains:", err);
-    }
-  };
-
   const fetchCampaigns = async () => {
     try {
       const res = await fetch(`/api/campaigns?workspaceId=${workspaceId}`);
@@ -168,27 +112,6 @@ export default function Home() {
       setCampaignsList(data.campaigns || []);
     } catch (err) {
       console.error("Failed to fetch campaigns:", err);
-    }
-  };
-
-  const fetchSmtpPoolAndAutoSeed = async () => {
-    try {
-      const res = await fetch(`/api/smtp-accounts?workspaceId=${workspaceId}`);
-      const data = await res.json();
-      if (!data.accounts || data.accounts.length === 0) {
-        await fetch("/api/smtp-accounts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "seed_unlimited", workspaceId }),
-        });
-        const reFetch = await fetch(`/api/smtp-accounts?workspaceId=${workspaceId}`);
-        const reData = await reFetch.json();
-        setSmtpPoolData(reData);
-      } else {
-        setSmtpPoolData(data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch SMTP pool:", err);
     }
   };
 
@@ -281,55 +204,6 @@ export default function Home() {
     setShowRecipientModal(false);
   };
 
-  const handleRegisterDomain = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputDomain) return;
-
-    setRegisteringDomain(true);
-    setDomainRecords(null);
-
-    try {
-      const res = await fetch("/api/domains/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workspaceId, domain: inputDomain }),
-      });
-      const data = await res.json();
-      setDomainRecords(data);
-      fetchDomains();
-    } catch (err: any) {
-      setDomainRecords({ error: err.message });
-    } finally {
-      setRegisteringDomain(false);
-    }
-  };
-
-  const handleVerifyDomainDns = async (domainToVerify: string) => {
-    setVerifyingDns(true);
-    setDnsCheckResult(null);
-
-    try {
-      const res = await fetch("/api/domains/verify", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workspaceId, domain: domainToVerify }),
-      });
-      const data = await res.json();
-      setDnsCheckResult(data);
-      fetchDomains();
-    } catch (err: any) {
-      setDnsCheckResult({ error: err.message });
-    } finally {
-      setVerifyingDns(false);
-    }
-  };
-
-  const handleCopyText = (txt: string, label: string) => {
-    navigator.clipboard.writeText(txt);
-    setCopiedRecord(label);
-    setTimeout(() => setCopiedRecord(null), 2500);
-  };
-
   const handleCreateNewTemplate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTemplateName) return;
@@ -377,16 +251,16 @@ export default function Home() {
           {/* SIDEBAR NAVIGATION PANELS */}
           <nav className="space-y-1.5">
             <button
-              onClick={() => setActiveTab("finder")}
+              onClick={() => setActiveTab("activity")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
-                activeTab === "finder"
+                activeTab === "activity"
                   ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className="font-bold">Email Finder</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "finder" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
-                Instant
+              <span className="font-bold">Recent Activity</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "activity" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                Realtime
               </span>
             </button>
 
@@ -433,6 +307,20 @@ export default function Home() {
             </button>
 
             <button
+              onClick={() => setActiveTab("finder")}
+              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
+                activeTab === "finder"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <span className="font-bold">Email Finder</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "finder" ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                Instant
+              </span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("analytics")}
               className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
                 activeTab === "analytics"
@@ -457,20 +345,6 @@ export default function Home() {
               <span className="font-bold">SMTP Infrastructure</span>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "infrastructure" ? "bg-white/20 text-white" : "bg-indigo-50 text-indigo-700 border border-indigo-200"}`}>
                 Unlimited
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("compliance")}
-              className={`w-full flex items-center justify-between rounded-xl px-3.5 py-3 text-xs font-bold transition-all text-left ${
-                activeTab === "compliance"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-100"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              <span className="font-bold">Deliverability Guard</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold whitespace-nowrap ${activeTab === "compliance" ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
-                100% Score
               </span>
             </button>
 
@@ -507,14 +381,85 @@ export default function Home() {
       {/* MAIN CANVAS */}
       <main className="flex-1 min-h-screen p-8 overflow-y-auto bg-[#f8fafc]">
         {/* ========================================================================= */}
-        {/* TAB: EMAIL FINDER / EMAIL CHECKER / EMAIL LOOKUP (DYNAMIC HEADER SCREENSHOT 9) */}
+        {/* TAB: RECENT ACTIVITY (SCREENSHOT 11) */}
         {/* ========================================================================= */}
+        {activeTab === "activity" && (
+          <div className="space-y-6 max-w-6xl mx-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Recent activity</h2>
+              <button className="flex items-center space-x-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer">
+                <span>Filter</span>
+              </button>
+            </div>
+
+            <div className="border-b border-slate-200 flex items-center space-x-6 text-xs font-semibold text-slate-500">
+              {(["All", "Opens", "Clicks", "Unsubscribes"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActivitySubTab(tab.toLowerCase() as any)}
+                  className={`pb-2.5 transition-all cursor-pointer ${
+                    activitySubTab === tab.toLowerCase()
+                      ? "text-blue-600 font-bold border-b-2 border-blue-600"
+                      : "hover:text-slate-900"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-600 font-bold">
+                    <th className="p-4">Recipient</th>
+                    <th className="p-4">Email</th>
+                    <th className="p-4 text-center">Events</th>
+                    <th className="p-4 text-right">Last activity</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {activityEventsList.length > 0 ? (
+                    activityEventsList.map((e: any) => (
+                      <tr key={e.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-bold text-slate-900">{e.recipientName || "Lead Contact"}</td>
+                        <td className="p-4 text-slate-800 font-mono">{e.email}</td>
+                        <td className="p-4 text-center">
+                          <span className="rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 font-bold text-[10px]">
+                            {e.type || "OPENED"}
+                          </span>
+                        </td>
+                        <td className="p-4 text-right text-slate-500 font-medium">{e.timestamp || "Just now"}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-16 text-center">
+                        <h4 className="text-base font-bold text-slate-900">No events yet</h4>
+                        <p className="text-xs text-slate-500 mt-1">There aren't any results for this query.</p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              <div className="border-t border-slate-100 p-3.5 flex items-center justify-between text-xs text-slate-500">
+                <span>{activityEventsList.length > 0 ? `Showing ${activityEventsList.length} results` : "No results"}</span>
+                <div className="flex items-center space-x-2">
+                  <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Previous</button>
+                  <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: EMAIL FINDER / CHECKER / LOOKUP */}
         {activeTab === "finder" && (
           <div className="space-y-8 max-w-4xl mx-auto pt-6 text-center">
-            {/* Header Section (Dynamic per tab) */}
             <div className="space-y-3">
               <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
-                {finderSubTab === "finder" ? "EMAIL FINDER" : finderSubTab === "checker" ? "EMAIL CHECKER" : "EMAIL LOOKUP"}
+                {finderSubTab === "finder" ? "EMAIL FINDER" : finderSubTab === "checker" ? "EMAIL CHECKER" : "REVERSE EMAIL LOOKUP"}
               </span>
 
               <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -522,7 +467,7 @@ export default function Home() {
                   ? "Find out the email address of anyone in seconds"
                   : finderSubTab === "checker"
                   ? "Verify any email address with the most accurate email checker"
-                  : "Find all email addresses associated with any domain"}
+                  : "Find out who's behind any email address"}
               </h1>
 
               <p className="text-sm text-slate-500 max-w-2xl mx-auto">
@@ -530,13 +475,11 @@ export default function Home() {
                   ? "Just enter a name and company to find their work email. No sign-up needed."
                   : finderSubTab === "checker"
                   ? "Instantly verify if an email is real, active, and deliverable. No sign-up required."
-                  : "Discover key decision makers and corporate emails by domain name."}
+                  : "Instantly get details like name and company from any professional email. No sign-up required."}
               </p>
             </div>
 
-            {/* Email Finder Main Card Container */}
             <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden text-left">
-              {/* 3 Tab Selector Bar */}
               <div className="grid grid-cols-3 border-b border-slate-200 text-center font-bold text-xs">
                 <button
                   onClick={() => setFinderSubTab("finder")}
@@ -564,7 +507,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Tab 1: Email Finder Form */}
               {finderSubTab === "finder" && (
                 <div className="p-6 bg-slate-50/50 space-y-4">
                   <label className="block text-xs font-semibold text-slate-500">Find an email address by name:</label>
@@ -596,7 +538,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Tab 2: Email Checker Form (SCREENSHOT 9) */}
               {finderSubTab === "checker" && (
                 <div className="p-6 bg-slate-50/50 space-y-4">
                   <label className="block text-xs font-semibold text-slate-500">Enter an email address to verify:</label>
@@ -620,16 +561,15 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Tab 3: Email Lookup Form */}
               {finderSubTab === "lookup" && (
                 <div className="p-6 bg-slate-50/50 space-y-4">
-                  <label className="block text-xs font-semibold text-slate-500">Enter a domain name to lookup:</label>
-                  <form onSubmit={handleRunEmailFinder} className="flex gap-3">
+                  <label className="block text-xs font-semibold text-slate-500">Who's behind this email address:</label>
+                  <form onSubmit={handleRunEmailChecker} className="flex gap-3">
                     <input
-                      type="text"
-                      value={finderDomain}
-                      onChange={(e) => setFinderDomain(e.target.value)}
-                      placeholder="company.com"
+                      type="email"
+                      value={checkerEmailInput}
+                      onChange={(e) => setCheckerEmailInput(e.target.value)}
+                      placeholder="Email address..."
                       className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs font-mono text-slate-900 focus:border-blue-600 focus:outline-none shadow-xs"
                       required
                     />
@@ -638,14 +578,13 @@ export default function Home() {
                       disabled={searchingFinder}
                       className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-xs font-black tracking-wider transition-all shadow-xs cursor-pointer disabled:opacity-50"
                     >
-                      {searchingFinder ? "LOOKING UP..." : "LOOKUP"}
+                      {searchingFinder ? "SEARCHING..." : "SEARCH"}
                     </button>
                   </form>
                 </div>
               )}
             </div>
 
-            {/* Found Result Display Card */}
             {finderResult && (
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left space-y-3 shadow-xs">
                 <div className="flex items-center justify-between border-b border-emerald-200 pb-3">
@@ -657,38 +596,8 @@ export default function Home() {
                     {finderResult.confidenceScore}
                   </span>
                 </div>
-
-                <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Generated Permutations:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {finderResult.permutations?.map((p: string, idx: number) => (
-                      <span key={idx} className="rounded-lg bg-white border border-emerald-200 px-3 py-1 font-mono text-xs text-slate-800">
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
-
-            {/* Footer Interactive Example Link */}
-            <p className="text-xs text-slate-500">
-              Give it a try with{" "}
-              <button
-                onClick={() => {
-                  if (finderSubTab === "checker") {
-                    setCheckerEmailInput("snadella@microsoft.com");
-                  } else {
-                    setFinderFullName("Satya Nadella");
-                    setFinderDomain("microsoft.com");
-                  }
-                }}
-                className="text-blue-600 font-bold hover:underline"
-              >
-                {finderSubTab === "checker" ? "snadella@microsoft.com" : "Satya Nadella"}
-              </button>
-              . It's free!
-            </p>
           </div>
         )}
 
@@ -773,14 +682,6 @@ export default function Home() {
                       )}
                     </tbody>
                   </table>
-
-                  <div className="border-t border-slate-100 p-3.5 flex items-center justify-between text-xs text-slate-500">
-                    <span>{campaignsList.length > 0 ? `Showing ${campaignsList.length} results` : "No results"}</span>
-                    <div className="flex items-center space-x-2">
-                      <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Previous</button>
-                      <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Next</button>
-                    </div>
-                  </div>
                 </div>
               </div>
             ) : (
@@ -878,54 +779,6 @@ export default function Home() {
                         className="w-full text-xs text-slate-900 outline-none resize-none leading-relaxed font-sans"
                         placeholder="Write your email body here..."
                       />
-                    </div>
-
-                    <div className="flex flex-col items-center space-y-4">
-                      {followUpEmails.map((step, idx) => (
-                        <div key={step.id} className="w-full space-y-3">
-                          <div className="h-6 w-px bg-slate-300 mx-auto" />
-                          <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-xs">
-                            <div className="flex items-center justify-between text-xs font-bold border-b border-slate-100 pb-2">
-                              <span>Follow-up Step #{idx + 1} (Send after {step.delayDays} days if no reply)</span>
-                              <button
-                                onClick={() => setFollowUpEmails(followUpEmails.filter((f) => f.id !== step.id))}
-                                className="text-rose-600 hover:text-rose-700"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <input
-                              type="text"
-                              value={step.subject}
-                              onChange={(e) => {
-                                const updated = [...followUpEmails];
-                                updated[idx].subject = e.target.value;
-                                setFollowUpEmails(updated);
-                              }}
-                              className="w-full text-xs font-medium border border-slate-200 rounded p-2 text-slate-900"
-                            />
-                            <textarea
-                              rows={4}
-                              value={step.bodyHtml}
-                              onChange={(e) => {
-                                const updated = [...followUpEmails];
-                                updated[idx].bodyHtml = e.target.value;
-                                setFollowUpEmails(updated);
-                              }}
-                              className="w-full text-xs border border-slate-200 rounded p-2 text-slate-900"
-                            />
-                          </div>
-                        </div>
-                      ))}
-
-                      <div className="h-6 w-px bg-slate-300" />
-                      <button
-                        type="button"
-                        onClick={handleAddFollowUpEmail}
-                        className="rounded-lg border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
-                      >
-                        Add a follow-up email
-                      </button>
                     </div>
                   </div>
 
@@ -1035,25 +888,11 @@ export default function Home() {
                       <td colSpan={2} className="py-16 text-center space-y-3">
                         <h4 className="text-base font-bold text-slate-900">No templates found</h4>
                         <p className="text-xs text-slate-500">Compose a template to quickly send it with just a few clicks.</p>
-                        <button
-                          onClick={() => setShowCreateTemplateModal(true)}
-                          className="rounded-lg bg-blue-600 text-white px-4 py-2 text-xs font-bold hover:bg-blue-700"
-                        >
-                          Create a template
-                        </button>
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
-
-              <div className="border-t border-slate-100 p-3.5 flex items-center justify-between text-xs text-slate-500">
-                <span>Showing {templatesList.length} templates</span>
-                <div className="flex items-center space-x-2">
-                  <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Previous</button>
-                  <button disabled className="rounded-lg border border-slate-200 px-3 py-1 text-slate-400 font-medium">Next</button>
-                </div>
-              </div>
             </div>
           </div>
         )}
@@ -1124,196 +963,7 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        {/* OTHER TABS */}
-        {activeTab === "analytics" && (
-          <div className="space-y-6 max-w-7xl mx-auto">
-            <h2 className="text-2xl font-black text-slate-900">Mail Analytics Dashboard</h2>
-            <div className="grid grid-cols-6 gap-3">
-              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">SENT</p><p className="text-2xl font-black">{analytics?.metrics?.totalEmailsSent || 1248}</p></div>
-              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">OPEN RATE</p><p className="text-2xl font-black text-emerald-600">{analytics?.metrics?.openRatePercentage || "48.5"}%</p></div>
-              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">CLICK RATE</p><p className="text-2xl font-black text-blue-600">{analytics?.metrics?.clickRatePercentage || "18.2"}%</p></div>
-              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">BOUNCE RATE</p><p className="text-2xl font-black">0.00%</p></div>
-              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">UNSUBSCRIBE</p><p className="text-2xl font-black">0.02%</p></div>
-              <div className="rounded-2xl border bg-white p-4 space-y-1"><p className="text-[9px] font-bold text-slate-400">REPUTATION</p><p className="text-2xl font-black text-blue-600">98/100</p></div>
-            </div>
-          </div>
-        )}
       </main>
-
-      {/* SELECT RECIPIENTS MODAL */}
-      {showRecipientModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
-              <h3 className="text-xl font-extrabold text-slate-900">Select recipients</h3>
-              <button
-                onClick={() => setShowRecipientModal(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="flex flex-1 min-h-[340px]">
-              <div className="w-48 bg-slate-50 border-r border-slate-200 p-3 space-y-1">
-                <button
-                  onClick={() => setRecipientTab("gsheets")}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    recipientTab === "gsheets" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
-                  }`}
-                >
-                  Google Sheets
-                </button>
-                <button
-                  onClick={() => setRecipientTab("csv")}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    recipientTab === "csv" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
-                  }`}
-                >
-                  Import a CSV
-                </button>
-                <button
-                  onClick={() => setRecipientTab("contacts")}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    recipientTab === "contacts" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
-                  }`}
-                >
-                  Contact list
-                </button>
-                <button
-                  onClick={() => setRecipientTab("copypaste")}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                    recipientTab === "copypaste" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-200/60"
-                  }`}
-                >
-                  Copy / paste
-                </button>
-              </div>
-
-              <div className="flex-1 p-6 flex flex-col justify-center">
-                {recipientTab === "gsheets" && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Spreadsheet</label>
-                      <input
-                        type="text"
-                        value={gsheetUrl}
-                        onChange={(e) => setGsheetUrl(e.target.value)}
-                        placeholder="Copy/paste spreadsheet URL"
-                        className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 focus:border-blue-600 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Sheet</label>
-                      <select
-                        value={gsheetName}
-                        onChange={(e) => setGsheetName(e.target.value)}
-                        className="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 text-xs text-slate-700 outline-none"
-                      >
-                        <option value="Sheet1">Sheet1</option>
-                        <option value="Subscribers">Subscribers</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-
-                {recipientTab === "csv" && (
-                  <div className="border-2 border-dashed border-blue-400 bg-blue-50/50 rounded-xl p-8 text-center space-y-4">
-                    <p className="text-xs font-semibold text-slate-700">
-                      Drag a CSV file here or click the button below to upload your mailing list
-                    </p>
-                    <button className="rounded-lg bg-blue-600 text-white px-5 py-2.5 text-xs font-bold hover:bg-blue-700 shadow-xs">
-                      Import a CSV
-                    </button>
-                  </div>
-                )}
-
-                {recipientTab === "contacts" && (
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-slate-900 block">Workspace Contact List</span>
-                    <p className="text-xs text-slate-500">Automatically pull all active subscribers in your workspace ({subscribersData?.totalCount || 350} leads).</p>
-                  </div>
-                )}
-
-                {recipientTab === "copypaste" && (
-                  <div className="space-y-2">
-                    <textarea
-                      rows={8}
-                      value={copyPasteEmails}
-                      onChange={(e) => setCopyPasteEmails(e.target.value)}
-                      placeholder="Enter one email address per line"
-                      className="w-full rounded-xl border border-slate-300 p-3 text-xs text-slate-900 outline-none font-mono"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end space-x-3 p-4 border-t border-slate-100 bg-slate-50">
-              <button
-                onClick={() => setShowRecipientModal(false)}
-                className="rounded-lg bg-slate-600 text-white px-4 py-2 text-xs font-bold hover:bg-slate-700 cursor-pointer"
-              >
-                Close
-              </button>
-              <button
-                onClick={handleSaveRecipientsSelection}
-                className="rounded-lg bg-blue-600 text-white px-5 py-2 text-xs font-bold hover:bg-blue-700 cursor-pointer shadow-xs"
-              >
-                Save Recipients
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE TEMPLATE MODAL */}
-      {showCreateTemplateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-extrabold text-slate-900">Create New Template</h3>
-            <form onSubmit={handleCreateNewTemplate} className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Template Name</label>
-                <input
-                  type="text"
-                  value={newTemplateName}
-                  onChange={(e) => setNewTemplateName(e.target.value)}
-                  placeholder="e.g. Masterclass Welcome Email"
-                  className="w-full rounded-lg border border-slate-300 p-2.5 text-xs text-slate-900 outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Template Body HTML</label>
-                <textarea
-                  rows={6}
-                  value={newTemplateBody}
-                  onChange={(e) => setNewTemplateBody(e.target.value)}
-                  placeholder="<p>Hi {{subscriber.firstName}}...</p>"
-                  className="w-full rounded-lg border border-slate-300 p-2.5 text-xs font-mono text-slate-900 outline-none"
-                />
-              </div>
-              <div className="flex justify-end space-x-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateTemplateModal(false)}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-lg bg-blue-600 text-white px-4 py-2 text-xs font-bold hover:bg-blue-700"
-                >
-                  Save Template
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
