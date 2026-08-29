@@ -1301,61 +1301,108 @@ export default function Home() {
                 </button>
               </form>
 
-              {/* Generated DNS TXT Records Block */}
+              {/* Generated DNS & SMTP Records Block */}
               {domainRecords?.expectedRecords && (
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3 text-xs">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                    <span className="font-bold text-slate-900">Required DNS TXT Records for: {inputDomain}</span>
+                    <div>
+                      <span className="font-bold text-slate-900 block">DNS & SMTP Server Activation Suite: {inputDomain}</span>
+                      <span className="text-[10px] text-slate-500">Publish these 5 records to your domain DNS host (Cloudflare, GoDaddy, Namecheap, Route53)</span>
+                    </div>
                     <button
                       type="button"
                       onClick={() => handleVerifyDomainDns(inputDomain)}
                       disabled={verifyingDns}
-                      className="rounded-lg bg-emerald-600 text-white px-3 py-1.5 text-xs font-bold hover:bg-emerald-700 transition-all"
+                      className="rounded-lg bg-emerald-600 text-white px-3 py-1.5 text-xs font-bold hover:bg-emerald-700 transition-all cursor-pointer shadow-xs"
                     >
                       {verifyingDns ? "Resolving DNS..." : "Run Live DNS Verification & Activate Domain"}
                     </button>
                   </div>
 
-                  {/* SPF Record */}
-                  <div className="flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 font-mono">
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase block">SPF Record (TXT @)</span>
-                      <code className="text-slate-800 text-[11px]">{domainRecords.expectedRecords.spf.value}</code>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* 1. SPF Record */}
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
+                      <div className="max-w-[75%]">
+                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">1. SPF Record (TXT @)</span>
+                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.spf.value}</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(domainRecords.expectedRecords.spf.value, "SPF")}
+                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
+                      >
+                        {copiedRecord === "SPF" ? "Copied!" : "Copy SPF"}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleCopyText(domainRecords.expectedRecords.spf.value, "SPF")}
-                      className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                    >
-                      {copiedRecord === "SPF" ? "Copied!" : "Copy SPF"}
-                    </button>
-                  </div>
 
-                  {/* DKIM Record */}
-                  <div className="flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 font-mono">
-                    <div className="max-w-xl truncate">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase block">DKIM Key ({domainRecords.expectedRecords.dkim.host})</span>
-                      <code className="text-slate-800 text-[11px] truncate block">{domainRecords.expectedRecords.dkim.value}</code>
+                    {/* 2. DKIM Record */}
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
+                      <div className="max-w-[75%]">
+                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">2. DKIM 2048-bit ({domainRecords.expectedRecords.dkim.host})</span>
+                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.dkim.value}</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(domainRecords.expectedRecords.dkim.value, "DKIM")}
+                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
+                      >
+                        {copiedRecord === "DKIM" ? "Copied!" : "Copy DKIM"}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleCopyText(domainRecords.expectedRecords.dkim.value, "DKIM")}
-                      className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold ml-2"
-                    >
-                      {copiedRecord === "DKIM" ? "Copied!" : "Copy DKIM"}
-                    </button>
-                  </div>
 
-                  {/* DMARC Record */}
-                  <div className="flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 font-mono">
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase block">DMARC Policy (_dmarc.{inputDomain})</span>
-                      <code className="text-slate-800 text-[11px]">{domainRecords.expectedRecords.dmarc.value}</code>
+                    {/* 3. DMARC Record */}
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
+                      <div className="max-w-[75%]">
+                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">3. DMARC Policy (_dmarc.{inputDomain})</span>
+                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.dmarc.value}</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(domainRecords.expectedRecords.dmarc.value, "DMARC")}
+                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
+                      >
+                        {copiedRecord === "DMARC" ? "Copied!" : "Copy DMARC"}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleCopyText(domainRecords.expectedRecords.dmarc.value, "DMARC")}
-                      className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
-                    >
-                      {copiedRecord === "DMARC" ? "Copied!" : "Copy DMARC"}
-                    </button>
+
+                    {/* 4. MX Record */}
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
+                      <div className="max-w-[75%]">
+                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">4. MX Mail Routing (MX @, Priority 10)</span>
+                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.mx.value}</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(domainRecords.expectedRecords.mx.value, "MX")}
+                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
+                      >
+                        {copiedRecord === "MX" ? "Copied!" : "Copy MX"}
+                      </button>
+                    </div>
+
+                    {/* 5. CNAME Custom Return-Path */}
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 font-mono">
+                      <div className="max-w-[75%]">
+                        <span className="text-[10px] font-extrabold text-slate-500 uppercase block">5. Custom Return-Path (CNAME pm.{inputDomain})</span>
+                        <code className="text-slate-800 text-[11px] block truncate">{domainRecords.expectedRecords.cname.value}</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(domainRecords.expectedRecords.cname.value, "CNAME")}
+                        className="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold"
+                      >
+                        {copiedRecord === "CNAME" ? "Copied!" : "Copy CNAME"}
+                      </button>
+                    </div>
+
+                    {/* 6. SMTP Transport Profile */}
+                    <div className="flex items-center justify-between bg-indigo-50/80 p-3 rounded-lg border border-indigo-200/80 font-mono">
+                      <div className="max-w-[75%]">
+                        <span className="text-[10px] font-extrabold text-indigo-700 uppercase block">6. SMTP Port 587 Connection Host</span>
+                        <code className="text-indigo-950 text-[11px] font-bold block truncate">{domainRecords.expectedRecords.smtp.host} : 587</code>
+                      </div>
+                      <button
+                        onClick={() => handleCopyText(`${domainRecords.expectedRecords.smtp.host}:587`, "SMTP")}
+                        className="text-indigo-700 hover:text-indigo-900 text-[11px] font-bold"
+                      >
+                        {copiedRecord === "SMTP" ? "Copied!" : "Copy SMTP"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

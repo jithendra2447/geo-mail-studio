@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       spf: {
         type: "TXT",
         host: "@",
-        value: "v=spf1 ip4:YOUR_SERVER_IP ~all",
+        value: `v=spf1 include:_spf.google.com ip4:${process.env.SERVER_IP || "104.21.82.11"} ~all`,
       },
       dkim: {
         type: "TXT",
@@ -76,7 +76,25 @@ export async function POST(request: Request) {
       dmarc: {
         type: "TXT",
         host: `_dmarc.${cleanDomain}`,
-        value: "v=DMARC1; p=quarantine; pct=100;",
+        value: `v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc@${cleanDomain}`,
+      },
+      mx: {
+        type: "MX",
+        host: "@",
+        priority: 10,
+        value: `mail.${cleanDomain}`,
+      },
+      cname: {
+        type: "CNAME",
+        host: `pm.${cleanDomain}`,
+        value: "smtp.geonixa.com",
+      },
+      smtp: {
+        type: "SMTP",
+        host: `smtp.${cleanDomain}`,
+        port: 587,
+        encryption: "STARTTLS / TLS",
+        authMethod: "AUTH LOGIN / PLAIN",
       },
     };
 
