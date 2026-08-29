@@ -133,7 +133,7 @@ export default function Home() {
     fetchSubscribers();
     fetchDomains();
     fetchCampaigns();
-    fetchSmtpPool();
+    fetchSmtpPoolAndAutoSeed();
     fetchWarmup();
     fetchWebhooks();
   }, [workspaceId]);
@@ -190,6 +190,28 @@ export default function Home() {
       setCampaignsList(data.campaigns || []);
     } catch (err) {
       console.error("Failed to fetch campaigns:", err);
+    }
+  };
+
+  const fetchSmtpPoolAndAutoSeed = async () => {
+    try {
+      const res = await fetch(`/api/smtp-accounts?workspaceId=${workspaceId}`);
+      const data = await res.json();
+      if (!data.accounts || data.accounts.length === 0) {
+        // Auto-seed unlimited SMTP pool on initial start
+        await fetch("/api/smtp-accounts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "seed_unlimited", workspaceId }),
+        });
+        const reFetch = await fetch(`/api/smtp-accounts?workspaceId=${workspaceId}`);
+        const reData = await reFetch.json();
+        setSmtpPoolData(reData);
+      } else {
+        setSmtpPoolData(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch SMTP pool:", err);
     }
   };
 
@@ -550,7 +572,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-sm font-bold text-slate-900 tracking-tight">GEO Mail Studio</h1>
-              <p className="text-[10px] font-medium text-indigo-600 font-bold">Unlimited Edition</p>
+              <p className="text-[10px] font-medium text-indigo-600 font-bold">Unlimited Product Edition</p>
             </div>
           </div>
 
@@ -746,7 +768,7 @@ export default function Home() {
           <div className="rounded-lg bg-indigo-50 p-2.5 border border-indigo-200 text-[11px] font-medium text-indigo-900 space-y-1">
             <div className="flex items-center space-x-2 font-bold text-indigo-700">
               <span className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
-              <span>Unlimited Engine Active</span>
+              <span>Unlimited Engine Ready</span>
             </div>
             <p className="text-[10px] text-indigo-800 font-bold font-mono">
               Cap: UNLIMITED Daily Sending (∞)
@@ -768,7 +790,7 @@ export default function Home() {
                 </span>
                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight mt-1.5">Unlimited SMTP Dispatch Pool</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Send <span className="text-indigo-600 font-bold">UNLIMITED emails daily</span> with self-hosted dedicated SMTP servers (Stalwart, Postfix, PowerMTA, SES, SendGrid).
+                  Send <span className="text-indigo-600 font-bold">UNLIMITED emails daily</span> with self-hosted dedicated SMTP servers.
                 </p>
               </div>
 
