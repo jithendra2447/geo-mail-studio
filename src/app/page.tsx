@@ -160,6 +160,71 @@ export default function Home() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [subscribersData, setSubscribersData] = useState<any>(null);
 
+  // Contact Import Modal State
+  const [showAddContactModal, setShowAddContactModal] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importingList, setImportingList] = useState(false);
+  const [importStatusMsg, setImportStatusMsg] = useState<string | null>(null);
+
+  const handleExportSubscribersCSV = () => {
+    const subs = subscribersData?.subscribers || [];
+    if (subs.length === 0) return alert("No subscribers to export.");
+    const headers = "Email,First Name,Status,Created At\n";
+    const rows = subs.map((s: any) => `"${s.email}","${s.firstName || ""}","${s.status || "SUBSCRIBED"}","${s.createdAt || ""}"`).join("\n");
+    const blob = new Blob([headers + rows], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `geo_mail_contacts_export_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportContactsList = async () => {
+    if (!importText.trim()) return alert("Please enter or paste at least one email address.");
+    setImportingList(true);
+    setImportStatusMsg(null);
+
+    const lines = importText.split("\n");
+    let count = 0;
+
+    for (const line of lines) {
+      const cleanLine = line.trim();
+      if (!cleanLine) continue;
+
+      const emailMatch = cleanLine.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (!emailMatch) continue;
+      const email = emailMatch[0];
+      const parts = cleanLine.split(/,|\t/);
+      const firstName = parts[1] && !parts[1].includes("@") ? parts[1].trim() : parts[0] && !parts[0].includes("@") ? parts[0].trim() : email.split("@")[0];
+
+      try {
+        await fetch("/api/subscribers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            workspaceId,
+            email,
+            firstName,
+            attributes: { source: "Manual List Import" },
+          }),
+        });
+        count++;
+      } catch (err) {
+        console.warn("Import error:", err);
+      }
+    }
+
+    setImportingList(false);
+    setImportStatusMsg(`✓ Successfully added ${count} new contacts to your subscriber list!`);
+    fetchSubscribers();
+    setTimeout(() => {
+      setImportText("");
+      setShowAddContactModal(false);
+      setImportStatusMsg(null);
+    }, 1800);
+  };
+
   // Upload State
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadResult, setUploadResult] = useState<any>(null);
@@ -1620,14 +1685,28 @@ export default function Home() {
             </div>
 
             <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
                 <div>
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Subscriber List & Engagement Matrix</h3>
                   <p className="text-xs text-slate-500">Lead tiers calculated automatically based on open & click events.</p>
                 </div>
-                <span className="bg-indigo-50 text-indigo-800 border border-indigo-200/80 px-3 py-1 rounded-full text-xs font-bold">
-                  {subscribersData?.totalCount || 0} Total Subscribers
-                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setShowAddContactModal(true)}
+                    className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center space-x-1"
+                  >
+                    <span>➕ Add / Import Contacts List</span>
+                  </button>
+                  <button
+                    onClick={handleExportSubscribersCSV}
+                    className="rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center space-x-1"
+                  >
+                    <span>📥 Export List (CSV)</span>
+                  </button>
+                  <span className="bg-indigo-50 text-indigo-800 border border-indigo-200/80 px-3 py-1.5 rounded-xl text-xs font-bold">
+                    {subscribersData?.totalCount || 0} Total Subscribers
+                  </span>
+                </div>
               </div>
 
               {subscribersData?.subscribers?.length > 0 ? (
@@ -2208,6 +2287,72 @@ func main() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* ========================================================================= */}
+      {/* MODAL: ADD / IMPORT CONTACT LIST */}
+      {/* ========================================================================= */}
+      {showAddContactModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-xl w-full space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+                  Audience Manager
+                </span>
+                <h3 className="text-lg font-black text-slate-900 mt-1">Import Contact List</h3>
+                <p className="text-xs text-slate-500">Paste your lead list, Google Forms export, or CSV records.</p>
+              </div>
+              <button
+                onClick={() => setShowAddContactModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {importStatusMsg && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs font-bold">
+                {importStatusMsg}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Paste Emails / CSV Rows (One per line or comma-separated)
+                </label>
+                <textarea
+                  rows={8}
+                  value={importText}
+                  onChange={(e) => setImportText(e.target.value)}
+                  placeholder={`satya.nadella@microsoft.com, Satya Nadella\nsundar.pichai@google.com, Sundar Pichai\njithendravarma.l@gmail.com, Jithendra Varma`}
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3.5 text-xs font-mono text-slate-900 focus:border-indigo-600 focus:outline-none shadow-xs leading-relaxed"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Supports formats: <code>email@domain.com</code> or <code>Name, email@domain.com</code>
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddContactModal(false)}
+                  className="rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleImportContactsList}
+                  disabled={importingList}
+                  className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 text-xs font-bold transition-all disabled:opacity-50 shadow-md cursor-pointer flex items-center space-x-1"
+                >
+                  <span>{importingList ? "Importing Contacts..." : "Save Leads to Database"}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
