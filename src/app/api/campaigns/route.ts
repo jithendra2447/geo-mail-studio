@@ -144,10 +144,6 @@ export async function POST(request: Request) {
         if (targetSubscribers.length === 0) {
           const defaultEmails = [
             "jithendravarma.l@gmail.com",
-            "admin@geonixa.com",
-            "lead.dev@enterprise.io",
-            "contact@company.org",
-            "alex.marketing@techfirm.com",
           ];
 
           for (const email of defaultEmails) {
